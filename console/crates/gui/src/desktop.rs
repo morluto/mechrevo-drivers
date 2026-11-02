@@ -9,15 +9,8 @@ use std::{
     time::{Duration, Instant},
 };
 
-const BACKGROUND: Color32 = Color32::from_rgb(11, 13, 15);
-const PANEL: Color32 = Color32::from_rgb(24, 28, 32);
-const FOREGROUND: Color32 = Color32::from_rgb(241, 243, 245);
-const SUBTLE: Color32 = Color32::from_rgb(139, 148, 158);
-const GREEN: Color32 = Color32::from_rgb(143, 211, 154);
-const AMBER: Color32 = Color32::from_rgb(240, 200, 121);
-const ERROR: Color32 = Color32::from_rgb(255, 133, 133);
-const INFO: Color32 = Color32::from_rgb(143, 184, 242);
-const FIXTURE: Color32 = Color32::from_rgb(169, 155, 203);
+mod controls;
+
 const HISTORY_LIMIT: usize = 120;
 
 #[derive(Debug, Clone, Copy)]
@@ -41,7 +34,7 @@ impl Default for RenderMetrics {
         }
     }
 }
-#[derive(Default, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Hash)]
 pub enum Section {
     #[default]
     Dashboard,
@@ -121,6 +114,7 @@ pub struct DesktopApp {
     motion_enabled: bool,
     source_details_expanded: bool,
     history: TemperatureHistory,
+    side_navigation: bool,
 }
 impl DesktopApp {
     pub fn new(creation: &eframe::CreationContext<'_>) -> Result<Self, std::io::Error> {
@@ -154,6 +148,7 @@ impl DesktopApp {
             motion_enabled: true,
             source_details_expanded: false,
             history: TemperatureHistory::default(),
+            side_navigation: false,
         }
     }
     pub fn scroll_to_bottom(&mut self) {
@@ -175,63 +170,40 @@ impl DesktopApp {
             Theme::Light => false,
             Theme::System => ctx.system_theme().unwrap_or(egui::Theme::Dark) == egui::Theme::Dark,
         };
+        // set_visuals alone changes colors, not the theme-specific spacing
+        // and typography selected by egui. Keep both on the same theme.
+        ctx.set_theme(if dark {
+            egui::ThemePreference::Dark
+        } else {
+            egui::ThemePreference::Light
+        });
         let mut v = if dark {
             egui::Visuals::dark()
         } else {
             egui::Visuals::light()
         };
-        let text = if dark {
-            FOREGROUND
-        } else {
-            Color32::from_rgb(37, 39, 35)
-        };
-        let bg = if dark {
-            BACKGROUND
-        } else {
-            Color32::from_rgb(241, 240, 233)
-        };
-        let panel = if dark {
-            PANEL
-        } else {
-            Color32::from_rgb(251, 250, 245)
-        };
-        let line = if dark {
-            Color32::from_rgb(41, 48, 56)
-        } else {
-            Color32::from_rgb(211, 213, 201)
-        };
+        let colors = appearance::Palette::new(dark);
+        let text = colors.text;
+        let bg = colors.background;
+        let panel = colors.panel;
+        let line = colors.border;
         v.panel_fill = bg;
         v.window_fill = panel;
-        v.extreme_bg_color = bg;
+        v.extreme_bg_color = colors.inset;
         v.faint_bg_color = panel;
         v.override_text_color = Some(text);
         v.hyperlink_color = text;
-        v.selection.bg_fill = if dark {
-            Color32::from_rgb(49, 75, 75)
-        } else {
-            Color32::from_rgb(211, 221, 192)
-        };
-        v.selection.stroke = Stroke::new(1.0, text);
+        v.selection.bg_fill = colors.selection;
+        v.selection.stroke = Stroke::new(1.0, colors.accent);
         v.widgets.noninteractive.bg_stroke = Stroke::new(1.0, line);
         v.widgets.noninteractive.fg_stroke = Stroke::new(1.0, text);
         v.widgets.inactive.weak_bg_fill = panel;
         v.widgets.inactive.bg_fill = panel;
         v.widgets.inactive.bg_stroke = Stroke::new(1.0, line);
         v.widgets.inactive.fg_stroke = Stroke::new(1.0, text);
-        v.widgets.hovered.bg_fill = if dark {
-            Color32::from_rgb(32, 39, 44)
-        } else {
-            Color32::from_rgb(228, 231, 218)
-        };
+        v.widgets.hovered.bg_fill = colors.raised;
         v.widgets.hovered.weak_bg_fill = v.widgets.hovered.bg_fill;
-        v.widgets.hovered.bg_stroke = Stroke::new(
-            1.0,
-            if dark {
-                INFO
-            } else {
-                Color32::from_rgb(130, 139, 114)
-            },
-        );
+        v.widgets.hovered.bg_stroke = Stroke::new(1.0, colors.accent);
         v.widgets.hovered.fg_stroke = Stroke::new(1.0, text);
         v.widgets.active = v.widgets.hovered;
         v.widgets.open = v.widgets.hovered;
@@ -268,7 +240,7 @@ impl DesktopApp {
                     &mut style.visuals.widgets.active,
                     &mut style.visuals.widgets.open,
                 ] {
-                    widget.corner_radius = egui::CornerRadius::same(8);
+                    widget.corner_radius = egui::CornerRadius::same(12);
                 }
             },
         );
@@ -323,23 +295,38 @@ impl DesktopApp {
         }
         let backdrop_rect = root.max_rect();
         appearance::paint_backdrop(root, backdrop_rect);
+        self.side_navigation = root.available_width() >= 1180.0;
         let outer = if root.available_width() >= 900.0 {
-            40.0
+            24.0
         } else {
             16.0
         };
         let mut metrics = RenderMetrics::default();
         egui::Frame::new().inner_margin(outer).show(root, |ui| {
-            let width = ui.available_width().clamp(1.0, 1000.0);
+            let width = ui.available_width().clamp(1.0, 1440.0);
             let side = ((ui.available_width() - width) * 0.5).max(0.0);
             ui.horizontal_top(|ui| {
                 ui.spacing_mut().item_spacing.x = 0.0;
                 ui.add_space(side);
+                let content_width = if self.side_navigation {
+                    ui.allocate_ui_with_layout(
+                        Vec2::new(172.0, ui.available_height()),
+                        egui::Layout::top_down(egui::Align::Min),
+                        |ui| {
+                            ui.set_width(172.0);
+                            self.sidebar(ui);
+                        },
+                    );
+                    ui.add_space(24.0);
+                    width - 196.0
+                } else {
+                    width
+                };
                 ui.allocate_ui_with_layout(
-                    Vec2::new(width, ui.available_height()),
+                    Vec2::new(content_width, ui.available_height()),
                     egui::Layout::top_down(egui::Align::Min),
                     |ui| {
-                        ui.set_width(width);
+                        ui.set_width(content_width);
                         metrics = self.main_content(ui);
                     },
                 );
@@ -393,7 +380,7 @@ impl DesktopApp {
         let mut heading_rect = Rect::NOTHING;
         let mut thermal_panel_rect = Rect::NOTHING;
         let mut scroll = egui::ScrollArea::vertical()
-            .id_salt("console-content")
+            .id_salt(("console-content", self.section))
             .auto_shrink([false, false]);
         if self.bottom_requested {
             scroll = scroll.vertical_scroll_offset(self.last_metrics.content_size.y.max(0.0));
@@ -406,12 +393,22 @@ impl DesktopApp {
                 self.display_settings(ui);
             }
             self.feedback(ui);
-            ui.add_space(0.0);
+            ui.add_space(8.0);
             heading_rect = ui.scope(|ui| self.editorial_heading(ui)).response.rect;
-            ui.add_space(0.0);
+            ui.add_space(8.0);
             match self.section {
                 Section::Dashboard => thermal_panel_rect = self.dashboard(ui),
-                Section::Controls => self.oem_controls(ui),
+                Section::Controls => {
+                    if self
+                        .controller
+                        .selected_oem()
+                        .is_some_and(|c| c.kind == OemControlKind::PerformanceProfile)
+                    {
+                        self.performance_controls(ui);
+                        ui.add_space(16.0);
+                    }
+                    self.oem_controls(ui);
+                }
                 Section::Sensors => self.sensors(ui),
                 Section::Catalog => self.catalog(ui),
             }
@@ -441,11 +438,19 @@ impl DesktopApp {
         let wide = ui.available_width() >= 760.0;
         ui.horizontal_wrapped(|ui| {
             ui.spacing_mut().item_spacing.x = 10.0;
-            let (rect, _) = ui.allocate_exact_size(Vec2::splat(24.0), egui::Sense::hover());
-            icon(ui.painter(), rect, Icon::Brand, foreground(ui));
-            ui.label(RichText::new("MECHREVO").font(appearance::display_font(19.0)));
-            ui.add_space(if wide { 20.0 } else { 6.0 });
-            self.navigation(ui);
+            if self.side_navigation {
+                ui.label(
+                    RichText::new("WORKSPACE / 控制中心")
+                        .size(12.0)
+                        .color(secondary(ui)),
+                );
+            } else {
+                let (rect, _) = ui.allocate_exact_size(Vec2::splat(24.0), egui::Sense::hover());
+                icon(ui.painter(), rect, Icon::Brand, green(ui));
+                ui.label(RichText::new("MECHREVO").font(appearance::display_font(20.0)));
+                ui.add_space(if wide { 20.0 } else { 6.0 });
+                self.navigation(ui);
+            }
             if wide {
                 // The actions remain direct children of this row. A nested
                 // wrapping row would inherit the remaining sliver of width.
@@ -572,7 +577,7 @@ impl DesktopApp {
                 .color(secondary(ui)),
         );
         ui.add_space(4.0);
-        let (provenance, provenance_color) = data_provenance(snapshot);
+        let (provenance, provenance_color) = data_provenance(ui, snapshot);
         ui.label(
             RichText::new(format!(
                 "{provenance}  ·  {}",
@@ -635,6 +640,7 @@ impl DesktopApp {
     }
 
     fn dashboard(&mut self, ui: &mut egui::Ui) -> Rect {
+        self.performance_controls(ui);
         let thermal_rect = self.thermal_panel(ui);
         ui.add_space(18.0);
         if ui.available_width() >= 660.0 {
@@ -644,15 +650,17 @@ impl DesktopApp {
                     for column in columns.iter_mut() {
                         column.spacing_mut().item_spacing.x = 10.0;
                     }
-                    surface(&mut columns[0], |ui| self.power_controls(ui));
+                    surface(&mut columns[0], |ui| self.everyday_power(ui));
                     surface(&mut columns[1], |ui| self.brightness_controls(ui));
                 });
             });
         } else {
-            surface(ui, |ui| self.power_controls(ui));
+            surface(ui, |ui| self.everyday_power(ui));
             ui.add_space(14.0);
             surface(ui, |ui| self.brightness_controls(ui));
         }
+        ui.add_space(18.0);
+        self.quick_controls(ui);
         ui.add_space(24.0);
         self.power_source(ui);
         ui.add_space(24.0);
@@ -1090,6 +1098,10 @@ impl DesktopApp {
                 ui.label("所选设备接口已离线，请刷新并重新选择。");
                 return;
             };
+            if control.kind == OemControlKind::PerformanceProfile {
+                ui.label("五档性能切换位于上方；下面也可以选择电池、键盘与功能键。点击档位只选择，应用后才生效。");
+                return;
+            }
             ui.label(RichText::new(&control.label).size(18.0));
             ui.label(
                 RichText::new(format!(
@@ -1135,6 +1147,19 @@ impl DesktopApp {
                         }
                         (OemDomain::Rgb, Some(OemValue::Rgb(rgb))) => {
                             ui.label(RichText::new("目标颜色").size(13.0).color(secondary(ui)));
+                            ui.horizontal_wrapped(|ui| {
+                                for (name, preset) in [
+                                    ("暖白", [255, 230, 195]),
+                                    ("冰白", [220, 240, 255]),
+                                    ("珊瑚", [255, 95, 70]),
+                                    ("青绿", [65, 220, 150]),
+                                    ("紫罗兰", [170, 95, 255]),
+                                ] {
+                                    if ui.selectable_label(*rgb == preset, name).clicked() {
+                                        *rgb = preset;
+                                    }
+                                }
+                            });
                             ui.horizontal_wrapped(|ui| {
                                 for (label, channel) in
                                     ["红", "绿", "蓝"].into_iter().zip(rgb.iter_mut())
@@ -1709,28 +1734,23 @@ fn foreground(ui: &egui::Ui) -> Color32 {
     ui.visuals().text_color()
 }
 fn secondary(ui: &egui::Ui) -> Color32 {
-    if ui.visuals().dark_mode {
-        SUBTLE
-    } else {
-        Color32::from_rgb(103, 106, 108)
-    }
+    appearance::palette(ui).secondary
 }
 fn label_color(ui: &egui::Ui) -> Color32 {
-    if ui.visuals().dark_mode {
-        Color32::from_rgb(209, 211, 212)
-    } else {
-        Color32::from_rgb(68, 72, 75)
-    }
+    appearance::palette(ui).label
 }
 
-fn data_provenance(snapshot: Option<&mechrevo_console_core::Snapshot>) -> (&'static str, Color32) {
+fn data_provenance(
+    ui: &egui::Ui,
+    snapshot: Option<&mechrevo_console_core::Snapshot>,
+) -> (&'static str, Color32) {
     let Some(snapshot) = snapshot else {
-        return ("尚未确认硬件", AMBER);
+        return ("尚未确认硬件", amber(ui));
     };
     if snapshot_is_fixture(Some(snapshot)) {
-        ("模拟数据", FIXTURE)
+        ("模拟数据", amber(ui))
     } else {
-        ("真实硬件", GREEN)
+        ("真实硬件", green(ui))
     }
 }
 
@@ -1790,7 +1810,7 @@ fn sampling_switch(ui: &mut egui::Ui, enabled: &mut bool, motion: bool) -> egui:
             ),
             6.0,
             if *enabled && ui.visuals().dark_mode {
-                BACKGROUND
+                appearance::palette(ui).background
             } else {
                 Color32::WHITE
             },
@@ -1812,32 +1832,16 @@ fn sampling_switch(ui: &mut egui::Ui, enabled: &mut bool, motion: bool) -> egui:
     response
 }
 fn green(ui: &egui::Ui) -> Color32 {
-    if ui.visuals().dark_mode {
-        GREEN
-    } else {
-        Color32::from_rgb(69, 105, 44)
-    }
+    appearance::palette(ui).accent
 }
 fn amber(ui: &egui::Ui) -> Color32 {
-    if ui.visuals().dark_mode {
-        AMBER
-    } else {
-        Color32::from_rgb(137, 100, 31)
-    }
+    appearance::palette(ui).warning
 }
 fn error_color(ui: &egui::Ui) -> Color32 {
-    if ui.visuals().dark_mode {
-        ERROR
-    } else {
-        Color32::from_rgb(154, 46, 34)
-    }
+    appearance::palette(ui).error
 }
 fn divider(ui: &egui::Ui) -> Color32 {
-    if ui.visuals().dark_mode {
-        Color32::from_rgb(51, 54, 49)
-    } else {
-        Color32::from_rgb(215, 217, 205)
-    }
+    appearance::palette(ui).border
 }
 fn surface<R>(ui: &mut egui::Ui, contents: impl FnOnce(&mut egui::Ui) -> R) -> R {
     appearance::glass(ui, contents)
@@ -1863,17 +1867,10 @@ fn slider_style(ui: &mut egui::Ui) {
     visuals.widgets.active = visuals.widgets.hovered;
 }
 fn primary_button(ui: &egui::Ui, label: &str) -> egui::Button<'static> {
-    egui::Button::new(RichText::new(label).color(if ui.visuals().dark_mode {
-        BACKGROUND
-    } else {
-        Color32::WHITE
-    }))
-    .fill(if ui.visuals().dark_mode {
-        FOREGROUND
-    } else {
-        Color32::from_rgb(50, 57, 43)
-    })
-    .stroke(Stroke::NONE)
+    let colors = appearance::palette(ui);
+    egui::Button::new(RichText::new(label).color(colors.background))
+        .fill(colors.accent)
+        .stroke(Stroke::NONE)
 }
 fn unavailable(ui: &mut egui::Ui, reason: &str) {
     let concise = reason.split(['。', '；', '\n']).next().unwrap_or(reason);
@@ -1942,6 +1939,11 @@ fn oem_value_text(value: &OemValue) -> String {
 }
 fn oem_choice_label(choice: &str) -> &str {
     match choice {
+        "mechrevo_office" => "办公节能",
+        "mechrevo_gaming_quiet" => "游戏低噪",
+        "mechrevo_gaming" => "游戏平衡",
+        "mechrevo_turbo" => "狂暴性能",
+        "mechrevo_fan_boost" => "全速强冷",
         "high_capacity" => "高容量",
         "balanced" => "均衡",
         "stationary" => "长期接电",

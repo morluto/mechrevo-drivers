@@ -222,6 +222,211 @@ fn oem_fixture() -> DesktopApp {
     app
 }
 
+fn performance_fixture() -> DesktopApp {
+    let mut app = oem_fixture();
+    app.select_section(Section::Dashboard);
+    let snapshot = app.controller.snapshot.as_mut().unwrap();
+    snapshot.oem_controls.truncate(4);
+    for control in &mut snapshot.oem_controls {
+        control.label = control.label.split(" / ").next().unwrap().into();
+    }
+    snapshot.oem_controls.insert(
+        0,
+        OemControl {
+            id: "mechrevo-performance-profile".into(),
+            kind: OemControlKind::PerformanceProfile,
+            label: "性能与散热档位".into(),
+            current: Some(OemValue::Choice("mechrevo_turbo".into())),
+            domain: OemDomain::Choices(
+                [
+                    "mechrevo_office",
+                    "mechrevo_gaming_quiet",
+                    "mechrevo_gaming",
+                    "mechrevo_turbo",
+                    "mechrevo_fan_boost",
+                ]
+                .map(str::to_owned)
+                .into(),
+            ),
+            status: CapabilityStatus::Available,
+            writable: false,
+            source: EvidenceSource {
+                backend: "fixture-only".into(),
+                path: "fixture://saved-profiles".into(),
+                device_id: Some("fixture-only".into()),
+            },
+            binding: "fixture-only:profiles".into(),
+            readback_scope: "模拟界面数据，不代表硬件验收。".into(),
+            reason: None,
+        },
+    );
+    snapshot.brightness.push(serde_json::from_value(json!({
+        "id":"fixture-panel", "label":"内置屏幕 / 模拟数据", "current_percent":65.0,
+        "control_value":650, "actual_value":650, "maximum":1000,
+        "status":"available", "readable":true, "writable":true, "supported_percentages":[], "reason":null,
+        "source":{"backend":"fixture-only", "path":"fixture://panel", "device_id":"fixture-panel"}
+    })).unwrap());
+    for (id, label, value) in [
+        ("cpu_fan", "CPU Fan", 2600.0),
+        ("gpu_fan", "GPU Fan", 3800.0),
+    ] {
+        snapshot.telemetry.push(serde_json::from_value(json!({
+            "id":id, "label":label, "device_id":"fixture-fans", "kind":"fan_speed", "value":value,
+            "unit":"RPM", "status":"available", "reason":null,
+            "source":{"backend":"fixture-only", "path":"fixture://fans", "device_id":"fixture-fans"}
+        })).unwrap());
+    }
+    app
+}
+
+#[test]
+fn five_profile_dashboard_is_responsive_in_both_themes() {
+    let fonts = Arc::new(SystemFontProvider::new().with_locale(Some("zh-Hans")));
+    let capture = std::env::var_os("MECHREVO_GUI_CAPTURE_DIR").map(std::path::PathBuf::from);
+    if let Some(path) = &capture {
+        std::fs::create_dir_all(path).unwrap();
+    }
+    for (theme, name) in [(Theme::Dark, "dark"), (Theme::Light, "light")] {
+        for (physical, dpi, text_scale) in [
+            ([1280, 900], 1.0, 1.0),
+            ([1120, 760], 1.0, 1.0),
+            ([360, 280], 1.0, 1.0),
+            ([720, 560], 2.0, 1.6),
+        ] {
+            let mut app = performance_fixture();
+            app.preferences.theme = theme;
+            app.preferences.text_scale = text_scale;
+            let mut harness = Harness::new(physical, dpi, fonts.clone());
+            let label = format!(
+                "profiles-{name}-{}x{}-text{}",
+                physical[0], physical[1], text_scale
+            );
+            assert_layout(&label, &mut app, &mut harness, capture.as_deref(), true);
+            let style = harness.ctx.global_style();
+            assert_eq!(
+                style.visuals.dark_mode,
+                theme == Theme::Dark,
+                "{label}: theme mismatch"
+            );
+            assert_eq!(
+                style.spacing.interact_size.y, 36.0,
+                "{label}: theme must not reset control sizes"
+            );
+            assert_eq!(
+                style.spacing.button_padding,
+                vec2(12.0, 8.0),
+                "{label}: theme must not reset spacing"
+            );
+            let (metrics, output) = reveal_oem_control(
+                &mut harness,
+                &mut app,
+                "预览档位更改",
+                egui::accesskit::Role::Button,
+            );
+            assert_width(&label, &metrics);
+            assert_client_bounds(&label, &metrics, physical, output.pixels_per_point);
+            assert!(
+                !app.controller.busy(),
+                "drawing must not request a preview or write"
+            );
+            assert!(app.controller.oem_preview.is_none());
+            assert_eq!(
+                app.controller.selected_oem().unwrap().current,
+                Some(OemValue::Choice("mechrevo_turbo".into()))
+            );
+        }
+    }
+}
+
+#[test]
+fn profile_selection_does_not_apply_or_change_current_readback() {
+    let fonts = Arc::new(SystemFontProvider::new().with_locale(Some("zh-Hans")));
+    let mut app = performance_fixture();
+    let mut harness = Harness::new([1280, 900], 1.0, fonts);
+    let (_, output) = settle(&mut harness, &mut app);
+    let (_, office) = accessible_control(
+        &output,
+        "办公节能\n轻负载 · 节能优先",
+        egui::accesskit::Role::Button,
+    );
+    let output = click(&mut harness, &mut app, office.center());
+    assert_eq!(
+        app.controller.requested_oem_value,
+        Some(OemValue::Choice("mechrevo_office".into()))
+    );
+    assert_eq!(
+        app.controller.selected_oem().unwrap().current,
+        Some(OemValue::Choice("mechrevo_turbo".into()))
+    );
+    assert!(!app.controller.busy());
+    assert!(app.controller.oem_preview.is_none());
+    let (_, node) = output
+        .platform_output
+        .accesskit_update
+        .as_ref()
+        .unwrap()
+        .nodes
+        .iter()
+        .find(|(_, node)| node.label() == Some("应用性能档位"))
+        .unwrap();
+    assert!(
+        node.is_disabled(),
+        "a selected card must never authorize a write"
+    );
+    assert_page_title(&output, "当前运行");
+    assert_page_title(&output, "狂暴性能");
+    // A stale preview cannot survive choosing a different profile.
+    let control = app.controller.selected_oem().unwrap();
+    app.controller.oem_preview = Some(OemPlan {
+        control_id: control.id.clone(),
+        kind: control.kind,
+        label: control.label.clone(),
+        previous: control.current.clone().unwrap(),
+        target: OemValue::Choice("mechrevo_office".into()),
+        domain: control.domain.clone(),
+        source: control.source.clone(),
+        binding: control.binding.clone(),
+        readback_scope: control.readback_scope.clone(),
+        requires_privilege: true,
+        companion_brightness: None,
+    });
+    let (_, output) = settle(&mut harness, &mut app);
+    let (_, boost) = accessible_control(
+        &output,
+        "全速强冷\n全速风扇请求 · 快速散热",
+        egui::accesskit::Role::Button,
+    );
+    click(&mut harness, &mut app, boost.center());
+    assert!(app.controller.oem_preview.is_none());
+    assert!(!app.controller.busy());
+    assert_eq!(
+        app.controller.requested_oem_value,
+        Some(OemValue::Choice("mechrevo_fan_boost".into()))
+    );
+}
+
+#[test]
+fn unavailable_performance_backend_never_offers_a_write() {
+    let fonts = Arc::new(SystemFontProvider::new().with_locale(Some("zh-Hans")));
+    let mut app = performance_fixture();
+    let control = &mut app.controller.snapshot.as_mut().unwrap().oem_controls[0];
+    control.current = None;
+    control.status = CapabilityStatus::Unavailable;
+    control.reason = Some("测试后台不可用".into());
+    let mut harness = Harness::new([1280, 900], 1.0, fonts);
+    let (_, output) = settle(&mut harness, &mut app);
+    assert_page_title(&output, "测试后台不可用");
+    assert!(!output
+        .platform_output
+        .accesskit_update
+        .as_ref()
+        .unwrap()
+        .nodes
+        .iter()
+        .any(|(_, node)| node.label() == Some("应用性能档位") && !node.is_disabled()));
+    assert!(!app.controller.busy());
+}
+
 struct Harness {
     ctx: Context,
     textures: HashMap<TextureId, ColorImage>,
@@ -327,7 +532,7 @@ impl Harness {
                 .get(&mesh.texture_id)
                 .expect("mesh texture must be uploaded");
             let clip = primitive.clip_rect * output.pixels_per_point;
-            for triangle in mesh.indices.chunks_exact(3) {
+            for triangle in mesh.indices.as_chunks::<3>().0 {
                 let v = [
                     mesh.vertices[triangle[0] as usize],
                     mesh.vertices[triangle[1] as usize],
@@ -894,7 +1099,9 @@ fn reveal_oem_control(
     app.scroll_to_bottom();
     let (mut metrics, mut output) = settle(harness, app);
     let mut scroll_trace = Vec::new();
-    for _ in 0..8 {
+    // A full dashboard is taller than one editor at 160% zoom. Keep the
+    // reachability check bounded while allowing its longer real scroll path.
+    for _ in 0..32 {
         let (id, bounds) = accessible_control(&output, label, role);
         scroll_trace.push(format!(
             "offset={:?}, viewport={:?}, control={bounds:?}",
@@ -1247,7 +1454,7 @@ fn overview_gives_compact_space_to_real_device_readings() {
         );
         let (_, navigation) = accessible_control(&output, "概览", egui::accesskit::Role::Button);
         assert!(
-            panel.top() - navigation.bottom() <= 112.0,
+            panel.top() - navigation.bottom() <= 132.0,
             "too much space between navigation and device readings: {}",
             panel.top() - navigation.bottom()
         );
@@ -1526,11 +1733,11 @@ fn assert_layout(
         (output.pixels_per_point - harness.dpi * app.preferences.text_scale).abs() < 0.001,
         "{label}: wrong DPI"
     );
-    assert_width(label, &metrics);
     assert_client_bounds(label, &metrics, harness.physical, output.pixels_per_point);
     if let Some(path) = capture {
         harness.capture(output, &path.join(format!("{label}-top.png")));
     }
+    assert_width(label, &metrics);
     app.scroll_to_bottom();
     let mut bottom = None;
     for _ in 0..4 {

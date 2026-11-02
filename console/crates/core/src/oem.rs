@@ -10,12 +10,15 @@ use std::path::Path;
 
 #[cfg(target_os = "linux")]
 mod linux;
+#[cfg(target_os = "linux")]
+mod performance;
 #[cfg(test)]
 mod tests;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum OemControlKind {
+    PerformanceProfile,
     FnLock,
     ChargingProfile,
     KeyboardBrightness,
@@ -103,7 +106,11 @@ fn validate_target(domain: &OemDomain, value: &OemValue) -> Result<(), ControlEr
 pub fn controls(root: &Path) -> Vec<OemControl> {
     #[cfg(target_os = "linux")]
     {
-        linux::controls(root)
+        let mut controls = linux::controls(root);
+        if let Some(profile) = performance::control(root) {
+            controls.insert(0, profile);
+        }
+        controls
     }
     #[cfg(not(target_os = "linux"))]
     {
@@ -114,7 +121,11 @@ pub fn controls(root: &Path) -> Vec<OemControl> {
 pub fn plan(root: &Path, id: &str, target: OemValue) -> Result<OemPlan, ControlError> {
     #[cfg(target_os = "linux")]
     {
-        linux::plan(root, id, target)
+        if id == performance::ID {
+            performance::plan(root, target)
+        } else {
+            linux::plan(root, id, target)
+        }
     }
     #[cfg(not(target_os = "linux"))]
     {
@@ -125,7 +136,11 @@ pub fn plan(root: &Path, id: &str, target: OemValue) -> Result<OemPlan, ControlE
 pub fn apply(root: &Path, plan: &OemPlan) -> Result<OemApplyResult, ControlError> {
     #[cfg(target_os = "linux")]
     {
-        linux::apply(root, plan)
+        if plan.control_id == performance::ID || plan.kind == OemControlKind::PerformanceProfile {
+            performance::apply(root, plan)
+        } else {
+            linux::apply(root, plan)
+        }
     }
     #[cfg(not(target_os = "linux"))]
     {

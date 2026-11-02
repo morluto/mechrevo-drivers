@@ -1,6 +1,62 @@
 //! Application-owned frosted material. This never captures or blurs the desktop.
 use eframe::egui::{self, Color32, FontId, Rect, TextureHandle, Vec2};
 
+/// Shared semantic colors. Widgets and materials must use the same theme;
+/// status text is deliberately dark enough in the ivory theme to remain legible.
+#[derive(Clone, Copy)]
+pub(crate) struct Palette {
+    pub background: Color32,
+    pub panel: Color32,
+    pub raised: Color32,
+    pub inset: Color32,
+    pub text: Color32,
+    pub secondary: Color32,
+    pub label: Color32,
+    pub border: Color32,
+    pub accent: Color32,
+    pub selection: Color32,
+    pub warning: Color32,
+    pub error: Color32,
+}
+impl Palette {
+    pub fn new(dark: bool) -> Self {
+        if dark {
+            Self {
+                background: Color32::from_rgb(20, 22, 20),
+                panel: Color32::from_rgb(31, 34, 30),
+                raised: Color32::from_rgb(44, 49, 41),
+                inset: Color32::from_rgb(24, 27, 23),
+                text: Color32::from_rgb(242, 242, 234),
+                secondary: Color32::from_rgb(166, 174, 158),
+                label: Color32::from_rgb(212, 218, 205),
+                border: Color32::from_rgb(61, 67, 56),
+                accent: Color32::from_rgb(186, 214, 151),
+                selection: Color32::from_rgb(55, 68, 44),
+                warning: Color32::from_rgb(228, 192, 132),
+                error: Color32::from_rgb(238, 155, 140),
+            }
+        } else {
+            Self {
+                background: Color32::from_rgb(240, 239, 231),
+                panel: Color32::from_rgb(251, 251, 246),
+                raised: Color32::from_rgb(231, 235, 222),
+                inset: Color32::from_rgb(239, 241, 232),
+                text: Color32::from_rgb(36, 42, 32),
+                secondary: Color32::from_rgb(98, 107, 88),
+                label: Color32::from_rgb(66, 75, 56),
+                border: Color32::from_rgb(207, 214, 197),
+                accent: Color32::from_rgb(65, 95, 35),
+                selection: Color32::from_rgb(222, 233, 207),
+                warning: Color32::from_rgb(133, 91, 24),
+                error: Color32::from_rgb(154, 46, 34),
+            }
+        }
+    }
+}
+pub(crate) fn palette(ui: &egui::Ui) -> Palette {
+    Palette::new(ui.visuals().dark_mode)
+}
+
 /// Install once per context, keeping the platform's Chinese fallback provider.
 pub(crate) fn install_fonts(ctx: &egui::Context) {
     let key = egui::Id::unique("mechrevo-bundled-fonts-v1");
@@ -63,7 +119,7 @@ pub(crate) fn tabular_font(size: f32) -> FontId {
 /// animated wallpaper, network request, compositor dependency or sensor input.
 pub(crate) fn paint_backdrop(ui: &egui::Ui, rect: Rect) {
     let dark = ui.visuals().dark_mode;
-    let key = egui::Id::unique(("mechrevo-diffuse-field-v2", dark));
+    let key = egui::Id::unique(("mechrevo-diffuse-field-v3", dark));
     let texture = ui
         .ctx()
         .data(|data| data.get_temp::<TextureHandle>(key))
@@ -92,6 +148,7 @@ pub(crate) fn paint_backdrop(ui: &egui::Ui, rect: Rect) {
 fn diffuse_field(dark: bool) -> egui::ColorImage {
     let size = [640, 480];
     let mut pixels = Vec::with_capacity(size[0] * size[1]);
+    let base = Palette::new(dark).background;
     let mut seed = 0x77ab_213du32;
     for y in 0..size[1] {
         for x in 0..size[0] {
@@ -104,15 +161,11 @@ fn diffuse_field(dark: bool) -> egui::ColorImage {
             let grain = (seed & 255) as f32 / 255.0 - 0.5;
             let channel =
                 |base: f32, a: f32| (base + a * warm + grain * 0.55).clamp(0.0, 255.0) as u8;
-            pixels.push(if dark {
-                Color32::from_rgb(channel(11.0, 4.0), channel(13.0, 4.0), channel(15.0, 5.0))
-            } else {
-                Color32::from_rgb(
-                    channel(239.0, 9.0),
-                    channel(239.0, 6.0),
-                    channel(235.0, 2.0),
-                )
-            });
+            pixels.push(Color32::from_rgb(
+                channel(f32::from(base.r()), 6.0),
+                channel(f32::from(base.g()), 4.0),
+                channel(f32::from(base.b()), 1.0),
+            ));
         }
     }
     egui::ColorImage::new(size, pixels)
@@ -120,19 +173,11 @@ fn diffuse_field(dark: bool) -> egui::ColorImage {
 
 pub(crate) fn glass<R>(ui: &mut egui::Ui, contents: impl FnOnce(&mut egui::Ui) -> R) -> R {
     let dark = ui.visuals().dark_mode;
-    let edge = if dark {
-        Color32::from_white_alpha(20)
-    } else {
-        Color32::from_black_alpha(18)
-    };
+    let colors = palette(ui);
     let response = egui::Frame::new()
-        .fill(if dark {
-            Color32::from_rgb(24, 28, 32)
-        } else {
-            Color32::from_rgb(248, 249, 246)
-        })
-        .stroke(egui::Stroke::new(1.0, edge))
-        .corner_radius(12.0)
+        .fill(colors.panel)
+        .stroke(egui::Stroke::new(0.7, colors.border))
+        .corner_radius(20.0)
         .shadow(egui::epaint::Shadow {
             offset: [0, 4],
             blur: 14,
@@ -140,9 +185,9 @@ pub(crate) fn glass<R>(ui: &mut egui::Ui, contents: impl FnOnce(&mut egui::Ui) -
             color: Color32::from_black_alpha(if dark { 28 } else { 12 }),
         })
         .inner_margin(if ui.available_width() < 380.0 {
-            16.0
+            18.0
         } else {
-            20.0
+            24.0
         })
         .show(ui, |ui| {
             ui.set_min_width(ui.available_width());
@@ -164,6 +209,41 @@ pub(crate) fn glass<R>(ui: &mut egui::Ui, contents: impl FnOnce(&mut egui::Ui) -
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn contrast(a: Color32, b: Color32) -> f32 {
+        let luminance = |color: Color32| {
+            [color.r(), color.g(), color.b()]
+                .into_iter()
+                .zip([0.2126, 0.7152, 0.0722])
+                .map(|(channel, weight)| {
+                    let c = f32::from(channel) / 255.0;
+                    weight
+                        * if c <= 0.04045 {
+                            c / 12.92
+                        } else {
+                            ((c + 0.055) / 1.055).powf(2.4)
+                        }
+                })
+                .sum::<f32>()
+        };
+        let a = luminance(a);
+        let b = luminance(b);
+        (a.max(b) + 0.05) / (a.min(b) + 0.05)
+    }
+
+    #[test]
+    fn semantic_text_has_readable_contrast_in_both_themes() {
+        for dark in [true, false] {
+            let p = Palette::new(dark);
+            for bg in [p.background, p.panel, p.inset] {
+                for fg in [p.text, p.secondary, p.label, p.accent, p.warning, p.error] {
+                    assert!(contrast(fg, bg) >= 4.5, "dark={dark}: {fg:?} on {bg:?}");
+                }
+            }
+            assert!(contrast(p.accent, p.selection) >= 4.5);
+            assert!(contrast(p.background, p.accent) >= 4.5);
+        }
+    }
 
     #[test]
     fn grain_is_stable_and_themes_are_distinct() {

@@ -158,12 +158,15 @@ fn parse_oem_value(
             "off" => Ok(OemValue::Boolean(false)),
             _ => Err(oem_value_error("Boolean OEM controls require on or off")),
         },
-        (OemControlKind::ChargingProfile, OemDomain::Choices(choices)) => {
+        (
+            OemControlKind::ChargingProfile | OemControlKind::PerformanceProfile,
+            OemDomain::Choices(choices),
+        ) => {
             if choices.iter().any(|choice| choice == raw) {
                 Ok(OemValue::Choice(raw.into()))
             } else {
                 Err(oem_value_error(
-                    "Charging profile must be one of the exact choices returned by oem list",
+                    "Profile must be one of the exact choices returned by oem list",
                 ))
             }
         }
@@ -524,6 +527,25 @@ mod tests {
         assert!(
             parse_oem_value(&OemControlKind::ChargingProfile, &OemDomain::Boolean, "on").is_err()
         );
+    }
+    #[test]
+    fn performance_profile_values_require_an_exact_enumerated_choice() {
+        let kind = OemControlKind::PerformanceProfile;
+        let choices = OemDomain::Choices(vec!["mechrevo_turbo".into()]);
+        assert_eq!(
+            parse_oem_value(&kind, &choices, "mechrevo_turbo").unwrap(),
+            OemValue::Choice("mechrevo_turbo".into())
+        );
+        for raw in [
+            "turbo",
+            "mechrevo_office",
+            "MECHREVO_TURBO",
+            "mechrevo_turbo; exit",
+        ] {
+            assert!(parse_oem_value(&kind, &choices, raw).is_err());
+        }
+        assert!(parse_oem_value(&kind, &OemDomain::Boolean, "on").is_err());
+        assert!(parse_oem_value(&kind, &OemDomain::Choices(vec![]), "mechrevo_turbo").is_err());
     }
     #[test]
     fn oem_brightness_uses_raw_levels_and_actual_maximum() {

@@ -600,6 +600,7 @@ fn inspect(root: &Path, spec: &Spec) -> Result<Inspected, ControlError> {
     let mut order = None;
     let mut companion = None;
     let (domain, current) = match spec.kind {
+        OemControlKind::PerformanceProfile => return Err(unavailable()),
         OemControlKind::FnLock | OemControlKind::AcAutoBoot | OemControlKind::UsbPowerShare => {
             let value = match device.read(spec.attribute)?.as_str() {
                 "0" => false,
@@ -760,6 +761,7 @@ impl OemIo for ControlIo {
     fn observe(&mut self) -> Result<Observation, ControlError> {
         let device = &self.inspected.device;
         let value = match self.spec.kind {
+            OemControlKind::PerformanceProfile => return Err(unavailable()),
             OemControlKind::FnLock | OemControlKind::AcAutoBoot | OemControlKind::UsbPowerShare => {
                 match device.read(self.spec.attribute)?.as_str() {
                     "0" => OemValue::Boolean(false),

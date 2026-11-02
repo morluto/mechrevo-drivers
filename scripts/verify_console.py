@@ -63,6 +63,12 @@ def artifact_base(root: Path, env: dict[str, str]) -> Path:
     return base
 
 
+def stable_file_metadata(value: os.stat_result) -> tuple[int, ...]:
+    """Ignore read-induced atime updates, but retain identity and nanosecond changes."""
+    return (value.st_dev, value.st_ino, value.st_mode, value.st_nlink,
+            value.st_uid, value.st_gid, value.st_size, value.st_mtime_ns, value.st_ctime_ns)
+
+
 def source_snapshot(root: Path) -> dict[str, object]:
     """Hash source, GUI assets, packaged resources, and manifests; not atomic."""
     console = checked_directory(root / "console")
@@ -98,12 +104,13 @@ def source_snapshot(root: Path) -> dict[str, object]:
         digest = hashlib.sha256()
         with path.open("rb") as stream:
             opened = os.fstat(stream.fileno())
-            if opened != before:
+            if stable_file_metadata(opened) != stable_file_metadata(before):
                 raise ValueError("Source changed before hashing: " + relative)
             for block in iter(lambda: stream.read(65536), b""):
                 digest.update(block)
             after = os.fstat(stream.fileno())
-        if before != after or path.stat() != after:
+        if (stable_file_metadata(before) != stable_file_metadata(after)
+                or stable_file_metadata(path.stat()) != stable_file_metadata(after)):
             raise ValueError("Source changed while hashing: " + relative)
         files[relative] = digest.hexdigest()
     if not any(name.endswith(".rs") for name in files):
@@ -162,7 +169,8 @@ def parse_test_log(log: Path, *, max_bytes: int = TEST_LOG_MAX_BYTES,
                 elif line.startswith(b"test result:"):
                     result["reason"] = "Unrecognized libtest summary format"
                     return result
-            if before != os.fstat(stream.fileno()) or before != log.stat():
+            if (stable_file_metadata(before) != stable_file_metadata(os.fstat(stream.fileno()))
+                    or stable_file_metadata(before) != stable_file_metadata(log.stat())):
                 result["reason"] = "Test log changed during summary parsing"
                 return result
         result["totals_complete"] = True

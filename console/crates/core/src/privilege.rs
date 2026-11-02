@@ -232,7 +232,7 @@ pub fn apply_oem(service: &Service, plan: &OemPlan) -> Result<OemApplyResult, Co
 static NEXT_REQUEST: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
 
 #[cfg(target_os = "linux")]
-fn validate_program(path: &std::path::Path) -> Result<(), ControlError> {
+pub(crate) fn validate_program(path: &std::path::Path) -> Result<(), ControlError> {
     use std::os::unix::fs::MetadataExt;
     let mut current = std::path::PathBuf::from("/");
     for component in path.components().skip(1) {

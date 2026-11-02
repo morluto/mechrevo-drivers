@@ -7,6 +7,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -201,6 +202,35 @@ class ConsoleVerificationTests(unittest.TestCase):
         result = verify.parse_test_log(log, max_bytes=300, max_line_bytes=50)
         self.assertFalse(result["totals_complete"])
         self.assertEqual(result["bytes_scanned"], 51)
+
+    def test_source_hashing_accepts_read_induced_access_time_changes(self):
+        baseline = verify.source_snapshot(self.root)
+        old = self.font_license.stat().st_mtime_ns - 2 * 24 * 60 * 60 * 1_000_000_000
+        os.utime(self.font_license, ns=(old, old))
+        self.assertEqual(verify.source_snapshot(self.root), baseline)
+
+    def test_test_log_parser_accepts_read_induced_access_time_changes(self):
+        log = self.directory / "aged-test.log"
+        log.write_text(self.test_output)
+        old = log.stat().st_mtime_ns - 2 * 24 * 60 * 60 * 1_000_000_000
+        os.utime(log, ns=(old, old))
+        result = verify.parse_test_log(log)
+        self.assertTrue(result["totals_complete"], result)
+        self.assertEqual(result["totals"]["passed"], 3)
+
+    def test_stable_metadata_preserves_identity_permissions_and_nanosecond_changes(self):
+        fields = ("st_dev", "st_ino", "st_mode", "st_nlink", "st_uid", "st_gid",
+                  "st_size", "st_mtime_ns", "st_ctime_ns")
+        actual = self.source.stat()
+        values = {name: getattr(actual, name) for name in fields}
+        original = verify.stable_file_metadata(actual)
+        for name in fields:
+            with self.subTest(field=name):
+                changed = SimpleNamespace(**(values | {name: values[name] + 1}))
+                self.assertNotEqual(verify.stable_file_metadata(changed), original)
+        for atime in (0, actual.st_atime_ns + 1_000_000_000):
+            changed = SimpleNamespace(**(values | {"st_atime_ns": atime}))
+            self.assertEqual(verify.stable_file_metadata(changed), original)
 
     def test_source_edits_and_new_source_files_make_run_incomplete(self):
         changes = (lambda: self.source.write_text("pub fn changed() {}\n"),

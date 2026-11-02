@@ -3,7 +3,7 @@
 fn main() -> eframe::Result {
     let options = eframe::NativeOptions {
         viewport: eframe::egui::ViewportBuilder::default()
-            .with_inner_size([1120.0, 760.0])
+            .with_inner_size([1280.0, 900.0])
             .with_min_inner_size([360.0, 280.0])
             .with_app_id("best.lmm.mechrevo-console"),
         renderer: eframe::Renderer::Glow,
