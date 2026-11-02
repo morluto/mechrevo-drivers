@@ -1,96 +1,138 @@
-# mechrevo-drivers — 机械革命 Linux 平台驱动维护分支
+<div align="center">
+  <h1>mechrevo-drivers</h1>
+  <p><strong>机械革命笔记本的社区 Linux 平台驱动维护分支。</strong></p>
+  <p>基于 TUXEDO drivers · DKMS · 精确 DMI/固件匹配 · 可审计硬件边界</p>
 
-[![支持 mechrevo-drivers](https://donate.lmm.best/badge.svg?project=mechrevo-drivers&currency=CNY&lang=zh-CN&period=all&layout=compact&theme=dark&width=440&title=mechrevo-drivers)](https://donate.lmm.best/?project=mechrevo-drivers)
+  [![Upstream baseline](https://img.shields.io/badge/upstream-v4.24.0-111111?style=flat-square)](https://gitlab.com/tuxedocomputers/development/packages/tuxedo-drivers)
+  [![AUR](https://img.shields.io/badge/AUR-mechrevo--drivers--dkms--git-111111?style=flat-square&logo=archlinux)](https://aur.archlinux.org/packages/mechrevo-drivers-dkms-git)
+  [![License](https://img.shields.io/github/license/LIghtJUNction/mechrevo-drivers?style=flat-square)](LICENSE)
+  [![Last commit](https://img.shields.io/github/last-commit/LIghtJUNction/mechrevo-drivers?style=flat-square)](https://github.com/LIghtJUNction/mechrevo-drivers/commits/main)
+</div>
 
-基于 [TUXEDO `tuxedo-drivers`](https://gitlab.com/tuxedocomputers/development/packages/tuxedo-drivers) 的非官方维护分支，保留原始历史、模块名称及许可证。
+> [!CAUTION]
+> 这是非官方社区项目，与 MECHREVO、TUXEDO 均无官方支持关系。错误的 EC、风扇或功耗写入可能损坏硬件。**品牌检查通过不等于机型兼容，更不等于所有控制接口安全。**
 
-- **初始维护基线：上游 `v4.24.0`**，不是开发版 `v4.25.0_rc`。
-- **当前适配：** `MECHREVO` 品牌检查、Uniwill 错误传播与 WMI 响应校验；旷世 16 Pro `GM6PX0X` 加载时保留已有电源配置；无界 14X 三档模式、蛟龙 16 Pro 2025 精确板号功耗接口、无界 15X Pro / 蛟龙 16K / 翼龙 15 Pro 接电开机与 USB 供电适配。控制台另接入原生 Uniwill 的有限控制及蛟龙 16 Pro 2023 `MRID6-23` 的原生 Bitland 背光接口；新增无界 15 Pro HPT 的固件差异处理，以及星耀 P916F HPT-R 的精确识别与标准接口支持，见[两型范围](docs/hardware/WUJIE-HPT-P916F.md)。新增机型尚未在本项目实机验收，精确板号、固件限制见[其他机型说明](docs/hardware/OTHER-MODELS.md)及[原生驱动接入范围](docs/hardware/NATIVE-KERNEL-CONTROLS.md)。保留原有 TUXEDO 匹配和旧平台逻辑。
-- **本机验证：** 旷世 16 Pro `GM6PX0X` 已安装、加载并完成部分接口验证，详见[验证记录](docs/hardware/GM6PX0X.md)；不代表完整功能认证。
-- **不是性能优化包：** 尚无机械革命型号专属风扇曲线、功耗调优或实机兼容性认证。品牌匹配不能保证 EC 操作安全。
-- **上游同步：** 每日镜像开发分支到 `upstream`，仅将正式版本合入自动更新 PR；`main` 不会被强推或自动合并。
+## 先看结论
 
-阅读 [机械革命支持范围与验证](docs/MECHREVO.md)、[同步机制及维护流程](docs/MAINTENANCE.md) 和 [Arch / AUR 安装与打包](docs/AUR.md)。
+这个仓库做的事情很具体：保留 TUXEDO 驱动原有结构和模块名，只在有明确硬件身份、源码依据或实机证据时增加机械革命适配，并修复通用错误传播与并发状态问题。
 
-GM6PX0X 的独立 CPU 长期功耗工具及其适用条件见 [功耗控制说明](docs/POWER-CONTROL.md)。
-它单独安装，不包含在现有 DKMS / AUR 驱动包中；验收范围见本机验证记录。
+```text
+DMI / BIOS / 板号精确匹配
+          ↓
+复用已知平台接口，而不是猜 EC 寄存器
+          ↓
+DKMS 为当前内核编译模块
+          ↓
+只在明确范围内加载、验证、记录结果
+```
 
-> 本分支的 AUR 包名为 `mechrevo-drivers-dkms-git`，从本仓库 `main` 获取源码。它与其他维护者的 `mechrevo-drivers-dkms` 独立、互斥，不接管对方的包；也不要与原版 tuxedo-drivers 同时安装同名模块。AUR 发布的是构建配方，不是预编译 DKMS 二进制包。下方保留上游说明，列出的功能不代表所有机械革命机型都支持。
+它不是“机械革命全机型驱动包”，也不是自动性能优化、降温或风扇调校工具。
 
----
+## 当前证据等级
 
-# Table of Content
-- <a href="#description">Description</a>
-- <a href="#building-and-install">Building and Install</a>
-- <a href="#troubleshooting">Troubleshooting</a>
-- <a href="#regarding-upstreaming-of-tuxedo-drivers">Regarding upstreaming of tuxedo-drivers</a>
+| 范围 | 状态 | 说明 |
+| --- | --- | --- |
+| 旷世 16 Pro `GM6PX0X` | **部分实机验证** | 已安装、加载并验证部分背光、Fn 锁、传感器、功耗拒绝路径与状态保持；不是完整认证 |
+| 无界 14X `GX4HRXL` | 源码适配，待本项目实机验收 | 三档模式，未复制旧式风扇表 |
+| 蛟龙 16 Pro 2025 `JIAOLONG Series-X6xR55xK` | 精确身份接入，待实机验收 | 复用已有 TDP 范围和 custom-profile 流程 |
+| 无界 15X Pro、蛟龙 16K、翼龙 15 Pro | 精确型号/固件接入，待实机验收 | 接电开机、USB 供电等已有接口 |
+| 蛟龙 16 Pro 2023 `MRID6-23` | 原生 Bitland/Uniwill 接口整合 | 不移植其他机型 EC 参数 |
+| 无界 15 Pro HPT、星耀 P916F HPT-R | 精确识别与控制台适配 | 固件差异和未确认 OEM 控制保持封闭 |
+| 其他 MECHREVO 机型 | **未知** | 只命中品牌字符串不能推导功能安全性 |
 
-# Description
-Drivers for several platform devices for TUXEDO notebooks meant for DKMS.
+详细身份、固件限制和验证项见：
 
-## Features implemented by this driver package
-- Fn-keys
-- Keyboard backlight
-- Fan control
-- Power control
-- Other sensors
-- Hardware specific userspace quirks
+- [机械革命支持范围与边界](docs/MECHREVO.md)
+- [GM6PX0X 实机记录](docs/hardware/GM6PX0X.md)
+- [其他机型证据](docs/hardware/OTHER-MODELS.md)
+- [原生内核控制范围](docs/hardware/NATIVE-KERNEL-CONTROLS.md)
+- [HPT / P916F 范围](docs/hardware/WUJIE-HPT-P916F.md)
 
-## Modules included in this package
-- clevo_acpi
-- clevo_wmi
-- tuxedo_keyboard
-- uniwill_wmi
-- ite_8291
-- ite_8291_lb
-- ite_8297
-- ite_829x
-- tuxedo_io
-- tuxedo_compatibility_check
-- tuxedo_nb05_keyboard
-- tuxedo_nb05_power_profiles
-- tuxedo_nb05_ec
-- tuxedo_nb05_sensors
-- tuxedo_nb04_keyboard
-- tuxedo_nb04_wmi_ab
-- tuxedo_nb04_wmi_bs
-- tuxedo_nb04_sensors
-- tuxedo_nb04_power_profiles
-- tuxedo_nb04_kbd_backlight
-- tuxedo_nb05_kbd_backlight
-- tuxedo_nb02_nvidia_power_ctrl
-- tuxedo_nb05_fan_control
-- tuxi_acpi
-- tuxedo_tuxi_fan_control
-- stk8321
-- gxtp7380
+## 安装（Arch Linux / AUR）
 
-# Building and Install
+先读取上面的支持范围，再安装与当前内核匹配的 headers。标准 Arch 内核示例：
 
-## Dependencies:
-All:
-- make
+```bash
+sudo pacman -S --needed base-devel linux-headers
+yay -S mechrevo-drivers-dkms-git
+# 或：paru -S mechrevo-drivers-dkms-git
+```
 
-`make package-*`:
-- [simple-package-creator](https://gitlab.com/tuxedocomputers/development/packages/simple-package-creator)
-- [simple-package-tools](https://gitlab.com/tuxedocomputers/development/packages/simple-package-tools)
+LTS、Zen、Hardened 或自定义内核必须安装对应 headers。安装后检查：
 
-# Troubleshooting
+```bash
+dkms status
+```
 
-## The keyboard backlight control and/or touchpad toggle key combinations do not work
-For all devices with a touchpad toggle key(-combo) and some devices with keyboard backlight control key-combos the driver does nothing more then to send the corresponding key event to userspace where it is the desktop environments duty to carry out the action. Some smaller desktop environments however don't bind an action to these keys by default so it seems that these keys don't work.
+AUR 发布的是**构建配方**，不是预编译内核模块。DKMS 会为装有 headers 的内核编译模块。替换磁盘上的包不代表当前已加载模块已经切换；通常应在确认恢复方案后重启，而不是随意热卸载一组互相依赖的平台模块。
 
-Please refer to your desktop environments documentation on how to set custom keybindings to fix this.
+> `mechrevo-drivers-dkms-git` 与另一维护者的 `mechrevo-drivers-dkms`、原版 `tuxedo-drivers`、旧 `tuxedo-keyboard` DKMS 包互斥。它不使用 `replaces`，不会接管其他维护者的包。
 
-For keyboard brightness control you should use the D-Bus interface of UPower as actions for the key presses.
+完整安装、卸载和发布流程见 [Arch / AUR 文档](docs/AUR.md)。
 
-For touchpad toggle on X11 you can use `xinput` to enable/disable the touchpad, on Wayland the correct way is desktop environment specific.
+## 只读识别本机
 
-# Regarding upstreaming of tuxedo-drivers
-The code, while perfectly functional, is currently not in an upstreamable state. That being said we started an upstreaming effort and the first small part, the keyboard backlight control for the Sirius 16 Gen 1 & 2, already got accepted.
+下列命令不加载模块，也不写 EC：
 
-If you want to hack away at this matter yourself please follow the following precautions and guidelines to avoid breakages on both software and hardware level:
-- Involve us in the whole process. Nothing is won if at some point tuxedo-control-center or the dkms variant of tuxedo-drivers stops working. Especially when you send something to the LKML, please set us in the cc.
-- We mostly can't share documentation, but we can answer questions.
-- Code interacting with the EC, which is most of tuxedo-drivers, can brick devices and therefore must be ensured to only run on compatible and tested devices.
-- If you use tuxedo-drivers as a reference or code snippets from it, a "Codeveloped-by:\<name\> \<tuxedo_email\>" must be included in your upstream commit, with \<name\> and \<tuxedo_email\> depending on the actual part of tuxedo-drivers being used. Please talk to us regarding this.
+```bash
+uname -r
+for field in \
+  sys_vendor product_name product_version \
+  board_vendor board_name chassis_vendor bios_version
+do
+  printf '%s: ' "$field"
+  cat "/sys/class/dmi/id/$field" 2>/dev/null || true
+done
+```
+
+反馈兼容性时请附型号、CPU/GPU、BIOS、发行版、内核、驱动版本，以及每项功能的实际结果。不要上传序列号、UUID、MAC 地址或未脱敏的完整系统报告。
+
+## 这个分支改了什么
+
+相对上游正式版 `v4.24.0`，主要维护内容包括：
+
+- 将 `MECHREVO` 加入受限的 DMI 品牌检查，不关闭兼容性门禁；
+- 为已知板号、完整产品名和 BIOS 增加精确匹配；
+- 修正 Uniwill TDP、WMI、输入输出复制和失败传播；
+- 拒绝越界风扇值、底层读写失败和回读不一致；
+- 让风扇、模式、睡眠与卸载路径使用一致的同步和状态更新；
+- 避免 `GM6PX0X` 探测时覆盖已有显卡电源配置；
+- 保留原有 TUXEDO 匹配、模块名称、用户态接口和许可证。
+
+没有新增泛化 EC 地址、未知机型风扇曲线、自动 GPU 功耗、自动降温或续航策略。
+
+## 构建与验证
+
+需要编译器、`make` 和当前内核 headers：
+
+```bash
+make -j2 KDIR=/usr/lib/modules/$(uname -r)/build
+python3 -m unittest discover -s tests -v
+```
+
+编译成功只证明源码能针对该内核构建，不能证明硬件兼容。不要为了试验未知机型直接执行 `make install`：上游安装目标会写系统模块和规则，且绕过发行版包管理的卸载保障。
+
+优先使用独立 DKMS 包，在明确支持范围内测试，并为安装前状态保留可验证的恢复材料。
+
+## 上游同步
+
+- 开发分支每日镜像到 `upstream`。
+- 只有上游正式版本进入自动更新 PR。
+- `main` 不被强推，也不会自动合并上游更新。
+- 同步策略、冲突处理和发布门槛见 [维护文档](docs/MAINTENANCE.md)。
+
+这意味着“上游已有新提交”与“本分支已审阅、构建、安装、加载并完成硬件验证”是五个不同状态，README 和验证记录不会把它们混为一谈。
+
+## 相关组件
+
+独立的机械革命 Rust 控制台与 CLI 正在实现，范围见 [控制台文档](docs/MECHREVO-CONSOLE.md)。`GM6PX0X` 的 CPU 长期功耗工具也独立维护，不包含在 DKMS/AUR 驱动包中，见 [功耗控制说明](docs/POWER-CONTROL.md)。
+
+## 上游模块
+
+仓库保留上游的 Clevo、Uniwill、ITE、NB04/NB05 等模块，可提供 Fn 键、键盘背光、传感器、风扇、功耗和平台相关用户态接口。具体模块能否绑定，仍由各自 DMI、控制器和固件条件决定。
+
+上游正在逐步把适合主线的部分提交到 Linux 内核。引用或移植 TUXEDO 代码时，应保留作者与许可证信息，并在提交主线前与上游协调相应 `Codeveloped-by` 归属。
+
+## License
+
+本项目保留 TUXEDO 上游历史、版权与 GPL 许可证。具体条款见 [LICENSE](LICENSE)。
