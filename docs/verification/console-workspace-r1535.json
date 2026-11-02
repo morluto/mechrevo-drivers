@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "scope": "Local GM6PX0X native console deployment; not an AUR release or complete OEM/hardware compatibility claim.",
+  "source_commit": "cee10ecbf7e86582e2e0f7ba887c13385c96c50d",
+  "package": {
+    "name": "mechrevo-console",
+    "version": "0.1.0.r1535.gcee10ec-1",
+    "sha256": "76eb036694a46cda4fe2eac0d512127434d098d92b8911d1f4b59069b5de2154",
+    "build": "release workspace, all features, locked and offline",
+    "installed": true,
+    "pacman_qkk": {
+      "total_files": 27,
+      "altered_files": 0
+    }
+  },
+  "local_verification": {
+    "result": "passed",
+    "checks": [
+      {
+        "name": "fmt",
+        "status": "passed",
+        "exit_code": 0
+      },
+      {
+        "name": "test",
+        "status": "passed",
+        "exit_code": 0,
+        "test_totals": {
+          "passed": 175,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        }
+      },
+      {
+        "name": "clippy",
+        "status": "passed",
+        "exit_code": 0
+      },
+      {
+        "name": "windows",
+        "status": "passed",
+        "exit_code": 0
+      }
+    ],
+    "snapshot_unchanged": true,
+    "verifier_snapshot_sha256": "9c91b6b51803fdb0a9c2ac99ad456fee4bdbe920d021d14a8d704d7ab59be374",
+    "python": {
+      "executed": 1101,
+      "passed": 1079,
+      "skipped": 22,
+      "failed": 0,
+      "scope": "Environment-dependent skips are not treated as passes."
+    },
+    "verifier_regression": {
+      "targeted_tests_passed": 34,
+      "old_implementation_rejected_two_unchanged_files": true,
+      "fix": "Ignore read-induced access-time updates; keep identity, permissions, size, nanosecond mtime and ctime checks."
+    },
+    "packaging_tests_passed": 32,
+    "rustdoc_warnings_denied": true,
+    "gui_layouts": "Simulated responsive, theme, trend and guarded-control tests; not hardware evidence."
+  },
+  "installed_control_files": [
+    {
+      "path": "/usr/bin/mechrevo-console",
+      "sha256": "3ad260270d76badb72d26a1dac0fe285431cf160de312c082c5c57f4dd391177",
+      "mode": "0o755",
+      "uid": 0,
+      "package_matches": true
+    },
+    {
+      "path": "/usr/bin/mechrevo-console-gui",
+      "sha256": "0a60f727e46275cc4c56a50526b6b91b7edf2e13cfa96c1b4c7906330c9b2ba8",
+      "mode": "0o755",
+      "uid": 0,
+      "package_matches": true
+    },
+    {
+      "path": "/usr/lib/mechrevo-console/oem-helper",
+      "sha256": "38ecaefb9df557b2d5b750834ed2691bb9d6e87cebbb4a75452092b5a001cfc8",
+      "mode": "0o755",
+      "uid": 0,
+      "package_matches": true
+    },
+    {
+      "path": "/usr/bin/mechrevo-control",
+      "sha256": "c98c65780c090b66179ea85d8bbebb94e878922c0ba41cd663d2ee0a3203a6e8",
+      "mode": "0o755",
+      "uid": 0,
+      "package_matches": true
+    },
+    {
+      "path": "/usr/share/polkit-1/actions/org.mechrevo.console.oem.policy",
+      "sha256": "61872098435090906cb0b4d6ada336edd883dc712e102a8d6e6e07733100d47f",
+      "mode": "0o644",
+      "uid": 0,
+      "package_matches": true
+    }
+  ],
+  "installed_configuration_unchanged": true,
+  "hardware": {
+    "identity": "MECHREVO/GM6PX0X",
+    "initial": "mechrevo_turbo",
+    "interface": "/usr/bin/mechrevo-console",
+    "profiles": [
+      {
+        "target": "mechrevo_office",
+        "confirmed": {
+          "type": "choice",
+          "value": "mechrevo_office"
+        },
+        "cpu_policy0": {
+          "energy_performance_preference": "balance_power",
+          "scaling_governor": "powersave",
+          "scaling_min_freq": "800000",
+          "scaling_max_freq": "3200000"
+        }
+      },
+      {
+        "target": "mechrevo_gaming_quiet",
+        "confirmed": {
+          "type": "choice",
+          "value": "mechrevo_gaming_quiet"
+        },
+        "cpu_policy0": {
+          "energy_performance_preference": "balance_performance",
+          "scaling_governor": "powersave",
+          "scaling_min_freq": "800000",
+          "scaling_max_freq": "4900000"
+        }
+      },
+      {
+        "target": "mechrevo_gaming",
+        "confirmed": {
+          "type": "choice",
+          "value": "mechrevo_gaming"
+        },
+        "cpu_policy0": {
+          "energy_performance_preference": "balance_performance",
+          "scaling_governor": "powersave",
+          "scaling_min_freq": "800000",
+          "scaling_max_freq": "4900000"
+        }
+      },
+      {
+        "target": "mechrevo_fan_boost",
+        "confirmed": {
+          "type": "choice",
+          "value": "mechrevo_fan_boost"
+        },
+        "cpu_policy0": {
+          "energy_performance_preference": "balance_performance",
+          "scaling_governor": "powersave",
+          "scaling_min_freq": "800000",
+          "scaling_max_freq": "4900000"
+        }
+      },
+      {
+        "target": "mechrevo_turbo",
+        "confirmed": {
+          "type": "choice",
+          "value": "mechrevo_turbo"
+        },
+        "cpu_policy0": {
+          "energy_performance_preference": "performance",
+          "scaling_governor": "powersave",
+          "scaling_min_freq": "800000",
+          "scaling_max_freq": "4900000"
+        }
+      }
+    ],
+    "scope": "Root transaction and live tccd/CPU readback, not GUI authentication or physical LED/RPM verification.",
+    "final": "mechrevo_turbo",
+    "final_cpu_policy0": {
+      "energy_performance_preference": "performance",
+      "scaling_governor": "powersave",
+      "scaling_min_freq": "800000",
+      "scaling_max_freq": "4900000"
+    }
+  },
+  "native_gui": {
+    "binary": "/usr/bin/mechrevo-console-gui",
+    "launch_verified": true,
+    "render_reviewed": true,
+    "size_pixels": [
+      1280,
+      720
+    ],
+    "isolated_headless_compositor": true,
+    "real_local_hardware_readback": true,
+    "temporary_processes_stopped": true
+  },
+  "recovery": {
+    "previous_package": "mechrevo-console-0.1.0.r1531.g6bb0590-1-x86_64.pkg.tar.zst",
+    "previous_package_sha256": "79d63065b890f6b4c01cdbcf4d2da7d7e3219488744ed4ac08cd1ac1cb01fad4",
+    "previous_installed_files_matched": 5,
+    "configuration_files": [
+      {
+        "path": "/etc/tcc/profiles",
+        "mode": "0o644",
+        "uid": 0,
+        "gid": 0,
+        "verified": true
+      },
+      {
+        "path": "/etc/tcc/settings",
+        "mode": "0o644",
+        "uid": 0,
+        "gid": 0,
+        "verified": true
+      }
+    ],
+    "location": "Local unified Backups tree; restore the previous package with pacman -U. No remote deployment involved."
+  },
+  "maintenance": {
+    "temporary_package_sources_removed": true,
+    "recovery_files_verified_in_local_backups": true,
+    "retained_cache": ".local-tests/console-target",
+    "retention_reason": "cargo clean refused: missing or invalid CACHEDIR.TAG; the safety check was not bypassed.",
+    "disk_available_gib_observed": 117,
+    "disk_used_percent_observed": 88
+  },
+  "limitations": [
+    "Profile transactions were applied as root; interactive ordinary-user authorization was not manually exercised.",
+    "CPU values are configured policy0 frequency limits and EPP readback, not sustained frequencies or fixed wattage.",
+    "Readback does not establish physical LED behavior, measured RPM, acoustics, game FPS, charging cutoff or suspend/resume persistence.",
+    "The GUI uses existing trusted saved profile parameters; no arbitrary EC register, power or fan-curve editing was introduced.",
+    "Windows compile checks passed; no Windows runtime or other-model hardware validation was performed.",
+    "AUR publication and a new formal release were not performed."
+  ]
+}
