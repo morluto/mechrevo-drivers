@@ -1,0 +1,282 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-02T06:47:16.510969+00:00",
+  "scope": "Standalone console publication; no local package installation, kernel-driver update or hardware writes in this release operation.",
+  "release": {
+    "version": "0.1.0.r1535.gcee10ec-2",
+    "tag": "console-v0.1.0-r1535-2",
+    "url": "https://github.com/LIghtJUNction/mechrevo-drivers/releases/tag/console-v0.1.0-r1535-2",
+    "published_at": "2026-11-02T06:23:32Z",
+    "draft": false,
+    "prerelease": false,
+    "source_commit": "77d487d30c4c4a3639d6ac215a07193ba49581b0",
+    "signed_tag_object": "a8a1dc14d8de154480d94b95eab87a308c156bb1",
+    "functional_source_commit": "cee10ecbf7e86582e2e0f7ba887c13385c96c50d",
+    "commit_and_tag_signatures_verified": true
+  },
+  "aur": {
+    "name": "mechrevo-console",
+    "version": "0.1.0.r1535.gcee10ec-2",
+    "maintainer": "lightjunction",
+    "url": "https://aur.archlinux.org/packages/mechrevo-console",
+    "git_url": "https://aur.archlinux.org/mechrevo-console.git",
+    "commit": "c6793efad5887f71abaf5c5509fd05a12a55b772",
+    "signed_commit_verified": true,
+    "public_https_checkout_matches_reviewed_recipe": true,
+    "public_web_version_verified": true,
+    "rpc_version_verified": true,
+    "initial_rpc_index_delay_resolved": true,
+    "recipe_files": [
+      "PKGBUILD",
+      ".SRCINFO",
+      "mechrevo-console.install",
+      "best.lmm.mechrevo-console.desktop"
+    ],
+    "runtime_dependencies": [
+      "glibc",
+      "libgcc",
+      "fontconfig",
+      "libxkbcommon",
+      "libxkbcommon-x11",
+      "wayland",
+      "libx11",
+      "libxcursor",
+      "libxi",
+      "libxrandr",
+      "libglvnd",
+      "polkit",
+      "python",
+      "systemd"
+    ]
+  },
+  "artifacts": [
+    {
+      "name": "SHA256SUMS",
+      "size": 341,
+      "sha256": "b68db80af9079eca3c01e18f058a3495c11e74a218fc7842704640292a2b43d2",
+      "url": "https://github.com/LIghtJUNction/mechrevo-drivers/releases/download/console-v0.1.0-r1535-2/SHA256SUMS"
+    },
+    {
+      "name": "SHA256SUMS.asc",
+      "size": 228,
+      "sha256": "5848b1e872b45519ba20933a7ba7a0c90f195aac072aa5b444ac7b8c4383cdc9",
+      "url": "https://github.com/LIghtJUNction/mechrevo-drivers/releases/download/console-v0.1.0-r1535-2/SHA256SUMS.asc"
+    },
+    {
+      "name": "mechrevo-console-0.1.0.r1535.gcee10ec-2-x86_64.pkg.tar.zst",
+      "size": 7025075,
+      "sha256": "c206ec6855a93fe8a596f461b28c3b66207f9bbc2c73f63a46f605717ca7f57d",
+      "url": "https://github.com/LIghtJUNction/mechrevo-drivers/releases/download/console-v0.1.0-r1535-2/mechrevo-console-0.1.0.r1535.gcee10ec-2-x86_64.pkg.tar.zst"
+    },
+    {
+      "name": "mechrevo-console-0.1.0.r1535.gcee10ec-2.src.tar.gz",
+      "size": 3268,
+      "sha256": "7b129d9eaaa143b62fa8b98b2a92ec34724fee5db55829a99b850bd7ab69eb27",
+      "url": "https://github.com/LIghtJUNction/mechrevo-drivers/releases/download/console-v0.1.0-r1535-2/mechrevo-console-0.1.0.r1535.gcee10ec-2.src.tar.gz"
+    },
+    {
+      "name": "mechrevo-release-signing-key.asc",
+      "size": 1314,
+      "sha256": "2647bcbf8a4c1e0cab3d140d9467f4e02cef5fde5ab4461f24c1de253376dd8d",
+      "url": "https://github.com/LIghtJUNction/mechrevo-drivers/releases/download/console-v0.1.0-r1535-2/mechrevo-release-signing-key.asc"
+    }
+  ],
+  "signing": {
+    "primary_key_fingerprint": "EB21B83AB1E982DF66F08387A67178405F7736FD",
+    "signing_subkey_fingerprint": "9F6AE0BCDB7FF917BEC6E234F304DD651D11929C",
+    "checksum_manifest": "SHA256SUMS",
+    "detached_signature": "SHA256SUMS.asc",
+    "signature_and_checksums_verified": true,
+    "all_five_remote_assets_redownloaded_and_byte_identical": true,
+    "anonymous_public_binary_download_byte_identical": true,
+    "exported_public_key_excludes_unrelated_uids_and_photo": true
+  },
+  "build": {
+    "environment": "Rootless official Arch Linux container; not the host CachyOS compiler environment.",
+    "image_id": "34af4119590d5a3a0f0b5c477b50093954b32886c858c01fcb3c1c543274fea5",
+    "image_reference": "docker.io/library/archlinux:base-devel",
+    "image_repo_digests": [
+      "docker.io/library/archlinux@sha256:51dd3d24f7fba779e7c471caeee7804c50e8c134ad948e19685a1c83a42facc3",
+      "docker.io/library/archlinux@sha256:8edb44f40a0cb5d3e44ef474f02780098ce0084e591c8641bdc01f02f185cc40"
+    ],
+    "architecture": "x86_64",
+    "rustc": "1.99.1 (58cf8f9c3 2026-10-13)",
+    "cargo": "1.99.1 (5f94df478 2026-08-27)",
+    "makepkg": "7.1.0",
+    "c_cpu_flags": [
+      "-march=x86-64",
+      "-mtune=generic"
+    ],
+    "rust_flags": "-C target-cpu=x86-64 -C force-frame-pointers=yes",
+    "max_build_jobs": 2,
+    "initially_empty_cargo_home": true,
+    "locked_dependency_fetch_then_offline_locked_workspace_build": true,
+    "source_recipe_archive_verified": true,
+    "checks_in_makepkg_passed": true,
+    "host_native_candidate_rejected": "Its GUI ELF declared x86-64-v2/v3 requirements; it was neither published nor installed.",
+    "published_elf_isa_check": "All three published ELFs have no elevated GNU ISA requirement note. Generic compiler flags and official Arch libraries were used; other CPU models were not physically tested.",
+    "dynamic_dependencies_resolve_on_test_host": true,
+    "host_inventory_not_embedded_in_buildinfo": true
+  },
+  "validation": {
+    "python_suite": {
+      "run": 1108,
+      "skipped": 22,
+      "failures": 0,
+      "errors": 0
+    },
+    "packaging_regressions": {
+      "run": 7,
+      "failures": 0,
+      "original_recipe_negative_control_failures": 4
+    },
+    "static_checks": [
+      "ShellCheck with bash dialect",
+      "bash -n",
+      "git diff --check",
+      "desktop-file-validate",
+      "xmllint and OEM authorization contract"
+    ],
+    "archive": {
+      "root_owned_regular_payload": true,
+      "layout_and_modes_match_installed_r1535_1": true,
+      "other_payload_bytes_unchanged": true,
+      "changed_executable_paths": [
+        "usr/bin/mechrevo-console",
+        "usr/bin/mechrevo-console-gui",
+        "usr/lib/mechrevo-console/oem-helper"
+      ],
+      "file_modes_and_sha256": {
+        ".BUILDINFO": {
+          "mode": "0o644",
+          "sha256": "645e39b72f2787ed898115e5af793e13e4c964d1292f3b0172c32d878601770c"
+        },
+        ".INSTALL": {
+          "mode": "0o644",
+          "sha256": "8778bbd1244d414adafe79a7d2187765a7e9a5da1f4efdd3d6e49c3688f52e20"
+        },
+        ".MTREE": {
+          "mode": "0o644",
+          "sha256": "cf238609715cae7d5c1c53d29aa69abfba98ea5c3a4a06418aeb171fb029efb0"
+        },
+        ".PKGINFO": {
+          "mode": "0o644",
+          "sha256": "8f3d68b8d55bdea5c4c5bb7e175530f2a7d10ec56f8133cb8fe5393e3f394f34"
+        },
+        "usr/bin/mechrevo-console": {
+          "mode": "0o755",
+          "sha256": "76932444ccc253a15f6d90fb83ba8f38c2b88ae1d6bbfe01d703a0c39bb5e9aa"
+        },
+        "usr/bin/mechrevo-console-gui": {
+          "mode": "0o755",
+          "sha256": "ae381c3b32386854afbeba77166cf95b7abd738e45740c03a34591507539ab14"
+        },
+        "usr/bin/mechrevo-control": {
+          "mode": "0o755",
+          "sha256": "c98c65780c090b66179ea85d8bbebb94e878922c0ba41cd663d2ee0a3203a6e8"
+        },
+        "usr/lib/mechrevo-console/oem-helper": {
+          "mode": "0o755",
+          "sha256": "2a19f5568d2a6f245f5f6bd14b3293dfb6491f4db9c466dd94082c7729bd584e"
+        },
+        "usr/lib/systemd/user/mechrevo-gaming-hotkey.service": {
+          "mode": "0o644",
+          "sha256": "283a59c08965f3de333a567a4458c59bc98735b707788baa9bb6cc1f39644717"
+        },
+        "usr/share/applications/best.lmm.mechrevo-console.desktop": {
+          "mode": "0o644",
+          "sha256": "bca48b9200f8aa66b34f357c3b8cce4f679bba998b6e777afec047bf601576a5"
+        },
+        "usr/share/doc/mechrevo-console/MECHREVO-CONSOLE.md": {
+          "mode": "0o644",
+          "sha256": "aa959ed3a081b8bbe1bce763abe1d382d923fa5b25c4d30029f6c8caab49198b"
+        },
+        "usr/share/doc/mechrevo-console/PERFORMANCE-PROFILES.md": {
+          "mode": "0o644",
+          "sha256": "adcc63f1314e29fd0707a293468a6dcff370ad045931ad6799c2bd02f616c8ff"
+        },
+        "usr/share/licenses/mechrevo-console/Cormorant-OFL.txt": {
+          "mode": "0o644",
+          "sha256": "60700d351cac4650c51f3f9db318d2a420f8b45052dba2715eb5fec41f0f6956"
+        },
+        "usr/share/licenses/mechrevo-console/LICENSE": {
+          "mode": "0o644",
+          "sha256": "cd6cc5e62e8217ce3c538d256e8c1ef9c9128dc7b30b825c1512676c66461657"
+        },
+        "usr/share/licenses/mechrevo-console/Manrope-OFL.txt": {
+          "mode": "0o644",
+          "sha256": "58172e0c0fac2cda8a37b348164bb55e44b0e69051e557e92b1d3f6910141f7b"
+        },
+        "usr/share/polkit-1/actions/org.mechrevo.console.oem.policy": {
+          "mode": "0o644",
+          "sha256": "61872098435090906cb0b4d6ada336edd883dc712e102a8d6e6e07733100d47f"
+        }
+      }
+    },
+    "cli": {
+      "version": "0.1.0",
+      "read_only_status_passed": true,
+      "available_oem_kinds": [
+        "performance_profile",
+        "fn_lock",
+        "charging_profile",
+        "keyboard_brightness",
+        "keyboard_color"
+      ]
+    },
+    "native_gui": {
+      "launch_verified": true,
+      "tested_binary_sha256": "ae381c3b32386854afbeba77166cf95b7abd738e45740c03a34591507539ab14",
+      "isolated_headless_compositor": true,
+      "real_local_hardware_readback": true,
+      "software_rendering": true,
+      "screenshot_visually_checked": true,
+      "private_capture_not_uploaded": true,
+      "temporary_processes_stopped": true
+    },
+    "previous_functional_validation": "docs/verification/console-ui-redesign.json",
+    "limits": [
+      "This -2 operation did not repeat hardware writes or install the release package; functional source is identical to the previously validated -1.",
+      "No physical LED observation, measured fan RPM, power-delivery calibration, sustained cooling/acoustic/battery/FPS benchmark or cross-model compatibility claim.",
+      "No Windows runtime verification or Windows installer is included.",
+      "Public binary targets current Arch x86_64, not arbitrary Linux distribution or old glibc compatibility."
+    ]
+  },
+  "local_installation": {
+    "installed_version": "0.1.0.r1535.gcee10ec-1",
+    "package_files_checked": 27,
+    "changed_package_files": 0,
+    "same_functional_source_as_release": true,
+    "release_revision_2_installed": false,
+    "kernel_driver_changed": false,
+    "tccd_service": "active",
+    "hotkey_service": "active",
+    "current_performance_profile": "mechrevo_turbo"
+  },
+  "recovery": {
+    "local_backup_directory": "~/Backups/mechrevo-drivers/light/2026-11-02-console-release-r1535-2",
+    "artifacts_and_recipe_bytes_verified": true,
+    "backup_metadata_and_no_symlinks_verified": true,
+    "complete_aur_git_bundle_verified": true,
+    "previous_installed_package": "~/Backups/mechrevo-drivers/light/2026-11-02-console-workspace/mechrevo-console-0.1.0.r1535.gcee10ec-1-x86_64.pkg.tar.zst",
+    "previous_installed_package_sha256": "76eb036694a46cda4fe2eac0d512127434d098d92b8911d1f4b59069b5de2154",
+    "restore_instructions": "RESTORE.md in the local backup; restoration on another host requires transferring and re-verifying the package."
+  },
+  "cleanup": {
+    "checked_at": "2026-11-02T06:45:35.911975+00:00",
+    "isolated_build_container_removed": true,
+    "independent_temporary_materials_removed": true,
+    "removed_directory_allocated_bytes": 924274688,
+    "entire_workspace_removed": false,
+    "retained_protected_cache": {
+      "relative_path": ".local-tests/console-release-20261102/clean/cargo-target",
+      "allocated_bytes": 861536256,
+      "reason": "cargo clean rejected both full cleanup and release-only dry-run: missing or invalid CACHEDIR.TAG file",
+      "safeguard_not_modified_or_bypassed": true
+    },
+    "preexisting_shared_cargo_cache_preserved": true,
+    "preexisting_official_base_image_preserved": true,
+    "home_available_bytes_after": 120663158784,
+    "free_space_note": "Directory cleanup size is not asserted to equal filesystem free-space change."
+  }
+}

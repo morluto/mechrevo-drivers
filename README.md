@@ -125,7 +125,18 @@ python3 -m unittest discover -s tests -v
 
 ## 相关组件
 
-独立的机械革命 Rust 控制台与 CLI 正在实现，范围见 [控制台文档](docs/MECHREVO-CONSOLE.md)。`GM6PX0X` 的 CPU 长期功耗工具也独立维护，不包含在 DKMS/AUR 驱动包中，见 [功耗控制说明](docs/POWER-CONTROL.md)。
+### 原生控制台
+
+`mechrevo-console` 已作为独立包发布：提供设备工作台、真实温度趋势、受限 OEM 控制，以及
+受支持 `GM6PX0X` 上的五档性能选择。它不依赖或自动升级 DKMS 包，也不把未知机型的控制接口标为可用。
+
+- [GitHub Release：0.1.0.r1535.gcee10ec-2](https://github.com/LIghtJUNction/mechrevo-drivers/releases/tag/console-v0.1.0-r1535-2)：通用 Arch x86_64 安装包、配方源包、摘要与签名。
+- [AUR：mechrevo-console](https://aur.archlinux.org/packages/mechrevo-console)：独立的源码构建配方；AUR 不是预编译包仓库。
+- [安装、构建与授权说明](packaging/arch/mechrevo-console/README.md)、[控制台功能边界](docs/MECHREVO-CONSOLE.md)与[发布验证记录](docs/verification/console-release-r1535-2.json)。
+
+五档控制仍需已验证的机型和有效的 tccd 配置；不自动覆盖用户修改过的档位参数，不承诺实体灯光、转速或游戏性能效果。
+
+`GM6PX0X` 的 CPU 长期功耗工具也独立维护，不包含在 DKMS/AUR 驱动包中，见 [功耗控制说明](docs/POWER-CONTROL.md)。
 
 ## 上游模块
 

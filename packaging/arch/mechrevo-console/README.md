@@ -18,7 +18,10 @@ systemctl --user enable --now mechrevo-gaming-hotkey.service
 当前配方固定源码提交 `cee10ecbf7e86582e2e0f7ba887c13385c96c50d`，包版本为
 `0.1.0.r1535.gcee10ec-2`。源码仍为已验证的 r1535，第二次打包修正首次构建依赖获取、
 Python/systemd 运行依赖与安装脚本校验和，不改变控制台或硬件参数。
-该配方用于本地构建和独立的 AUR 包；发布状态以 GitHub Release 与 AUR 远端记录为准。
+该配方已发布到独立的 [AUR 包](https://aur.archlinux.org/packages/mechrevo-console)，
+签名安装包与配方源包见 [GitHub Release](https://github.com/LIghtJUNction/mechrevo-drivers/releases/tag/console-v0.1.0-r1535-2)。
+发布构建、制品摘要、远端状态与验收边界见 [发布收据](../../../docs/verification/console-release-r1535-2.json)；
+本次发布验收机仍保留此前已验证的 `-1`，没有重新安装控制台或更新内核驱动。
 后续更新应一并修改提交、版本和部署验证记录，不能只替换安装目录里的二进制。
 
 该固定提交包含 OEM helper 与策略。本轮包的实际构建、安装及硬件验证结果由部署
