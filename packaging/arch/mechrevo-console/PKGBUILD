@@ -2,17 +2,18 @@
 # makepkg consumes these metadata variables and supplies srcdir/pkgdir.
 # shellcheck disable=SC2034,SC2154
 # Maintainer: LIghtJUNction <lightjunction.me@gmail.com>
-# Local package: the Rust console is independent of DKMS and the legacy tools.
+# The Rust console is independent of DKMS and the legacy tools.
 
 pkgname=mechrevo-console
 pkgver=0.1.0.r1535.gcee10ec
-pkgrel=1
+pkgrel=2
 pkgdesc='Native MECHREVO system and OEM device control console'
 arch=('x86_64')
 url='https://github.com/LIghtJUNction/mechrevo-drivers'
 license=('GPL-2.0-or-later' 'OFL-1.1')
-depends=('glibc' 'gcc-libs' 'fontconfig' 'libxkbcommon' 'libxkbcommon-x11'
-         'wayland' 'libx11' 'libxcursor' 'libxi' 'libxrandr' 'libglvnd' 'polkit')
+depends=('glibc' 'libgcc' 'fontconfig' 'libxkbcommon' 'libxkbcommon-x11'
+         'wayland' 'libx11' 'libxcursor' 'libxi' 'libxrandr' 'libglvnd' 'polkit'
+         'python' 'systemd')
 # Cargo enforces the GUI's Rust 1.95 minimum; rustup also provides `rust`.
 makedepends=('git' 'rust' 'pkgconf' 'desktop-file-utils' 'libxml2')
 optdepends=('noto-fonts-cjk: Chinese system font fallback')
@@ -26,7 +27,7 @@ source=("mechrevo-drivers::git+${_source_url}#commit=${_source_commit}"
         'mechrevo-console.install')
 sha256sums=('SKIP'
             'bca48b9200f8aa66b34f357c3b8cce4f679bba998b6e777afec047bf601576a5'
-            'SKIP')
+            '8778bbd1244d414adafe79a7d2187765a7e9a5da1f4efdd3d6e49c3688f52e20')
 install=mechrevo-console.install
 
 prepare() {
@@ -52,6 +53,10 @@ prepare() {
             return 1
         fi
     done
+    # Populate a first-time builder's cache before the strictly offline build.
+    # --locked fails rather than changing the reviewed dependency graph.
+    cargo fetch --manifest-path console/Cargo.toml --locked \
+        --target "${CARCH}-unknown-linux-gnu"
 }
 
 build() {

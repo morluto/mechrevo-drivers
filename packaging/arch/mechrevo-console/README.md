@@ -1,4 +1,4 @@
-# 本地 Arch 控制台包
+# Arch / AUR 控制台包
 
 `mechrevo-console` 安装 Rust CLI、原生 GUI、受限 OEM helper 和统一的
 `mechrevo-control` 桥接工具，不依赖 DKMS 包。安装会把未改过的 TUXEDO 默认 profile
@@ -16,7 +16,9 @@ systemctl --user enable --now mechrevo-gaming-hotkey.service
 [灯光验证记录](../../../docs/PERFORMANCE-INDICATOR.md)。
 
 当前配方固定源码提交 `cee10ecbf7e86582e2e0f7ba887c13385c96c50d`，包版本为
-`0.1.0.r1535.gcee10ec-1`。这是本地部署配方，不表示已经发布到 AUR。
+`0.1.0.r1535.gcee10ec-2`。源码仍为已验证的 r1535，第二次打包修正首次构建依赖获取、
+Python/systemd 运行依赖与安装脚本校验和，不改变控制台或硬件参数。
+该配方用于本地构建和独立的 AUR 包；发布状态以 GitHub Release 与 AUR 远端记录为准。
 后续更新应一并修改提交、版本和部署验证记录，不能只替换安装目录里的二进制。
 
 该固定提交包含 OEM helper 与策略。本轮包的实际构建、安装及硬件验证结果由部署
@@ -32,12 +34,16 @@ systemctl --user enable --now mechrevo-gaming-hotkey.service
 实体灯光／RPM、游戏性能及 Windows 实机不在本轮结论范围内。
 更新不自动覆盖已有用户配置；本机 profile/settings 安装前后内容一致，恢复材料保存在本机统一备份目录。
 
-构建需要系统已有 Rust 1.95 以上、Git、pkgconf、desktop-file-utils、libxml2，以及锁文件
-对应的 Cargo 缓存。Cargo 使用 `--release --workspace --all-features --locked --offline`，
-缺少依赖时直接失败，不安装依赖或修改锁文件。内嵌字体和型号目录随二进制分发；
-中文字体通过 fontconfig 使用系统回退字体，可选安装 `noto-fonts-cjk`。
-运行依赖包含 `polkit`。桌面会话需有可用的授权代理才能显示管理员认证；本包不安装
-新的常驻服务，也不自动启动授权代理。
+构建需要 Rust 1.95 以上、Git、pkgconf、desktop-file-utils 和 libxml2；makepkg/AUR helper
+可按配方安装缺失的系统构建依赖。`prepare()` 先用 `cargo fetch --locked` 下载当前架构的
+锁定依赖，首次构建不要求事先准备 Cargo 缓存；网络或锁文件检查失败就停止。
+编译仍使用 `--release --workspace --all-features --locked --offline`，不会联网更新依赖
+或修改锁文件。已有完整缓存时，可设置 `CARGO_NET_OFFLINE=true` 进行全离线构建。
+内嵌字体和型号目录随二进制分发；中文字体通过 fontconfig 使用系统回退字体，
+可选安装 `noto-fonts-cjk`。运行依赖明确包含 `python`、`systemd` 与 `polkit`。
+桌面会话需有可用的授权代理才能显示管理员认证；本包不自动启用常驻服务或授权代理，
+也不自动安装或升级 DKMS/TCC；已有 profile 的迁移规则见开头说明。
+五档控制仍需受支持机型及可信、有效的 tccd 配置。
 
 在此目录执行；将本地仓库路径设为实际位置，Git 只取固定提交，工作区改动不进入包：
 
@@ -51,11 +57,23 @@ nice -n 15 ionice -c 3 makepkg
 `CARGO_TARGET_DIR` 可指定绝对路径，以复用受跟踪的构建缓存；未设置时，产物在
 makepkg 的 `src/cargo-target` 中。不要并行复用正在被其他 Cargo 构建写入的目录。
 
+## 预编译发布约束
+
+公开的 Arch `x86_64` 安装包必须在干净的官方 Arch 环境中构建，而不是直接分发
+CachyOS 或其他按本机 CPU 优化的产物。C/C++ 使用 `-march=x86-64 -mtune=generic`，
+Rust 使用 `-C target-cpu=x86-64`；三个 ELF 产物均需检查 GNU ISA 属性，不得带有
+`x86-64-v2/v3/v4` 的最低要求。只改编译参数而继续链接宿主的 v3 启动对象／库并不足够。
+这只约束公开二进制；AUR 本机构建仍尊重用户自己的 makepkg 编译设置。
+
+发布附件应同时包含构建配方源包、`SHA256SUMS`、其 OpenPGP 分离签名和维护者公钥。
+从可信渠道核对公钥指纹后，再验签、校验摘要并检查包内容。源码标签与二进制摘要分别
+记录；GitHub 自动生成的整个仓库源码压缩包不等同于 AUR 配方源包。
+
 检查包内容和部署材料后，通过 pacman 安装本地产物：
 
 ```sh
-pacman -Qlp mechrevo-console-0.1.0.r1535.gcee10ec-1-x86_64.pkg.tar.zst
-sudo pacman -U ./mechrevo-console-0.1.0.r1535.gcee10ec-1-x86_64.pkg.tar.zst
+pacman -Qlp mechrevo-console-0.1.0.r1535.gcee10ec-2-x86_64.pkg.tar.zst
+sudo pacman -U ./mechrevo-console-0.1.0.r1535.gcee10ec-2-x86_64.pkg.tar.zst
 mechrevo-console --version
 mechrevo-console status --json
 ```
@@ -69,7 +87,7 @@ mechrevo-console status --json
 许可放在 `/usr/share/licenses/mechrevo-console/`，
 包含项目 GPL 许可声明和两份内嵌字体的 OFL；控制台说明放在对应的 `/usr/share/doc/` 目录。
 
-`prepare()` 核对固定提交、干净工作树及必要文件的 Git 跟踪和普通文件类型；
+`prepare()` 先核对固定提交、干净工作树及必要文件的 Git 跟踪和普通文件类型，再获取锁定依赖；
 `check()` 验证 desktop 文件及策略 XML，不联网读取 DTD，并核对唯一 action、固定
 helper 路径及授权默认值。`package()` 要求三个真实可执行产物为非符号链接普通文件，
 将 helper 改名放到上述固定路径，再核对 helper／策略的字节与权限。
