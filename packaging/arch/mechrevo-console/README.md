@@ -15,14 +15,18 @@ systemctl --user enable --now mechrevo-gaming-hotkey.service
 本机 Turbo 小灯变化已有用户确认，其余灯态及唤醒后的行为见
 [灯光验证记录](../../../docs/PERFORMANCE-INDICATOR.md)。
 
-当前配方固定源码提交 `575632a90eac7ce9d61215fa8f4d18f543895977`，包版本为
-`0.1.0.r188.g575632a-1`。这是本地部署配方，不表示已经发布到 AUR。
+当前配方固定源码提交 `6bb0590737d42d10e4175a18890523014bd0be1e`，包版本为
+`0.1.0.r1531.g6bb0590-1`。这是本地部署配方，不表示已经发布到 AUR。
 后续更新应一并修改提交、版本和部署验证记录，不能只替换安装目录里的二进制。
 
 该固定提交包含 OEM helper 与策略。本轮包的实际构建、安装及硬件验证结果由部署
 收据单独记录，更新配方本身不代表已安装或已经验证实体效果。
-本机 r188 的构建、安装、三档 CLI 回读和视觉验收边界见
-[部署收据](../../../docs/verification/performance-mode-cycle-r188.json)。
+本机旧 r188 的构建与验收边界保留在
+[历史收据](../../../docs/verification/performance-mode-cycle-r188.json)。
+本轮动态 Turbo、办公偏好与亮度策略见
+[档位说明](../../../docs/PERFORMANCE-PROFILES.md)，实际安装及回读见
+[本轮收据](../../../docs/verification/performance-profiles-r1531.json)。
+更新只改变新建档位的默认值，不自动覆盖已有用户配置；本机配置调整另有备份与逐字段收据。
 
 构建需要系统已有 Rust 1.95 以上、Git、pkgconf、desktop-file-utils、libxml2，以及锁文件
 对应的 Cargo 缓存。Cargo 使用 `--release --workspace --all-features --locked --offline`，
@@ -46,8 +50,8 @@ makepkg 的 `src/cargo-target` 中。不要并行复用正在被其他 Cargo 构
 检查包内容和部署材料后，通过 pacman 安装本地产物：
 
 ```sh
-pacman -Qlp mechrevo-console-0.1.0.r188.g575632a-1-x86_64.pkg.tar.zst
-sudo pacman -U ./mechrevo-console-0.1.0.r188.g575632a-1-x86_64.pkg.tar.zst
+pacman -Qlp mechrevo-console-0.1.0.r1531.g6bb0590-1-x86_64.pkg.tar.zst
+sudo pacman -U ./mechrevo-console-0.1.0.r1531.g6bb0590-1-x86_64.pkg.tar.zst
 mechrevo-console --version
 mechrevo-console status --json
 ```

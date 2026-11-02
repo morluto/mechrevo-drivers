@@ -5,7 +5,7 @@
 # Local package: the Rust console is independent of DKMS and the legacy tools.
 
 pkgname=mechrevo-console
-pkgver=0.1.0.r188.g575632a
+pkgver=0.1.0.r1531.g6bb0590
 pkgrel=1
 pkgdesc='Native MECHREVO system and OEM device control console'
 arch=('x86_64')
@@ -19,7 +19,7 @@ optdepends=('noto-fonts-cjk: Chinese system font fallback')
 options=('!strip' '!debug' '!lto')
 
 # Always build the reviewed commit, including when using an existing local repo.
-_source_commit=575632a90eac7ce9d61215fa8f4d18f543895977
+_source_commit=6bb0590737d42d10e4175a18890523014bd0be1e
 _source_url=${MECHREVO_CONSOLE_SOURCE:-"${url}.git"}
 source=("mechrevo-drivers::git+${_source_url}#commit=${_source_commit}"
         'best.lmm.mechrevo-console.desktop'
@@ -45,7 +45,7 @@ prepare() {
         scripts/mechrevo_control.py scripts/mechrevo-gaming-hotkey.service \
         console/crates/gui/assets/fonts/Cormorant-OFL.txt \
         console/crates/gui/assets/fonts/Manrope-OFL.txt \
-        docs/MECHREVO-CONSOLE.md LICENSE; do
+        docs/MECHREVO-CONSOLE.md docs/PERFORMANCE-PROFILES.md LICENSE; do
         if [[ ! -f $file || -L $file ]] ||
             ! git ls-files --error-unmatch -- "$file" >/dev/null 2>&1; then
             printf 'Required tracked regular source file missing: %s\n' "$file" >&2
@@ -115,4 +115,6 @@ package() {
         "${pkgdir}/usr/lib/systemd/user/mechrevo-gaming-hotkey.service"
     install -Dm644 docs/MECHREVO-CONSOLE.md \
         "${pkgdir}/usr/share/doc/${pkgname}/MECHREVO-CONSOLE.md"
+    install -Dm644 docs/PERFORMANCE-PROFILES.md \
+        "${pkgdir}/usr/share/doc/${pkgname}/PERFORMANCE-PROFILES.md"
 }
