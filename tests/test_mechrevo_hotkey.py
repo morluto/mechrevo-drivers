@@ -239,6 +239,20 @@ class ConfirmedProfileTests(unittest.TestCase):
         self.notify.assert_called_once()
         self.assertIn("[✓]", self.output.getvalue())
 
+    def test_mode_notifications_do_not_invent_watts_or_achieved_rpm(self):
+        for mode, profile in (('office', 'mechrevo_office'),
+                              ('gaming', 'mechrevo_gaming'),
+                              ('gaming-quiet', 'mechrevo_gaming_quiet'),
+                              ('turbo', 'mechrevo_turbo'),
+                              ('boost', 'mechrevo_fan_boost')):
+            with self.subTest(mode=mode):
+                self.active.return_value = ('Saved custom parameters', profile)
+                control.set_mode(mode, notify=True)
+                message = self.notify.call_args.args[1]
+                self.assertIn('保存', message)
+                for unsupported in ('45W', '75W', '130W', '100% 满转速'):
+                    self.assertNotIn(unsupported, message)
+
     def test_rejected_or_malformed_reply_never_writes_lamp_or_announces_success(self):
         for response in ('{"type":"b","data":[false]}', '{', '{}',
                          '{"type":"b","data":[1]}', '{"type":"s","data":[true]}'):

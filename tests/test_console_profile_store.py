@@ -268,6 +268,47 @@ class ShippedFanDefaultsTests(unittest.TestCase):
         self.assertEqual(quiet['maximumFanspeed'], 100)
         self.assertEqual(profiles['mechrevo_fan_boost']['fan']['minimumFanspeed'], 100)
 
+    def test_new_defaults_keep_dynamic_cpu_policy_without_claiming_power_limits(self):
+        self.sync()
+        profiles = {p['id']: p for p in json.loads(self.path.read_bytes())}
+        office = profiles['mechrevo_office']['cpu']
+        self.assertEqual(office['energyPerformancePreference'], 'balance_power')
+        self.assertEqual(office['scalingMaxFrequency'], 3200000)
+        turbo = profiles['mechrevo_turbo']['cpu']
+        self.assertFalse(turbo['useMaxPerfGov'])
+        self.assertEqual(turbo['governor'], 'powersave')
+        self.assertEqual(turbo['energyPerformancePreference'], 'performance')
+        self.assertEqual(turbo['scalingMinFrequency'], 800000)
+        self.assertEqual(turbo['scalingMaxFrequency'], 5000000)
+        for profile in profiles.values():
+            with self.subTest(profile=profile['id']):
+                self.assertFalse(profile['display']['useBrightness'])
+                self.assertFalse(profile['display']['useRefRate'])
+                self.assertFalse(profile['display']['useResolution'])
+                self.assertFalse(profile['cpu']['noTurbo'])
+                self.assertEqual(profile['cpu']['onlineCores'], 24)
+                self.assertEqual(profile['odmPowerLimits']['tdpValues'], [])
+                self.assertEqual(profile['odmProfile']['name'], '')
+                self.assertNotIn('原厂', profile['description'])
+                for unsupported in ('45W', '75W', '130W'):
+                    self.assertNotIn(unsupported, profile['description'])
+        self.assertEqual(profiles['mechrevo_gaming_quiet']['cpu'],
+                         profiles['mechrevo_gaming']['cpu'])
+
+    def test_tuning_defaults_never_silently_rewrites_saved_cpu_display_or_fans(self):
+        saved = copy.deepcopy(self.ns['MECHREVO_PROFILES'])
+        for profile in saved:
+            profile['cpu']['energyPerformancePreference'] = 'power'
+            profile['cpu']['scalingMaxFrequency'] = 2900000
+            profile['display']['useBrightness'] = True
+            profile['display']['brightness'] = 17
+            profile['fan']['minimumFanspeed'] = 63
+            profile['user_note'] = '保留旧配置，更新默认值不等于同意迁移'
+        before = (json.dumps(saved, ensure_ascii=False, indent=3) + '\n').encode()
+        self.path.write_bytes(before)
+        self.sync()
+        self.assertEqual(self.path.read_bytes(), before)
+
     def test_existing_user_floor_is_preserved_while_missing_modes_get_new_defaults(self):
         office = copy.deepcopy(self.ns['MECHREVO_PROFILES'][0])
         office['fan']['minimumFanspeed'] = 25

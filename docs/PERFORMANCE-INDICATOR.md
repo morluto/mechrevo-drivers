@@ -17,6 +17,27 @@ boolean reply and waits for the requested active-profile ID before requesting
 the indicator or announcing completion. This is profile identity confirmation,
 not proof of CPU power limits, thermal performance, or physical illumination.
 
+## Duplicate compositor binding (2026-11-02)
+
+On this GM6PX0X session, Hyprland also bound `Super+Alt+F6` to
+`mechrevo-control mode cycle --notify` while the evdev daemon was active.
+Injecting one complete chord into the existing TUXEDO evdev node produced two
+`SetTempProfileById` calls: Turbo → Office → Gaming. The write descriptor was
+closed after each bounded test; no physical button press was claimed.
+
+The local `/home/lightjunction/.config/hypr/bindings.lua` now explicitly unbinds
+that chord; the daemon remains its sole owner. After `hyprctl reload`, no F6
+binding or config error remained. Three separate injected presses each produced
+exactly one D-Bus request, completing Turbo → Office → Gaming → Turbo with EC
+readbacks `0xa0`, `0x00`, `0x10`. Each selection stayed unchanged during its
+12-second observation. This confirms the software event path, not physical
+illumination or resume behavior.
+
+Keep compositor shortcuts separate from hardware chords. Do not add a global
+cooldown to hide duplicate consumers: it would also discard intentional rapid
+presses. Private preimages, event traces and rollback instructions are in
+`/home/lightjunction/Backups/mechrevo-drivers/light/2026-11-02-hotkey-repair-105338/`.
+
 ## OEM evidence from leanrea analysis
 
 The preserved OEM 5.17.51.34 service is a protected .NET PE. Analysis uses the
@@ -98,8 +119,9 @@ Reproducible local disassembly and the rejected source remain in the ignored
 ## Remaining acceptance
 
 Turbo illumination has user confirmation on this host. The individual Office
-and Gaming lamp states, a complete physical-button cycle, and wake/resume
-behavior are not yet established. The existing W_UW_MODE bridge does not prove
+and Gaming lamp states, a complete cycle using the actual physical button, and
+wake/resume behavior are not yet established. The injected-input software cycle
+is independently confirmed above. The existing W_UW_MODE bridge does not prove
 an independent lamp interface or numeric brightness percentages. Further
 changes require the actual OEM branch plus physical confirmation; the failed
 candidate must not be reintroduced as a silent fallback.

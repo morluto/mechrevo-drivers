@@ -4,7 +4,7 @@
 
 This tool ports and integrates the complete feature set of the OEM Mechrevo
 Gaming Center to Linux on the GM6PX0X (and compatible) platforms:
-1. Operating Modes (Office 45W / Gaming 75W / Turbo 130W / Custom)
+1. Operating Modes (Office / Gaming / Turbo; independent thermal power policy)
 2. One-Click Fan Boost (一键强冷 / 100% Full Speed) & Auto Fan Control
 3. Win Key Lock (电竞游戏防误触锁) via hardware scancode mapping
 4. Touchpad Hardware Lock via I2C device bind/unbind
@@ -75,10 +75,10 @@ MECHREVO_PROFILES = [
     {
         "id": "mechrevo_office",
         "name": "机械革命-办公节能模式 (Office)",
-        "description": "机械革命原厂办公模式：PL1 45W，低噪节能，静音温控曲线",
+        "description": "办公节能：balance_power 偏好，CPU 上限 3.2GHz；不设置 PL1，保留独立温控",
         "display": {
             "brightness": 70,
-            "useBrightness": True,
+            "useBrightness": False,
             "refreshRate": -1,
             "useRefRate": False,
             "xResolution": -1,
@@ -88,7 +88,7 @@ MECHREVO_PROFILES = [
         "cpu": {
             "useMaxPerfGov": False,
             "governor": "powersave",
-            "energyPerformancePreference": "power",
+            "energyPerformancePreference": "balance_power",
             "noTurbo": False,
             "onlineCores": 24,
             "scalingMinFrequency": 800000,
@@ -133,10 +133,10 @@ MECHREVO_PROFILES = [
     {
         "id": "mechrevo_gaming",
         "name": "机械革命-游戏平衡模式 (Gaming)",
-        "description": "机械革命原厂游戏模式：PL1 75W，动态睿频，平衡温控曲线",
+        "description": "游戏平衡：balance_performance 偏好，动态睿频；不设置 PL1，保留独立温控",
         "display": {
             "brightness": 80,
-            "useBrightness": True,
+            "useBrightness": False,
             "refreshRate": -1,
             "useRefRate": False,
             "xResolution": -1,
@@ -191,10 +191,10 @@ MECHREVO_PROFILES = [
     {
         "id": "mechrevo_gaming_quiet",
         "name": "机械革命-游戏低噪模式 (Gaming Quiet)",
-        "description": "保留游戏平衡 CPU 参数，降低中温段风扇请求，高温仍快速强冷",
+        "description": "保留游戏平衡 CPU 参数，较低风扇下限请求；不保证实际噪声或转速",
         "display": {
             "brightness": 80,
-            "useBrightness": True,
+            "useBrightness": False,
             "refreshRate": -1,
             "useRefRate": False,
             "xResolution": -1,
@@ -249,10 +249,10 @@ MECHREVO_PROFILES = [
     {
         "id": "mechrevo_turbo",
         "name": "机械革命-极速狂暴模式 (Turbo)",
-        "description": "机械革命原厂狂暴模式：PL1 130W 满血释放，全核激进，强冷曲线",
+        "description": "狂暴性能：performance 偏好，允许空闲降频；不设置 PL1，保留独立温控",
         "display": {
             "brightness": 90,
-            "useBrightness": True,
+            "useBrightness": False,
             "refreshRate": -1,
             "useRefRate": False,
             "xResolution": -1,
@@ -260,8 +260,8 @@ MECHREVO_PROFILES = [
             "useResolution": False,
         },
         "cpu": {
-            "useMaxPerfGov": True,
-            "governor": "performance",
+            "useMaxPerfGov": False,
+            "governor": "powersave",
             "energyPerformancePreference": "performance",
             "noTurbo": False,
             "onlineCores": 24,
@@ -307,7 +307,7 @@ MECHREVO_PROFILES = [
     {
         "id": "mechrevo_fan_boost",
         "name": "机械革命-一键强冷 (Fan Boost)",
-        "description": "机械革命原厂一键强冷：双风扇 100% 满转速，极速压制积热",
+        "description": "一键强冷：请求双风扇 100%，实际转速需回读；不设置 PL1",
         "display": {
             "brightness": 80,
             "useBrightness": False,
@@ -598,14 +598,14 @@ def sync_mode_led_from_profile(profile_id: str | None = None) -> str:
 
 
 def set_mode(mode_name: str, notify: bool = False) -> None:
-    """Set the active performance mode (office, gaming, turbo, boost)."""
+    """Select a saved profile; do not claim fixed wattage or achieved fan RPM."""
     sync_oem_profiles()
     mapping = {
-        "office": ("mechrevo_office", "办公节能模式 (Office)", "长期功耗 PL1: 45W | 低噪静音温控曲线"),
-        "gaming": ("mechrevo_gaming", "游戏平衡模式 (Gaming)", "长期功耗 PL1: 75W | 动态睿频温控曲线"),
-        "gaming-quiet": ("mechrevo_gaming_quiet", "游戏低噪模式 (Gaming Quiet)", "保留游戏平衡 CPU 参数 | 降低中温段风扇请求"),
-        "turbo": ("mechrevo_turbo", "极速狂暴模式 (Turbo)", "长期功耗 PL1: 130W 满血释放 | 强冷温控曲线"),
-        "boost": ("mechrevo_fan_boost", "一键全速强冷 (Fan Boost)", "双风扇 100% 满转速运行"),
+        "office": ("mechrevo_office", "办公节能模式 (Office)", "已应用保存的办公配置；实际功耗由独立温控决定"),
+        "gaming": ("mechrevo_gaming", "游戏平衡模式 (Gaming)", "已应用保存的游戏配置；实际功耗由独立温控决定"),
+        "gaming-quiet": ("mechrevo_gaming_quiet", "游戏低噪模式 (Gaming Quiet)", "已应用保存的低噪配置；实际风扇转速需回读"),
+        "turbo": ("mechrevo_turbo", "极速狂暴模式 (Turbo)", "已应用保存的性能配置；不承诺固定瓦数或持续频率"),
+        "boost": ("mechrevo_fan_boost", "一键全速强冷 (Fan Boost)", "已应用保存的强冷配置；风扇请求不等于实际转速"),
     }
     mode_key = mode_name.lower().strip()
     if mode_key not in mapping:

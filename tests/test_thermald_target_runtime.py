@@ -183,6 +183,13 @@ class ThermaldTargetRuntime(unittest.TestCase):
         result = self.run_case('debounce_zero', root, expected=1)
         self.assertIn('debounce did not select', result.stderr)
 
+    def test_wrong_hysteresis_counterexamples_fail_native_qualification(self):
+        for value in ('0', '2999', '3001'):
+            with self.subTest(hysteresis=value):
+                root = self.xml()
+                root.find('./Platform/ThermalZones/ThermalZone/TripPoints/TripPoint/Hyst').text = value
+                self.run_case(root=root, expected=1)
+
     def test_old95_counterexample_fails_the_same_runtime_qualification(self):
         root = self.xml()
         root.find('./Platform/ThermalZones/ThermalZone/TripPoints/TripPoint/Temperature').text = '95000'
