@@ -22,3 +22,8 @@ egui_system_font_provider = { version = "0.37.0", optional = true }
 name = "mechrevo-console-gui"
 path = "src/main.rs"
 required-features = ["gui"]
+
+[[example]]
+name = "ui_preview"
+path = "examples/ui_preview.rs"
+required-features = ["screenshot"]

@@ -1668,6 +1668,92 @@ fn wrapped_navigation_accepts_pointer_and_keyboard_at_minimum_window_size() {
 }
 
 #[test]
+fn navigation_stays_reachable_after_scrolling_with_a_usable_content_viewport() {
+    let fonts = Arc::new(SystemFontProvider::new().with_locale(Some("zh-Hans")));
+    for (physical, dpi, text_scale) in [
+        ([360, 280], 1.0, 1.0),
+        ([360, 280], 1.0, 1.6),
+        ([720, 560], 2.0, 1.6),
+        ([1120, 760], 1.0, 1.0),
+    ] {
+        let mut app = fixture("representative");
+        app.preferences.text_scale = text_scale;
+        let mut harness = Harness::new(physical, dpi, fonts.clone());
+        let (_, output) = settle(&mut harness, &mut app);
+        let client = Rect::from_min_size(
+            pos2(0.0, 0.0),
+            vec2(
+                physical[0] as f32 / output.pixels_per_point,
+                physical[1] as f32 / output.pixels_per_point,
+            ),
+        );
+        let labels = ["传感器", "型号目录", "控制", "概览"];
+        let original: Vec<_> = labels
+            .iter()
+            .map(|label| accessible_control(&output, label, egui::accesskit::Role::Button).1)
+            .collect();
+        for (index, label) in labels.iter().enumerate() {
+            app.scroll_to_bottom();
+            let (metrics, output) = settle(&mut harness, &mut app);
+            if index == 0 {
+                assert!(
+                    metrics.scroll_offset.y > 0.0,
+                    "the overview must actually scroll"
+                );
+            }
+            assert!(
+                metrics.viewport.height() >= 36.0,
+                "pinned navigation leaves less than one control row for content: {:?}",
+                metrics.viewport
+            );
+            assert_client_bounds(
+                "pinned navigation",
+                &metrics,
+                physical,
+                output.pixels_per_point,
+            );
+            assert_width("pinned navigation", &metrics);
+            for (name, before) in labels.iter().zip(&original) {
+                let (_, after) = accessible_control(&output, name, egui::accesskit::Role::Button);
+                assert!(
+                    client.expand(1.0).contains_rect(after),
+                    "navigation '{name}' left the window"
+                );
+                assert!(
+                    before.min.distance(after.min) <= 1.0 && before.max.distance(after.max) <= 1.0,
+                    "navigation '{name}' moved with the page: {before:?} -> {after:?}"
+                );
+                assert!(
+                    !after.intersects(metrics.viewport),
+                    "navigation overlaps the scroll viewport"
+                );
+            }
+            let (_, bounds) = accessible_control(&output, label, egui::accesskit::Role::Button);
+            let output = click(&mut harness, &mut app, bounds.center());
+            assert_selected_navigation(&output, label);
+        }
+    }
+}
+
+#[test]
+fn empty_fixture_still_identifies_its_data_as_simulated() {
+    let fonts = Arc::new(SystemFontProvider::new().with_locale(Some("zh-Hans")));
+    let mut app = fixture("no_telemetry");
+    let snapshot = app.controller.snapshot.as_ref().unwrap();
+    assert!(snapshot.telemetry.is_empty());
+    assert!(snapshot.identity.manufacturer.is_none());
+    let mut harness = Harness::new([1120, 760], 1.0, fonts);
+    let (_, output) = settle(&mut harness, &mut app);
+    let text = rendered_text(&output);
+    assert!(text
+        .iter()
+        .any(|shape| shape.galley.job.text.contains("模拟数据")));
+    assert!(!text
+        .iter()
+        .any(|shape| shape.galley.job.text.contains("真实硬件")));
+}
+
+#[test]
 fn reducing_motion_through_visible_setting_disables_transitions() {
     let fonts = Arc::new(SystemFontProvider::new().with_locale(Some("zh-Hans")));
     let mut app = fixture("representative");

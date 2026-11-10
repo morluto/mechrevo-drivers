@@ -91,7 +91,7 @@ class ConsoleVerificationTests(unittest.TestCase):
         self.assertEqual((result["exit_code"], result["outcome"], result["checks_executed"]), (0, "passed", 4))
         self.assertTrue(result["source_unchanged"])
         self.assertEqual(result["source_before"], result["source_after"])
-        self.assertEqual(len(result["source_before"]["files"]), 10)
+        self.assertEqual(len(result["source_before"]["files"]), 9)
         for asset in (*self.fonts, self.font_license, self.oem_policy):
             self.assertIn(str(asset.relative_to(self.root)), result["source_before"]["files"])
         self.assertEqual({row["name"] for row in result["commands"]}, {"fmt", "test", "clippy", "windows"})

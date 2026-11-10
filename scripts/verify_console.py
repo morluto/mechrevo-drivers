@@ -23,7 +23,6 @@ ROOT = Path(__file__).resolve().parents[1]
 WINDOWS_TARGET = "x86_64-pc-windows-gnu"
 DEFAULT_TIMEOUT = 900.0
 GUI_EMBEDDED_FONTS = (
-    "crates/gui/assets/fonts/CormorantGaramond-Italic.ttf",
     "crates/gui/assets/fonts/Manrope.ttf",
 )
 CONSOLE_REQUIRED_RESOURCES = ("resources/org.mechrevo.console.oem.policy",)
