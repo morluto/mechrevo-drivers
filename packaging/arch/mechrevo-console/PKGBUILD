@@ -5,8 +5,8 @@
 # The Rust console is independent of DKMS and the legacy tools.
 
 pkgname=mechrevo-console
-pkgver=0.1.0.r1535.gcee10ec
-pkgrel=2
+pkgver=0.1.0.r1535.gc152ca3
+pkgrel=1
 pkgdesc='Native MECHREVO system and OEM device control console'
 arch=('x86_64')
 url='https://github.com/LIghtJUNction/mechrevo-drivers'
@@ -20,14 +20,14 @@ optdepends=('noto-fonts-cjk: Chinese system font fallback')
 options=('!strip' '!debug' '!lto')
 
 # Always build the reviewed commit, including when using an existing local repo.
-_source_commit=cee10ecbf7e86582e2e0f7ba887c13385c96c50d
+_source_commit=c152ca3fe2599aababcaf83f454987285ebf1abd
 _source_url=${MECHREVO_CONSOLE_SOURCE:-"${url}.git"}
 source=("mechrevo-drivers::git+${_source_url}#commit=${_source_commit}"
         'best.lmm.mechrevo-console.desktop'
         'mechrevo-console.install')
 sha256sums=('SKIP'
             'bca48b9200f8aa66b34f357c3b8cce4f679bba998b6e777afec047bf601576a5'
-            '8778bbd1244d414adafe79a7d2187765a7e9a5da1f4efdd3d6e49c3688f52e20')
+            '5aa6c999385663f2423934d8de3d52801a8468ca80403c2150b08ca29ad7c21f')
 install=mechrevo-console.install
 
 prepare() {
@@ -44,6 +44,7 @@ prepare() {
         console/crates/gui/src/main.rs \
         console/resources/org.mechrevo.console.oem.policy \
         scripts/mechrevo_control.py scripts/mechrevo-gaming-hotkey.service \
+        scripts/mechrevo-ec-hotkey.service scripts/mechrevo-touchpad-sleep \
         console/crates/gui/assets/fonts/Cormorant-OFL.txt \
         console/crates/gui/assets/fonts/Manrope-OFL.txt \
         docs/MECHREVO-CONSOLE.md docs/PERFORMANCE-PROFILES.md LICENSE; do
@@ -118,6 +119,10 @@ package() {
     install -Dm755 scripts/mechrevo_control.py "${pkgdir}/usr/bin/mechrevo-control"
     install -Dm644 scripts/mechrevo-gaming-hotkey.service \
         "${pkgdir}/usr/lib/systemd/user/mechrevo-gaming-hotkey.service"
+    install -Dm644 scripts/mechrevo-ec-hotkey.service \
+        "${pkgdir}/usr/lib/systemd/system/mechrevo-ec-hotkey.service"
+    install -Dm755 scripts/mechrevo-touchpad-sleep \
+        "${pkgdir}/usr/lib/systemd/system-sleep/mechrevo-touchpad"
     install -Dm644 docs/MECHREVO-CONSOLE.md \
         "${pkgdir}/usr/share/doc/${pkgname}/MECHREVO-CONSOLE.md"
     install -Dm644 docs/PERFORMANCE-PROFILES.md \

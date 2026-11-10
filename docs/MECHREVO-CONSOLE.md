@@ -18,6 +18,67 @@ mechrevo-console oem set mechrevo-performance-profile mechrevo_turbo --dry-run
 
 候选 root 事务完成五档真实切换并逐档回读 tccd ID 和 CPU policy0：办公为 `balance_power`、0.8–3.2 GHz；游戏、低噪和强冷为 `balance_performance`、0.8–4.9 GHz；狂暴为 `performance`、0.8–4.9 GHz，结束恢复狂暴。这是配置及频率边界回读，不是持续运行频率、固定瓦数、灯光、实际 RPM、噪声或游戏帧率验收；普通用户认证弹窗与 Windows 硬件也不在本次证明范围内。打包固定提交与本地安装状态见 [Arch 配方](../packaging/arch/mechrevo-console/README.md)，不表示 AUR 发布。
 
+## 无 tccd 的 EC-only 模式键（2026-11-07）
+
+GM6BG0Q 的实体模式键已经由 `tuxedo_keyboard` 驱动确认为 WMI `0xB0`，驱动会合成
+`Meta+Alt+F6`。原先的用户级 `mechrevo-gaming-hotkey.service` 在启动时调用
+`com.tuxedocomputers.tccd.GetActiveProfileJSON`；本机没有运行 tccd，服务因此直接退出，
+表现为按键无反应、模式灯不变。这不是 EC 未发事件，也不是 `0x782` 未使能。
+
+新增 root 系统服务 `mechrevo-ec-hotkey.service`，执行
+`mechrevo-control daemon --ec-only`：只监听 F6，通过 `/dev/tuxedo_io` 的
+`W_UW_MODE`/`R_UW_MODE` 在办公 `0xA0` → 游戏 `0x00` → Turbo `0x10` 之间循环，
+并逐次回读 EC 模式字节；不调用 tccd 或 D-Bus。root 权限是必要的：
+`/dev/tuxedo_io` 为 `0600 root:root`，输入节点为 `0660 root:input`。
+
+每次切模式后还会按 Windows Control Center 5.17.49.19 的 `UserPofiles` 应用
+PL1/PL2/PL4：Office `35/35/215`、Gaming `80/80/215`、Turbo `95/95/215`，
+通过 `W_UW_TDP0/1/2` 写入并逐项回读。`TccOffset=5`、cTGP、Dynamic Boost 和
+安装包里的用户风扇表没有在本服务中写入；EC 模式字节仍负责 EC 自身的风扇策略。
+
+切换成功后还会同步 UEFI `UniWillVariable` 的 `PowerMode`，对应关系为
+Gaming=0、Office=1、Turbo=2；变量数据偏移 `0x52`（efivar 文件偏移 `0x56`，前面
+是 4 字节属性）。只对精确的 `MECHREVO / GM6BG0Q / Jiaolong16K Series GM6BG0Q /
+N.1.19MRO15` 生效，保留其余全部字节和属性，清除/恢复 efivarfs 的 immutable 位，
+并在写入后重新读取整个变量做逐字节回读。efivarfs 对 `fsync` 返回 `EINVAL`，写入路径
+按同步写处理并忽略该 `EINVAL`；其它错误仍然上报。UEFI 写失败只记录错误，不回滚已经
+完成的 EC 模式切换。
+
+```sh
+# 两个热键处理者只能选一个，避免同一次按键切两档
+systemctl --user disable --now mechrevo-gaming-hotkey.service
+systemctl enable --now mechrevo-ec-hotkey.service
+```
+
+上一版 EC-only 服务已在本机安装并运行：启动时读到 EC `0xA0`、UEFI `PowerMode=0`；
+按三次 F6 后日志为 Gaming `0x00`/UEFI 0、Turbo `0x10`/UEFI 2、Office `0xA0`/UEFI 1，
+最终 EC 与 UEFI 一致为 Office。UEFI 受控写读回环验证了 `0→2→1→0` 并恢复原文件哈希；
+除文件偏移 `0x56` 外无字节变化，immutable 位恢复。
+
+新增的 Windows profile TDP 写入目前只有源码和 mock 回归，**没有把 95 W / PL4 215 W
+写入本机 EC 做满载验收**；需要重载新驱动、安装新脚本并单独做受控高功率测试。这里也
+不证明底盘灯珠实际亮灭、持续功耗、风扇 RPM 或 TCC profile 已被应用。
+
+### 触控板熄屏/恢复
+
+KDE 的触控板开关是 libinput 会话状态，不是 i2c 硬件锁。`kcminputrc` 里
+`Enabled=false` 时 i2c 设备仍可能绑定；熄屏/恢复后 KWin 重新应用 per-device
+状态失败，触控板就会回到默认开启。仓库的 `mechrevo-control touchpad off`
+走 i2c unbind，并写入 `/var/lib/mechrevo-control/touchpad_state`。
+
+新增 system-sleep hook `/usr/lib/systemd/system-sleep/mechrevo-touchpad`：
+恢复（`post`）后读取保存状态，等待 `i2c-UNIW0001:00` 重新出现，再执行
+`mechrevo-control touchpad restore`，保持关闭或开启。它只恢复由
+`mechrevo-control touchpad off|on` 写入的状态；只在 KDE 里关闭不会生成该文件，
+hook 因此不做任何事。
+
+```sh
+sudo mechrevo-control touchpad off   # 硬件锁，写入持久状态
+mechrevo-control touchpad status     # 查看 i2c 绑定状态
+```
+
+该 hook 是 root 执行的 systemd-sleep 脚本，不依赖 tccd 或 EC-only 热键服务。
+
 ## r160 历史安装基线（2026-10-18）
 
 `mechrevo-console 0.1.0.r160.g5542b9d-1` 已从固定提交 `5542b9d66eb3bb95b2edd07e4f2fe94afc36ea60` 构建并通过 pacman 安装。CLI、GUI、受限 OEM helper 与授权策略已落盘；21 个包文件零改动，9 个正规载荷的字节、权限及 root 归属逐项一致。release 的 31 份输入与通过 146 项 Rust、95 项 Python 检查的快照相同；release 与早期 debug 候选的二进制摘要分别保留。

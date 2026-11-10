@@ -1,0 +1,18 @@
+[Unit]
+Description=MECHREVO EC-only hardware mode-switch hotkey daemon (tccd-free)
+Documentation=https://github.com/LIghtJUNction/mechrevo-drivers
+After=systemd-modules-load.service
+# /dev/tuxedo_io and the tuxedo_keyboard input node may appear after boot.
+# The daemon exits with a clear error and this unit retries until they exist.
+
+[Service]
+Type=simple
+Environment=PYTHONUNBUFFERED=1
+# Root is required: /dev/tuxedo_io is 0600 root:root and the input node is
+# 0660 root:input. This service intentionally uses no tccd/D-Bus.
+ExecStart=/usr/bin/mechrevo-control daemon --ec-only
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

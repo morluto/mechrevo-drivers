@@ -178,12 +178,40 @@ mod tests {
             assert!(!result.matches[0].firmware_evidence_matches);
         }
     }
+    fn jiaolong16k() -> Identity {
+        Identity {
+            manufacturer: Some("MECHREVO".into()),
+            product_name: Some("Jiaolong16K Series GM6BG0Q".into()),
+            board_name: Some("GM6BG0Q".into()),
+            bios_version: Some("N.1.19MRO15".into()),
+            ..Default::default()
+        }
+    }
+    // @mark mechrevo.model_registry role=verification contract=exact_identity_evidence
+    #[test]
+    fn jiaolong16k_exact_bios_retains_partial_scope() {
+        let result = identify(&jiaolong16k());
+        assert_eq!(result.status, "hardware_partial");
+        assert_eq!(result.matches.len(), 1);
+        assert_eq!(result.matches[0].model_id, "gm6bg0q");
+        assert!(result.matches[0].firmware_evidence_matches);
+        assert!(!result.matches[0].hardware_validated);
+    }
+    #[test]
+    fn jiaolong16k_changed_or_missing_bios_does_not_inherit_firmware_evidence() {
+        for bios in [None, Some("N.1.19MRO14".into())] {
+            let mut identity = jiaolong16k();
+            identity.bios_version = bios;
+            let result = identify(&identity);
+            assert_eq!(result.status, "identified");
+            assert!(!result.matches[0].firmware_evidence_matches);
+        }
+    }
     #[test]
     fn other_model_sources_never_claim_local_hardware_acceptance() {
         for (board, product, model_id) in [
             ("GX4HRXL", None, "gx4hrxl"),
             ("JIAOLONG Series-X6xR55xK", None, "jiaolong-x6xr55xk"),
-            ("GM6BG0Q", Some("Jiaolong16K Series GM6BG0Q"), "gm6bg0q"),
             ("WUJIE Series-X5SP4NAG", None, "wujie-x5sp4nag"),
             ("GM5HG0A", Some("Yilong15Pro Series GM5HG0A"), "gm5hg0a"),
             ("WUJIE15 Series-HPT", Some("WUJIE15 PRO"), "wujie15-hpt"),

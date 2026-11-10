@@ -3,11 +3,27 @@
 `mechrevo-console` 安装 Rust CLI、原生 GUI、受限 OEM helper 和统一的
 `mechrevo-control` 桥接工具，不依赖 DKMS 包。安装会把未改过的 TUXEDO 默认 profile
 迁移为机械革命 Gaming profile，并保留用户已经修改过的 profile；不会覆盖用户曲线。
-包同时提供用户级 `mechrevo-gaming-hotkey.service`，用于在实体按键、GUI 或电源状态切换
-后同步机身性能档位灯。首次安装后执行：
+包同时提供两个互斥的热键处理者：
+
+- 用户级 `mechrevo-gaming-hotkey.service`：需要可用的 tccd/D-Bus，在实体按键、GUI 或
+  电源状态切换后同步 TCC profile 与机身性能档位灯。
+- 系统级 `mechrevo-ec-hotkey.service`：root、无 tccd 依赖，只监听 F6，通过
+  `/dev/tuxedo_io` 切换 EC 模式字节，按 Windows 54919 profile 写 PL1/PL2/PL4，
+  并同步 UEFI `UniWillVariable.PowerMode`。
+
+只能启用一个，否则同一次按键会切两档。另安装
+`/usr/lib/systemd/system-sleep/mechrevo-touchpad`：只恢复由
+`mechrevo-control touchpad off|on` 保存的 i2c 硬件状态；KDE/libinput 自己的
+`Enabled=false` 不会生成该状态文件。
+
+只能启用一个，否则同一次按键会切两档：
 
 ```sh
+# 走 TCC（需要 tccd）
 systemctl --user enable --now mechrevo-gaming-hotkey.service
+# 或走 EC-only（不需要 tccd；先停用用户级服务）
+systemctl --user disable --now mechrevo-gaming-hotkey.service
+systemctl enable --now mechrevo-ec-hotkey.service
 ```
 
 实体性能按钮循环为办公 → 游戏 → Turbo → 办公，使用三个不同的硬件模式请求。
@@ -15,9 +31,9 @@ systemctl --user enable --now mechrevo-gaming-hotkey.service
 本机 Turbo 小灯变化已有用户确认，其余灯态及唤醒后的行为见
 [灯光验证记录](../../../docs/PERFORMANCE-INDICATOR.md)。
 
-当前配方固定源码提交 `cee10ecbf7e86582e2e0f7ba887c13385c96c50d`，包版本为
-`0.1.0.r1535.gcee10ec-2`。源码仍为已验证的 r1535，第二次打包修正首次构建依赖获取、
-Python/systemd 运行依赖与安装脚本校验和，不改变控制台或硬件参数。
+当前配方固定源码提交 `c152ca3fe2599aababcaf83f454987285ebf1abd`，包版本为
+`0.1.0.r1535.gc152ca3-1`。该提交在 r1535 基线上增加无 tccd 的 EC-only 热键服务、Windows 54919 TDP profile、UEFI PowerMode 同步与触控板恢复 hook；
+发布收据仍对应旧的 r1535-2 包，不表示新包已经发布或完成整包验收。
 该配方已发布到独立的 [AUR 包](https://aur.archlinux.org/packages/mechrevo-console)，
 签名安装包与配方源包见 [GitHub Release](https://github.com/LIghtJUNction/mechrevo-drivers/releases/tag/console-v0.1.0-r1535-2)。
 发布构建、制品摘要、远端状态与验收边界见 [发布收据](../../../docs/verification/console-release-r1535-2.json)；
@@ -75,8 +91,8 @@ Rust 使用 `-C target-cpu=x86-64`；三个 ELF 产物均需检查 GNU ISA 属�
 检查包内容和部署材料后，通过 pacman 安装本地产物：
 
 ```sh
-pacman -Qlp mechrevo-console-0.1.0.r1535.gcee10ec-2-x86_64.pkg.tar.zst
-sudo pacman -U ./mechrevo-console-0.1.0.r1535.gcee10ec-2-x86_64.pkg.tar.zst
+pacman -Qlp mechrevo-console-0.1.0.r1535.gc152ca3-1-x86_64.pkg.tar.zst
+sudo pacman -U ./mechrevo-console-0.1.0.r1535.gc152ca3-1-x86_64.pkg.tar.zst
 mechrevo-console --version
 mechrevo-console status --json
 ```

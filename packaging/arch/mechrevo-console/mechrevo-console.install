@@ -1,7 +1,11 @@
 post_install() {
     /usr/bin/mechrevo-control sync-profiles >/dev/null 2>&1 ||
         printf '%s\n' 'mechrevo-console: profile migration was not applied; run mechrevo-control sync-profiles as root.' >&2
-    printf '%s\n' 'mechrevo-console: enable LED synchronization with: systemctl --user enable --now mechrevo-gaming-hotkey.service'
+    printf '%s\n' 'mechrevo-console: choose ONE hotkey handler to avoid double mode changes:'
+    printf '%s\n' '  TCC mode:  systemctl --user enable --now mechrevo-gaming-hotkey.service'
+    printf '%s\n' '  EC-only:   systemctl disable --now mechrevo-gaming-hotkey.service 2>/dev/null || true'
+    printf '%s\n' '             systemctl enable --now mechrevo-ec-hotkey.service'
+    printf '%s\n' 'touchpad: use mechrevo-control touchpad off|on; the installed system-sleep hook restores that hardware state after resume.'
 }
 
 post_upgrade() {

@@ -16,6 +16,7 @@ Gaming Center to Linux on the GM6PX0X (and compatible) platforms:
 from __future__ import annotations
 
 import argparse
+import errno
 import fcntl
 import json
 import os
@@ -68,6 +69,7 @@ TOUCHPAD_I2C_DEVICE = "i2c-UNIW0001:00"
 TOUCHPAD_BIND_PATH = Path("/sys/bus/i2c/drivers/i2c_hid_acpi/bind")
 TOUCHPAD_UNBIND_PATH = Path("/sys/bus/i2c/drivers/i2c_hid_acpi/unbind")
 TOUCHPAD_BOUND_CHECK = Path(f"/sys/bus/i2c/drivers/i2c_hid_acpi/{TOUCHPAD_I2C_DEVICE}")
+TOUCHPAD_DEVICE_PATH = Path(f"/sys/bus/i2c/devices/{TOUCHPAD_I2C_DEVICE}")
 
 # Local cooling defaults: keep at least 60% in normal modes. This floor was
 # exercised on GM6PX0X; it is a control request, not a guaranteed RPM or OEM curve.
@@ -537,6 +539,51 @@ def get_current_mode() -> str:
     return get_current_mode_info()[0]
 
 
+EC_MODE_BYTES = {
+    "office": 0xa0,
+    "gaming": 0x00,
+    "gaming-quiet": 0x00,
+    "turbo": 0x10,
+    "boost": 0x10,
+}
+# Hardware cycle order used by the physical key when tccd is not involved.
+EC_MODE_CYCLE = (("office", 0xa0), ("gaming", 0x00), ("turbo", 0x10))
+EC_CONTROL_DEVICE = Path("/dev/tuxedo_io")
+W_UW_MODE = 0x4008f012
+R_UW_MODE = 0x8008ef14
+
+
+def read_hardware_mode() -> int:
+    """Read the EC mode byte through tuxedo_io."""
+    if not EC_CONTROL_DEVICE.exists():
+        raise RuntimeError(f"Uniwill control device is unavailable: {EC_CONTROL_DEVICE}")
+    fd = os.open(EC_CONTROL_DEVICE, os.O_RDWR)
+    try:
+        readback = bytearray(8)
+        fcntl.ioctl(fd, R_UW_MODE, readback, True)
+        return struct.unpack("i", readback[:4])[0] & 0xff
+    finally:
+        os.close(fd)
+
+
+def write_hardware_mode(value: int) -> int:
+    """Request an EC mode byte and verify the readback."""
+    if not EC_CONTROL_DEVICE.exists():
+        raise RuntimeError(f"Uniwill control device is unavailable: {EC_CONTROL_DEVICE}")
+    value &= 0xff
+    fd = os.open(EC_CONTROL_DEVICE, os.O_RDWR)
+    try:
+        fcntl.ioctl(fd, W_UW_MODE, struct.pack("i", value))
+        readback = bytearray(8)
+        fcntl.ioctl(fd, R_UW_MODE, readback, True)
+        actual = struct.unpack("i", readback[:4])[0] & 0xff
+    finally:
+        os.close(fd)
+    if actual != value:
+        raise RuntimeError(f"EC mode readback mismatch: requested 0x{value:02x}, got 0x{actual:02x}")
+    return actual
+
+
 def set_hardware_mode_led(mode_key: str) -> None:
     """Request a mode byte and require the EC readback to match it.
 
@@ -544,32 +591,210 @@ def set_hardware_mode_led(mode_key: str) -> None:
     readback for this machine. A matching EC readback therefore proves only
     that the request reached the driver, not that a chassis lamp is illuminated.
     """
-    raw_mode_map = {
-        "office": 0xa0,
-        "gaming": 0x00,
-        "gaming-quiet": 0x00,
-        "turbo": 0x10,
-        "boost": 0x10,
-    }
-    if mode_key not in raw_mode_map:
+    if mode_key not in EC_MODE_BYTES:
         raise ValueError(f"Unknown hardware mode key: {mode_key}")
-    val = raw_mode_map[mode_key]
-    dev_path = Path("/dev/tuxedo_io")
-    if not dev_path.exists():
-        raise RuntimeError(f"Uniwill control device is unavailable: {dev_path}")
-    fd = os.open(dev_path, os.O_RDWR)
-    W_UW_MODE = 0x4008f012
-    R_UW_MODE = 0x8008ef14
+    write_hardware_mode(EC_MODE_BYTES[mode_key])
+
+
+def cycle_hardware_mode() -> str:
+    """Cycle the EC mode without tccd: office -> gaming -> turbo -> office."""
+    current = read_hardware_mode()
+    values = [value for _, value in EC_MODE_CYCLE]
+    if current in values:
+        next_name, next_value = EC_MODE_CYCLE[(values.index(current) + 1) % len(EC_MODE_CYCLE)]
+    else:
+        # Unknown mode byte: request the known Gaming value instead of guessing.
+        next_name, next_value = EC_MODE_CYCLE[1]
+    write_hardware_mode(next_value)
+    return next_name
+
+
+UEFI_POWER_MODE_EFIVAR = Path(
+    "/sys/firmware/efi/efivars/UniWillVariable-9f33f85c-13ca-4fd1-9c4a-96217722c593"
+)
+UEFI_POWER_MODE_DATA_OFFSET = 0x52
+UEFI_POWER_MODE_FILE_OFFSET = 4 + UEFI_POWER_MODE_DATA_OFFSET
+UEFI_POWER_MODE_VALUES = {
+    # NVRAM_STRUCT.PowerMode: Gaming=0, Office=1, Turbo=2, Custom=3.
+    "office": 1,
+    "gaming": 0,
+    "gaming-quiet": 0,
+    "turbo": 2,
+    "boost": 2,
+}
+_DMI_ID = Path("/sys/class/dmi/id")
+
+
+def _dmi_text(name: str) -> str | None:
     try:
-        fcntl.ioctl(fd, W_UW_MODE, struct.pack("i", val))
+        return (_DMI_ID / name).read_text().strip()
+    except OSError:
+        return None
+
+
+def uefi_power_mode_supported() -> bool:
+    """Only touch NVRAM on the exact model whose layout was verified."""
+    return (_dmi_text("sys_vendor") == "MECHREVO"
+            and _dmi_text("board_name") == "GM6BG0Q"
+            and _dmi_text("product_name") == "Jiaolong16K Series GM6BG0Q"
+            and _dmi_text("bios_version") == "N.1.19MRO15"
+            and UEFI_POWER_MODE_EFIVAR.is_file())
+
+
+def _efivar_immutable(path: Path) -> bool:
+    text = run_cmd(["lsattr", "-d", str(path)])
+    return "i" in text.split()[0]
+
+
+def _set_efivar_immutable(path: Path, immutable: bool) -> None:
+    run_cmd(["chattr", "+i" if immutable else "-i", str(path)])
+
+
+def read_uefi_power_mode() -> int:
+    """Read NVRAM_STRUCT.PowerMode from the UniWill UEFI variable."""
+    if not uefi_power_mode_supported():
+        raise RuntimeError("UniWill UEFI PowerMode is not supported on this machine")
+    raw = UEFI_POWER_MODE_EFIVAR.read_bytes()
+    if len(raw) <= UEFI_POWER_MODE_FILE_OFFSET:
+        raise RuntimeError(f"UniWill UEFI variable is too short: {len(raw)} bytes")
+    value = raw[UEFI_POWER_MODE_FILE_OFFSET]
+    if value > 3:
+        raise RuntimeError(f"Unknown UniWill UEFI PowerMode byte: 0x{value:02x}")
+    return value
+
+
+EC_MODE_NAMES = {
+    0x00: "gaming",
+    0xA0: "office",
+    0x10: "turbo",
+}
+EC_MODE_TDP = {
+    # Windows Control Center 5.17.49.19 profile values: PL1, PL2, PL4.
+    "office": (35, 35, 215),
+    "gaming": (80, 80, 215),
+    "gaming-quiet": (80, 80, 215),
+    "turbo": (95, 95, 215),
+    "boost": (95, 95, 215),
+}
+W_UW_TDP = (0x4008F015, 0x4008F016, 0x4008F017)
+R_UW_TDP = (0x8008EF18, 0x8008EF19, 0x8008EF1A)
+
+
+def _read_tdp(fd: int) -> tuple[int, int, int]:
+    values = []
+    for command in R_UW_TDP:
         readback = bytearray(8)
-        fcntl.ioctl(fd, R_UW_MODE, readback, True)
-        actual = struct.unpack("i", readback[:4])[0] & 0xff
+        fcntl.ioctl(fd, command, readback, True)
+        values.append(struct.unpack("i", readback[:4])[0])
+    return tuple(values)
+
+
+def _write_tdp(fd: int, values: tuple[int, int, int]) -> None:
+    for command, value in zip(W_UW_TDP, values):
+        fcntl.ioctl(fd, command, struct.pack("i", value))
+
+
+def apply_mode_tdp(mode_key: str) -> tuple[int, int, int]:
+    """Apply the package PL1/PL2/PL4 profile through tuxedo_io and verify it.
+
+    Read the previous limits first and restore all three if any write or
+    readback fails, so a partial failure cannot leave a mixed profile.
+    """
+    if mode_key not in EC_MODE_TDP:
+        raise ValueError(f"Unknown TDP mode key: {mode_key}")
+    if not EC_CONTROL_DEVICE.exists():
+        raise RuntimeError(f"Uniwill control device is unavailable: {EC_CONTROL_DEVICE}")
+    values = EC_MODE_TDP[mode_key]
+    fd = os.open(EC_CONTROL_DEVICE, os.O_RDWR)
+    try:
+        previous = _read_tdp(fd)
+        try:
+            _write_tdp(fd, values)
+            actual = _read_tdp(fd)
+            if actual != values:
+                raise RuntimeError(f"TDP readback mismatch: requested {values}, got {actual}")
+        except Exception:
+            try:
+                _write_tdp(fd, previous)
+                restored = _read_tdp(fd)
+                if restored != previous:
+                    raise RuntimeError(
+                        f"TDP rollback readback mismatch: requested {previous}, got {restored}"
+                    )
+            except Exception as rollback:
+                raise RuntimeError(
+                    f"TDP profile failed and rollback failed: {rollback}"
+                ) from rollback
+            raise
     finally:
         os.close(fd)
-    if actual != val:
-        raise RuntimeError(f"EC mode readback mismatch: requested 0x{val:02x}, got 0x{actual:02x}")
+    return values
 
+
+def write_uefi_power_mode(mode_key: str) -> int:
+    """Persist the selected mode in NVRAM while preserving every other byte.
+
+    efivarfs exposes the four attribute bytes followed by the variable data.
+    The file is normally immutable; clear that flag, write the complete
+    variable, verify the exact readback, then restore the flag.
+    """
+    if mode_key not in UEFI_POWER_MODE_VALUES:
+        raise ValueError(f"Unknown UEFI PowerMode key: {mode_key}")
+    if not uefi_power_mode_supported():
+        raise RuntimeError("UniWill UEFI PowerMode is not supported on this machine")
+
+    target = UEFI_POWER_MODE_VALUES[mode_key]
+    raw = bytearray(UEFI_POWER_MODE_EFIVAR.read_bytes())
+    if len(raw) <= UEFI_POWER_MODE_FILE_OFFSET:
+        raise RuntimeError(f"UniWill UEFI variable is too short: {len(raw)} bytes")
+    current = raw[UEFI_POWER_MODE_FILE_OFFSET]
+    if current > 3:
+        raise RuntimeError(f"Unknown UniWill UEFI PowerMode byte: 0x{current:02x}")
+    if current == target:
+        return target
+
+    raw[UEFI_POWER_MODE_FILE_OFFSET] = target
+    immutable = _efivar_immutable(UEFI_POWER_MODE_EFIVAR)
+    try:
+        if immutable:
+            _set_efivar_immutable(UEFI_POWER_MODE_EFIVAR, False)
+        fd = os.open(UEFI_POWER_MODE_EFIVAR, os.O_WRONLY | os.O_CLOEXEC)
+        try:
+            pending = memoryview(raw)
+            while pending:
+                written = os.write(fd, pending)
+                if written <= 0:
+                    raise OSError("short write to efivarfs")
+                pending = pending[written:]
+            try:
+                os.fsync(fd)
+            except OSError as exc:
+                # efivarfs rejects fsync with EINVAL; its write path is
+                # synchronous and the readback below is the durable check.
+                if exc.errno != errno.EINVAL:
+                    raise
+        finally:
+            os.close(fd)
+        actual = UEFI_POWER_MODE_EFIVAR.read_bytes()
+        if len(actual) != len(raw) or actual[:4] != raw[:4]:
+            raise RuntimeError("UniWill UEFI variable changed size or attributes")
+        if actual[UEFI_POWER_MODE_FILE_OFFSET] != target:
+            raise RuntimeError(
+                "UniWill UEFI PowerMode readback mismatch: "
+                f"requested {target}, got {actual[UEFI_POWER_MODE_FILE_OFFSET]}"
+            )
+        for offset, (before, after) in enumerate(zip(raw, actual)):
+            if offset == UEFI_POWER_MODE_FILE_OFFSET:
+                continue
+            if before != after:
+                raise RuntimeError(
+                    f"UniWill UEFI variable changed unrelated byte 0x{offset:02x}: "
+                    f"0x{before:02x} -> 0x{after:02x}"
+                )
+    finally:
+        if immutable:
+            _set_efivar_immutable(UEFI_POWER_MODE_EFIVAR, True)
+    return target
 
 PROFILE_MODE_KEYS = {
     "__default_custom_profile__": "gaming",
@@ -667,9 +892,14 @@ def toggle_touchpad() -> None:
         raise RuntimeError("No supported touchpad toggle command is available")
 
 
-def run_daemon() -> None:
-    """Listen to physical hotkey events (Mode button, Fn+Esc, Touchpad F21, Backlight)."""
-    import struct
+def run_daemon(ec_only: bool = False) -> None:
+    """Listen to physical hotkey events.
+
+    With ``ec_only`` the daemon deliberately avoids tccd and D-Bus: it writes
+    the mode byte through /dev/tuxedo_io and ignores all other keys. This mode
+    is intended for the root system service, which can access the 0600 control
+    device and the root:input event node.
+    """
     import select
 
     dev_paths = [
@@ -690,9 +920,32 @@ def run_daemon() -> None:
         print("错误: 找不到 tuxedo-keyboard 物理按键事件输入节点", file=sys.stderr)
         sys.exit(1)
 
-    print(f"[*] 机械革命硬件热键守护进程已启动，监听设备: {target_dev}")
-    sync_oem_profiles()
-    last_profile_id = sync_mode_led_from_profile()
+    if ec_only:
+        print(f"[*] MECHREVO EC-only 热键守护进程启动，监听设备: {target_dev}")
+        # Fail fast when the kernel control node is absent; systemd restarts us
+        # after the module/device appears.
+        initial_mode = read_hardware_mode()
+        print(f"[*] 当前 EC 模式字节: 0x{initial_mode:02x}（不依赖 tccd）")
+        try:
+            uefi_mode = read_uefi_power_mode()
+        except Exception as exc:
+            print(f"[!] UEFI PowerMode 读取失败: {exc}", file=sys.stderr)
+        else:
+            print(f"[*] 当前 UEFI PowerMode: {uefi_mode}")
+            mode_name = EC_MODE_NAMES.get(initial_mode)
+            expected_uefi = UEFI_POWER_MODE_VALUES.get(mode_name)
+            if expected_uefi is not None and uefi_mode != expected_uefi:
+                print(
+                    f"[!] 启动状态不一致: EC {mode_name} 期望 UEFI {expected_uefi}，"
+                    f"实际 {uefi_mode}；按一次模式键会重新同步",
+                    file=sys.stderr,
+                )
+        last_profile_id = None
+    else:
+        print(f"[*] 机械革命硬件热键守护进程已启动，监听设备: {target_dev}")
+        sync_oem_profiles()
+        last_profile_id = sync_mode_led_from_profile()
+
     last_mode_trigger = 0.0
     last_fn_trigger = 0.0
     last_tp_trigger = 0.0
@@ -706,6 +959,8 @@ def run_daemon() -> None:
         while True:
             ready, _, _ = select.select([f], [], [], 1.0)
             if not ready:
+                if ec_only:
+                    continue
                 current_profile_id = get_current_mode_info()[1]
                 if current_profile_id != last_profile_id:
                     last_profile_id = sync_mode_led_from_profile(current_profile_id)
@@ -723,9 +978,44 @@ def run_daemon() -> None:
                 if ev_code == 64:
                     if now - last_mode_trigger >= 0.35:  # 350ms debounce
                         last_mode_trigger = now
-                        print("[*] 捕捉到机身实体模式按键触发！执行模式切换...")
-                        cycle_mode(notify=True)
-                        last_profile_id = sync_mode_led_from_profile()
+                        if ec_only:
+                            previous_mode = read_hardware_mode()
+                            mode = cycle_hardware_mode()
+                            print(f"[*] 实体模式键 -> EC 模式 {mode}")
+                            try:
+                                tdp = apply_mode_tdp(mode)
+                            except Exception as exc:
+                                print(f"[!] TDP profile apply failed: {exc}", file=sys.stderr)
+                                try:
+                                    restored = write_hardware_mode(previous_mode)
+                                except Exception as rollback:
+                                    print(
+                                        f"[!] EC 模式回滚失败: {rollback}",
+                                        file=sys.stderr,
+                                    )
+                                else:
+                                    print(
+                                        f"[!] 已回滚 EC 模式到 0x{restored:02x}；"
+                                        "本次不写 UEFI",
+                                        file=sys.stderr,
+                                    )
+                                continue
+                            print(f"[*] PL1/PL2/PL4 -> {tdp[0]}/{tdp[1]}/{tdp[2]} W")
+                            try:
+                                uefi_mode = write_uefi_power_mode(mode)
+                            except Exception as exc:
+                                print(f"[!] UEFI PowerMode 同步失败: {exc}", file=sys.stderr)
+                            else:
+                                print(f"[*] UEFI PowerMode -> {uefi_mode}")
+                        else:
+                            print("[*] 捕捉到机身实体模式按键触发！执行模式切换...")
+                            cycle_mode(notify=True)
+                            last_profile_id = sync_mode_led_from_profile()
+
+                elif ec_only:
+                    # The root EC-only service must not duplicate the user
+                    # daemon's Fn-lock/touchpad/backlight actions.
+                    continue
 
                 # 2. Fn Lock toggle key (KEY_FN_ESC = 465)
                 elif ev_code == 465:
@@ -835,6 +1125,29 @@ def set_touchpad(enabled: bool) -> None:
     get_state_file("touchpad_state").write_text("1" if enabled else "0")
     state_str = "已开启 (正常滑动)" if enabled else "已锁定禁用 (防误触生效)"
     print(f"[✓] 机械革命触控板状态: {state_str}")
+
+
+def restore_touchpad_state(timeout: float = 30.0) -> bool | None:
+    """Reapply the saved hardware touchpad state after resume.
+
+    Returns None when no state was saved. The i2c device may appear a moment
+    after resume, so wait for it before bind/unbind; otherwise a late device
+    registration could silently undo the saved off state.
+    """
+    state_file = get_state_file("touchpad_state")
+    if not state_file.exists():
+        return None
+    value = state_file.read_text().strip()
+    if value not in {"0", "1"}:
+        raise RuntimeError(f"Invalid saved touchpad state: {value!r}")
+    enabled = value == "1"
+    deadline = time.monotonic() + timeout
+    while not TOUCHPAD_DEVICE_PATH.exists():
+        if time.monotonic() >= deadline:
+            raise RuntimeError(f"Touchpad device did not reappear: {TOUCHPAD_DEVICE_PATH}")
+        time.sleep(0.25)
+    set_touchpad(enabled)
+    return enabled
 
 
 # ==============================================================================
@@ -1158,7 +1471,12 @@ def main() -> int:
     p_bright.add_argument("percent", help="亮度百分比 (例如 80%% 或 80)")
 
     # daemon
-    subparsers.add_parser("daemon", help="启动机身模式物理按键监听守护进程")
+    p_daemon = subparsers.add_parser("daemon", help="启动机身模式物理按键监听守护进程")
+    p_daemon.add_argument(
+        "--ec-only",
+        action="store_true",
+        help="不依赖 tccd，直接用 /dev/tuxedo_io 切换 EC 模式（需要 root；供系统服务使用）",
+    )
 
     # fan
     p_fan = subparsers.add_parser("fan", help="风扇控制 (auto, boost, quiet)")
@@ -1170,7 +1488,7 @@ def main() -> int:
 
     # touchpad
     p_tp = subparsers.add_parser("touchpad", help="笔记本触控板硬件开关")
-    p_tp.add_argument("action", nargs="?", choices=["on", "off", "toggle", "status"], default="status")
+    p_tp.add_argument("action", nargs="?", choices=["on", "off", "toggle", "status", "restore"], default="status")
 
     # fn-lock
     p_fn = subparsers.add_parser("fn-lock", help="Fn 快捷键锁控制")
@@ -1213,7 +1531,7 @@ def main() -> int:
         elif args.command == "brightness":
             set_screen_brightness(args.percent)
         elif args.command == "daemon":
-            run_daemon()
+            run_daemon(ec_only=args.ec_only)
         elif args.command == "fan":
             set_fan(args.action)
         elif args.command == "win-lock":
@@ -1232,6 +1550,12 @@ def main() -> int:
                 set_touchpad(False)
             elif args.action == "toggle":
                 set_touchpad(not get_touchpad())
+            elif args.action == "restore":
+                restored = restore_touchpad_state()
+                if restored is None:
+                    print("没有保存的触控板硬件状态，跳过恢复")
+                else:
+                    print(f"已恢复触控板硬件状态: {'开启' if restored else '禁用'}")
             else:
                 print(f"触控板状态: {'已启用' if get_touchpad() else '已禁用'}")
         elif args.command == "fn-lock":
