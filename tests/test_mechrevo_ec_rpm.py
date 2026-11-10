@@ -15,3 +15,6 @@ class MechrevoEcRpm(unittest.TestCase):
 
     def test_acpi_identity_layout_and_startup_reads_fail_closed(self):
         self.check_case('rpm_qualification')
+
+    def test_gm6bg0q_uses_its_own_secondary_low_byte(self):
+        self.check_case('gm6bg0q')

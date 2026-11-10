@@ -1,8 +1,10 @@
 # Linux 标准 EC 温度接口
 
 `mechrevo_ec_sensors` 将已核对的两路 EC 温度接入 Linux hwmon，供 `sensors`
-和其他标准监控程序读取。目前严格限定 MECHREVO `Kuangshi16Pro Series GM6PX0X`、
-BIOS `N.1.09MRO07`，不接受相似型号或其他 BIOS。
+和其他标准监控程序读取。目前严格限定两种精确身份，不接受相似型号或其他 BIOS：
+
+- MECHREVO `Kuangshi16Pro Series GM6PX0X` / `GM6PX0X` / BIOS `N.1.09MRO07`；
+- MECHREVO `Jiaolong16K Series GM6BG0Q` / `GM6BG0Q` / BIOS `N.1.19MRO15`。
 
 安装包含该模块的驱动包后：
 
@@ -13,9 +15,11 @@ sensors 'mechrevo_ec-*'
 
 模块提供两路温度 (`temp*_input`) 和两路风扇转速 (`fan*_input`)，标签分别为
 `CPU EC`、`GPU EC`、`CPU fan`、`GPU fan`。温度单位是毫摄氏度，转速单位是 RPM。
-CPU/GPU EC 温度来自 `INOU.ECRR(0x043e/0x044f)`；风扇寄存器地址取自已核对的
-原厂方法。读取沿用 Uniwill 固件的 ACPI ECRR 方法，并在成功读取后等待 6–12 ms；
-不再依赖 TUXEDO 驱动导出的 EC 读取符号。
+CPU/GPU EC 温度来自 `INOU.ECRR(0x043e/0x044f)`；风扇高字节为
+`0x0464`/`0x046c`。GPU 转速低字节按机型区分：GM6PX0X 使用原厂方法中的
+`0x046b`，GM6BG0Q 使用本机风扇扫频确认的 `0x046d`（`0x046a/0x046b` 在
+全部转速下恒为 `0x41`）。读取沿用 Uniwill 固件的 ACPI ECRR 方法，并在成功
+读取后等待 6–12 ms；不再依赖 TUXEDO 驱动导出的 EC 读取符号。
 它们不是 `coretemp` 的 CPU 内部温度，也不等于 NVIDIA 驱动的 GPU 温度。
 已有本机 WMI 与固件内存读取路径对照见[原厂分析](<../reports/GM6PX0X 原厂控制台静态分析 20261016.md>)。
 
@@ -36,7 +40,8 @@ sudo rmmod mechrevo_ec_sensors
 
 模块包含精确的系统厂商、产品名、主板名和 BIOS DMI 匹配，不新增全局强制加载配置。
 项目号不是 `0x10`、能力位不符、ECRR 不存在或初始传感器读取失败时，初始化会退出，
-不注册 hwmon 设备。
+不注册 hwmon 设备。GM6BG0Q 的本机读数与扫频记录见
+[硬件记录](hardware/GM6BG0Q.md#32-风扇转速与占空比)。
 首次显式加载和运行读取需要实机核对；下次开机能否由系统自动加载应单独验收。
 
 初版 r60 的 `modprobe -r` 实机测试曾连带卸载 WMI，导致平台重新绑定和 TCC

@@ -163,6 +163,9 @@ static struct { const char *version; } mock_module = { "test" };
 static u32 id_check_clevo, id_check_uniwill;
 static u32 clevo_identify(void) { return 0; }
 static u32 uniwill_identify(void) { return 1; }
+/* The dispatcher's lazy-retry wrapper is exercised by test_tuxedo_io_identify;
+ * here identification is already mocked and never fails. */
+static bool uw_features_ready(void) { return uw_feats != NULL; }
 static int clevo_calls;
 static int uniwill_webcam_calls;
 static long uniwill_webcam_ioctl(struct file *file, unsigned int cmd, unsigned long arg)

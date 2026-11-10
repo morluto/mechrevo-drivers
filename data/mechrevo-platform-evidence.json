@@ -44,9 +44,12 @@
         "product_name": "Jiaolong16K Series GM6BG0Q",
         "board_name": "GM6BG0Q"
       },
-      "qualified_bios": [],
-      "evidence_level": "upstream-source",
+      "qualified_bios": ["N.1.19MRO15"],
+      "evidence_level": "hardware-partial",
       "sources": [
+        "docs/hardware/GM6BG0Q.md",
+        "src/mechrevo_ec_sensors.c",
+        "src/tuxedo_io/tuxedo_io.c",
         "https://lists.openwall.net/linux-kernel/2026/10/23/301",
         "https://github.com/Wer-Wolf/uniwill-laptop/blob/a9e5ac3b10ed09c6d9aedd23288d3c7887afb450/uniwill-acpi.c"
       ]

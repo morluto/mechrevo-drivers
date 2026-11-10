@@ -54,7 +54,9 @@ class UniwillFeatureBinding(unittest.TestCase):
         if not constant:
             raise AssertionError("Missing fan minimum speed constant")
         names = (
-            "uniwill_identify", "uw_get_tdp_min", "uw_get_tdp_max",
+            "uw_identify_locked", "uniwill_identify",
+            "uw_ensure_identified", "uw_features_ready",
+            "uw_get_tdp_min", "uw_get_tdp_max",
             "uw_get_tdp", "uw_set_tdp", "uw_get_performance_profile_count",
             "uw_apply_performance_profile_v1", "uw_set_performance_profile_v1",
             "uw_copy_tdp_value", "uniwill_ioctl_interface", "fop_ioctl",
@@ -112,6 +114,9 @@ class UniwillFeatureBinding(unittest.TestCase):
 
     def test_absent_interface_identification_leaves_features_unbound(self):
         self.check_case("identify_absent")
+
+    def test_incomplete_feature_probe_is_not_published_or_used_for_tdp_mapping(self):
+        self.check_case("identify_not_ready")
 
     def test_null_provider_result_is_not_published_or_used_for_tdp_mapping(self):
         self.check_case("identify_null_provider")

@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-07T09:30:56Z",
+  "scope": "Local package build, DKMS install, module reload and hardware checks for Jiaolong 16K GM6BG0Q. Not an AUR publication and not a complete compatibility certification.",
+  "source": {
+    "commit": "a8bb20f743fa5454cf90ba8b7255064f50e95fc7",
+    "branch": "feat/gm6bg0q-acpi-adaptation",
+    "package": "mechrevo-drivers-dkms-git",
+    "version": "4.24.0.r204.ga8bb20f-1",
+    "built_from": "local file:// clone of the branch through packaging/aur/mechrevo-drivers-dkms-git/PKGBUILD",
+    "aur_published": false
+  },
+  "host": {
+    "dmi": {
+      "sys_vendor": "MECHREVO",
+      "product_name": "Jiaolong16K Series GM6BG0Q",
+      "board_name": "GM6BG0Q",
+      "bios_version": "N.1.19MRO15",
+      "bios_date": "06/29/2023"
+    },
+    "cpu": "AMD Ryzen 7 7735H",
+    "gpu": "NVIDIA RTX 4060 Max-Q + Radeon 680M",
+    "kernel": "7.2.15-arch1-1"
+  },
+  "install": {
+    "pacman_version_reported": true,
+    "dkms_versions": [
+      "mechrevo-drivers/4.24.0.r204.ga8bb20f, 7.2.15-arch1-1, x86_64: installed (Original modules exist)"
+    ],
+    "pacman_qkk": "148 files, 0 changed",
+    "initramfs_regenerated": true,
+    "reboot_performed": false
+  },
+  "load_order_retry": {
+    "before_wmi": {
+      "loaded": ["tuxedo_keyboard", "tuxedo_io"],
+      "R_UW_MODEL_ID": "-ENODEV",
+      "R_HWCHECK_UW": 0
+    },
+    "after_wmi": {
+      "action": "modprobe uniwill_wmi; no R_HWCHECK_UW call",
+      "R_UW_MODEL_ID": 16,
+      "TDP_min": [35, 35, 100],
+      "TDP_max": [80, 80, 100],
+      "profiles_available": 3
+    }
+  },
+  "sensors": {
+    "hwmon": "mechrevo_ec",
+    "attributes": {
+      "temp1_input": 69000,
+      "temp2_input": 43000,
+      "fan1_input": 3348,
+      "fan2_input": 3036,
+      "labels": ["CPU EC", "GPU EC", "CPU fan", "GPU fan"]
+    },
+    "cross_check_ecrr": {
+      "0x043e": 70,
+      "0x044f": 43,
+      "cpu_rpm_0x0464_0x0465": 3120,
+      "gpu_rpm_0x046c_0x046d": 2495,
+      "note": "Readings are not simultaneous; hwmon and ECRR values were in the same range."
+    },
+    "unload_reload": "rmmod removed the hwmon node; modprobe re-registered one node"
+  },
+  "fan_control": {
+    "requested_duty_readback": {"fan0": 96, "fan1": 76},
+    "duty_sweep": [
+      {"request": 100, "cpu_rpm": 3208, "gpu_rpm": 3147},
+      {"request": 200, "cpu_rpm": 5431, "gpu_rpm": 5337},
+      {"request": "200/50", "cpu_rpm": 5445, "gpu_rpm": 1699},
+      {"request": "50/200", "cpu_rpm": 1755, "gpu_rpm": 5350}
+    ],
+    "restored_with": "W_UW_FANAUTO; 0x07c5/0x07c6 cleared"
+  },
+  "tdp": {
+    "bounds": {"min": [35, 35, 100], "max": [80, 80, 100]},
+    "rejected": {"tdp0": [34, 81], "profile": [0, 4], "errno": "EINVAL"},
+    "write_35": {
+      "EC_0x0783": "0x23",
+      "readback": 35,
+      "all_core_package_w": 35
+    },
+    "restore": {
+      "method": "ECRW 0x0783 0x00",
+      "readback": 0,
+      "all_core_package_w": 53
+    }
+  },
+  "profiles": [
+    {"ioctl_value": 1, "mode_byte": "0xa0"},
+    {"ioctl_value": 3, "mode_byte": "0x10"},
+    {"ioctl_value": 2, "mode_byte": "0x00"}
+  ],
+  "boundaries": [
+    "PL2/PL4 physical effect was not measured; bounds come from OEM profile/registry points.",
+    "The OEM fan curve tables were not migrated; manual control used the existing universal fan control path.",
+    "Suspend/resume, reboot persistence, other BIOS/EC versions and other machines were not tested.",
+    "The package was installed from a local branch clone; AUR still builds from main until a release is published."
+  ],
+  "boundary_checked_at": "2026-11-07T10:10:00Z",
+  "boundary_checks": {
+    "tdp_rejected": {
+      "pl1_pl2": [0, 34, 81, -1],
+      "pl4": [0, 99, 101],
+      "errno": "EINVAL",
+      "registers_unchanged": true
+    },
+    "tdp_accepted": {
+      "pl1_pl2_min": 35,
+      "pl1_pl2_max": 80,
+      "pl4": 100,
+      "readback_matches": true,
+      "zero_is_readable_but_rejected": true
+    },
+    "pl1_sustained_cap": {
+      "modes": ["0x00", "0x10"],
+      "request_w": 35,
+      "sustained_w": 35,
+      "turbo_boost_window_w": [50, 46],
+      "turbo_boost_window_s": 6,
+      "pl2_35_pl4_100_did_not_remove_boost": true
+    },
+    "max_80w_load_test": "skipped: default 54 W already reaches 99 C and no readable/writable RAPL constraint bounds the experiment",
+    "mode_bits": {
+      "rejected": [0, 4, 5, -1],
+      "accepted": {"1": "0xa0", "3": "0x10", "2": "0x00"},
+      "full_fan_bit6_preserved": {"1": "0xe0", "3": "0x50", "2": "0x40"},
+      "manual_fan_while_full_fan": "EBUSY"
+    },
+    "fan": {
+      "rejected": [201, 255, 256, -1],
+      "rejected_errno": "EINVAL",
+      "duty_registers_unchanged_on_reject": true,
+      "min_clamp_25_49_to": 50,
+      "request_24": {"duty": 1, "rpm": 0, "restored_with": "W_UW_FANAUTO"},
+      "request_200": {"duty": 200, "restored_with": "W_UW_FANAUTO"}
+    },
+    "wmi_removal": {
+      "keyboard_platform_device": "removed",
+      "model_and_profiles_from_cache": [16, 3],
+      "fan_and_tdp_reads": "EIO",
+      "mode_write": "ENODEV",
+      "ec_writes": 0,
+      "hwmon_unaffected": true,
+      "reload": "modprobe uniwill_wmi restored keyboard device, sysfs groups and transport"
+    },
+    "reload": {
+      "tuxedo_io_with_wmi_present": "identify at init; model 16, profiles 3",
+      "sensor_unload_reload": "one hwmon node after reload"
+    },
+    "autoload": {
+      "method": "rmmod mechrevo_ec_sensors; udevadm trigger --action=add /sys/devices/virtual/dmi/id",
+      "result": "module reloaded and hwmon registered"
+    },
+    "fan_table": {
+      "note": "Manual fan control rewrote 0x0f00-0x0f5f; AUTO disabled 0x07c6 bit2. Documented Windows-snapshot bytes were restored; five pad bytes after each FF terminator were not present in the saved material and remain driver-written.",
+      "custom_table_enabled": false
+    },
+    "final_state": {
+      "0x0751": 0,
+      "0x0783": 0,
+      "0x0784": 0,
+      "0x0785": 0,
+      "0x07c6": 0,
+      "fan_mode": "auto"
+    }
+  },
+  "keyboard_backlight": {
+    "sysfs": "/sys/devices/platform/tuxedo_keyboard/leds/rgb:kbd_backlight",
+    "brightness_ec_map": {"0": "0x08", "1": "0x28", "2": "0x48", "3": "0x68", "4": "0x88"},
+    "color_ec_map": {
+      "255 0 0": "0x32/0x00/0x00",
+      "0 255 0": "0x00/0x32/0x00",
+      "0 0 255": "0x00/0x00/0x32",
+      "255 255 255": "0x32/0x32/0x32"
+    },
+    "color_apply_bit": "0x0767 bit5 consumed by EC and returned to 0; bit4 untouched",
+    "asynchronous": true,
+    "restored_state": {"0x078c": "0x08", "0x0769_0x076b": "0x32/0x32/0x32"},
+    "physical_lighting_confirmed_by_script": false
+  }
+}

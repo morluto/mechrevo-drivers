@@ -25,6 +25,7 @@
 #include <linux/device.h>
 #include <linux/ioctl.h>
 #include <linux/fs.h>
+#include <linux/mutex.h>
 #include <linux/cdev.h>
 #include <linux/uaccess.h>
 #include <linux/delay.h>
@@ -167,18 +168,28 @@ static int tdp_max_x6xx45xu[] = { 0x64, 0x64, 0x69 };
 static int tdp_min_xxaf5xxx[] = { 0x0a, 0x0a, 0x0a };
 static int tdp_max_xxaf5xxx[] = { 0xd2, 0xd2, 0x1a4 };
 
+/* Windows Control Center 5.17.49.19 profile values for this exact model:
+ * Office/Gaming/Turbo use PL1/PL2/PL4 35/35/215, 80/80/215 and 95/95/215.
+ * The lower bound remains 35 W for PL1/PL2 and 100 W for PL4 so the EC
+ * defaults and an explicit reset remain representable. These are package
+ * profile values, not a completed high-power thermal qualification; PL4 was
+ * not load-tested at 215 W here.
+ */
+static int tdp_min_gm6bg0q[] = { 0x23, 0x23, 0x64 };
+static int tdp_max_gm6bg0q[] = { 0x5f, 0x5f, 0xd7 };
+
 static int *tdp_min_defs = NULL;
 static int *tdp_max_defs = NULL;
 
-static void uw_id_tdp(void)
+static void uw_id_tdp(u8 model)
 {
-	if (uw_feats->model == UW_MODEL_PH4TUX) {
+	if (model == UW_MODEL_PH4TUX) {
 		tdp_min_defs = tdp_min_ph4tux;
 		tdp_max_defs = tdp_max_ph4tux;
-	} else if (uw_feats->model == UW_MODEL_PH4TRX) {
+	} else if (model == UW_MODEL_PH4TRX) {
 		tdp_min_defs = tdp_min_ph4trx;
 		tdp_max_defs = tdp_max_ph4trx;
-	} else if (uw_feats->model == UW_MODEL_PH4TQF) {
+	} else if (model == UW_MODEL_PH4TQF) {
 		tdp_min_defs = tdp_min_ph4tqx;
 		tdp_max_defs = tdp_max_ph4tqx;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0)
@@ -272,6 +283,15 @@ static void uw_id_tdp(void)
 		   dmi_match(DMI_BOARD_NAME, "XxAF5xxx_mLED")) {
 		tdp_min_defs = tdp_min_xxaf5xxx;
 		tdp_max_defs = tdp_max_xxaf5xxx;
+	} else if (dmi_match(DMI_SYS_VENDOR, "MECHREVO") &&
+		   dmi_match(DMI_BOARD_NAME, "GM6BG0Q") &&
+		   dmi_match(DMI_PRODUCT_NAME, "Jiaolong16K Series GM6BG0Q") &&
+		   dmi_match(DMI_BIOS_VERSION, "N.1.19MRO15")) {
+		/* The same exact identity gates the boot/USB switches. Writing
+		 * PL1=35 through ECRR capped package power to 35 W on hardware;
+		 * other bounds are the OEM profile/registry points only. */
+		tdp_min_defs = tdp_min_gm6bg0q;
+		tdp_max_defs = tdp_max_gm6bg0q;
 #endif
 	} else {
 		tdp_min_defs = NULL;
@@ -279,18 +299,62 @@ static void uw_id_tdp(void)
 	}
 }
 
-static u32 uniwill_identify(void)
+static DEFINE_MUTEX(uniwill_identify_lock);
+
+/* Called with uniwill_identify_lock held. */
+static u32 uw_identify_locked(void)
 {
 	struct uniwill_device_features_t *features;
-	u32 result = uniwill_get_active_interface_id(NULL) == 0 ? 1 : 0;
+	u32 result;
+
+	result = uniwill_get_active_interface_id(NULL) == 0 ? 1 : 0;
 	if (result) {
 		features = uniwill_get_device_features();
-		if (!features)
-			return 0;
-		uw_feats = features;
-		uw_id_tdp();
+		if (!features || !uniwill_device_features_ready()) {
+			result = 0;
+		} else {
+			/* Initialize the TDP table before publishing uw_feats so a
+			 * concurrent ready check cannot observe the model without
+			 * its bounds. */
+			uw_id_tdp(features->model);
+			uw_feats = features;
+		}
 	}
 	return result;
+}
+
+static u32 uniwill_identify(void)
+{
+	u32 result;
+
+	mutex_lock(&uniwill_identify_lock);
+	result = uw_identify_locked();
+	mutex_unlock(&uniwill_identify_lock);
+	return result;
+}
+
+/* tuxedo_io may initialize before the Uniwill interface provider registers
+ * (reproduced on Jiaolong16K GM6BG0Q: R_UW_MODEL_ID failed with ENODEV until
+ * R_HWCHECK_UW). Retry on first use instead of caching a load-order failure.
+ * The lock serializes both the retry and reads of the published pointer, so a
+ * caller cannot observe uw_feats before uw_id_tdp() finished; concurrent
+ * first users still identify only once.
+ */
+static void uw_ensure_identified(void)
+{
+	mutex_lock(&uniwill_identify_lock);
+	if (!uw_feats)
+		uw_identify_locked();
+	mutex_unlock(&uniwill_identify_lock);
+}
+
+/* Feature-gated commands retry identification on first use. Argument
+ * validation and user copies still happen before this where the handler can
+ * decide without the feature set, so malformed requests do not probe. */
+static bool uw_features_ready(void)
+{
+	uw_ensure_identified();
+	return uw_feats != NULL;
 }
 
 /*static int fop_open(struct inode *inode, struct file *file)
@@ -628,13 +692,13 @@ static long uniwill_ioctl_interface(struct file *file, unsigned int cmd, unsigne
 			}
 			break;
 		case R_UW_MODEL_ID:
-			if (!uw_feats)
+			if (!uw_features_ready())
 				return -ENODEV;
 			result = uw_feats->model;
 			copy_result = copy_to_user((void *) arg, &result, sizeof(result));
 			break;
 		case R_UW_FANSPEED:
-			if (!uw_feats)
+			if (!uw_features_ready())
 				return -ENODEV;
 			status = uniwill_read_ec_ram(0x1804, &byte_data);
 			if (status < 0)
@@ -645,7 +709,7 @@ static long uniwill_ioctl_interface(struct file *file, unsigned int cmd, unsigne
 			copy_result = copy_to_user((void *) arg, &result, sizeof(result));
 			break;
 		case R_UW_FANSPEED2:
-			if (!uw_feats)
+			if (!uw_features_ready())
 				return -ENODEV;
 			status = uniwill_read_ec_ram(0x1809, &byte_data);
 			if (status < 0)
@@ -706,25 +770,43 @@ static long uniwill_ioctl_interface(struct file *file, unsigned int cmd, unsigne
 			copy_result = copy_to_user((void *) arg, &result, sizeof(result));
 			break;
 		case R_UW_TDP0:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp(0));
 		case R_UW_TDP1:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp(1));
 		case R_UW_TDP2:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp(2));
 		case R_UW_TDP0_MIN:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp_min(0));
 		case R_UW_TDP1_MIN:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp_min(1));
 		case R_UW_TDP2_MIN:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp_min(2));
 		case R_UW_TDP0_MAX:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp_max(0));
 		case R_UW_TDP1_MAX:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp_max(1));
 		case R_UW_TDP2_MAX:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp_max(2));
 		case R_UW_PROFS_AVAILABLE:
-			if (!uw_feats)
+			if (!uw_features_ready())
 				return -ENODEV;
 			result = uw_get_performance_profile_count();
 			copy_result = copy_to_user((void *) arg, &result, sizeof(result));
@@ -757,6 +839,8 @@ static long uniwill_ioctl_interface(struct file *file, unsigned int cmd, unsigne
 				return -EFAULT;
 			if (argument > 0xff)
 				return -EINVAL;
+			if (!uw_features_ready())
+				return -ENODEV;
 			return (int)uw_set_fan(cmd == W_UW_FANSPEED2, argument);
 		case W_UW_MODE:
 			copy_result = copy_from_user(&argument, (int32_t *) arg, sizeof(argument));
@@ -771,26 +855,44 @@ static long uniwill_ioctl_interface(struct file *file, unsigned int cmd, unsigne
 			*/
 			break;
 		case W_UW_FANAUTO:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return (int)uw_set_fan_auto();
 		case W_UW_TDP0:
 			copy_result = copy_from_user(&argument, (int32_t *) arg, sizeof(argument));
 			if (copy_result)
 				return -EFAULT;
+			if ((int32_t)argument < 0)
+				return -EINVAL;
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_set_tdp(0, argument);
 		case W_UW_TDP1:
 			copy_result = copy_from_user(&argument, (int32_t *) arg, sizeof(argument));
 			if (copy_result)
 				return -EFAULT;
+			if ((int32_t)argument < 0)
+				return -EINVAL;
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_set_tdp(1, argument);
 		case W_UW_TDP2:
 			copy_result = copy_from_user(&argument, (int32_t *) arg, sizeof(argument));
 			if (copy_result)
 				return -EFAULT;
+			if ((int32_t)argument < 0)
+				return -EINVAL;
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_set_tdp(2, argument);
 		case W_UW_PERF_PROF:
 			copy_result = copy_from_user(&argument, (int32_t *) arg, sizeof(argument));
 			if (copy_result)
 				return -EFAULT;
+			if (argument < PROFILE_POWERSAVE || argument > PROFILE_OVERBOOST)
+				return -EINVAL;
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_set_performance_profile_v1(argument);
 #ifdef DEBUG
 		case W_TF_BC:

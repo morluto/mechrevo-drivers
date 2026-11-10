@@ -46,9 +46,12 @@ DEBUG 任意地址 EC 写入不包含在这些同步保障中。
 其他机型的精确匹配、源码依据与待验证功能见[其他机型说明](hardware/OTHER-MODELS.md)。
 `GX4HRXL` 新增三档模式，不启用旧式风扇表复制；`JIAOLONG Series-X6xR55xK`
 按已公开实测补丁接入既有 TDP 表及 custom-profile 流程。只匹配 `MECHREVO` 厂商和完整板号。
-无界 15X Pro `WUJIE Series-X5SP4NAG` 和蛟龙 16K `GM6BG0Q` 增加接电开机、USB 供电开关；
-后者还要求已报告的完整产品名和 BIOS `N.1.19MRO15`。寄存器及位定义经过公开 Uniwill 实现核对，
-识别不修改开关值，本项目尚无新增型号的硬件验收。
+无界 15X Pro `WUJIE Series-X5SP4NAG` 和蛟龙 16K `GM6BG0Q` 增加接电开机、USB 供电开关。
+蛟龙 16K 还要求完整产品名和 BIOS `N.1.19MRO15`，并接入只读 EC 温度/双风扇 RPM、
+三档模式（`0x0751` 的 `0xA0/0x00/0x10`）和按 OEM 控制台 profile 点收紧的
+TDP 范围（PL1/PL2 35–80 W，PL4 固定 100 W）。本机已验证 PL1 写入对 package
+功耗的影响；PL2/PL4、风扇曲线迁移和睡眠恢复未闭环，详见[本机记录](hardware/GM6BG0Q.md)。
+寄存器及位定义经过公开 Uniwill 实现与 ACPI 反汇编核对，识别不修改开关值。
 
 翼龙 15 Pro `GM5HG0A` 在完整产品名与 BIOS `N.1.09MRO19` 匹配时，也提供上述两个开关。
 蛟龙 16 Pro 2023 `MRID6-23` 属于另一条 Bitland 路线，控制台通过已加载原生驱动提供背光亮度；

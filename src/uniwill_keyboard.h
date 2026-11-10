@@ -1958,10 +1958,15 @@ struct uniwill_device_features_t *uniwill_get_device_features(void)
 		uw_feats->uniwill_profile_v1_three_profs;
 	/* GX4HRXL supports the same three mode values (mech-forza-kmod),
 	 * but has no evidence for the legacy fan-curve copy in probe. Advertise
-	 * modes after computing that legacy initialization flag. */
+	 * modes after computing that legacy initialization flag. GM6BG0Q also
+	 * stays out of the fan-table copy: the OEM control center owns its
+	 * curves, and hardware only qualified the 0x0751 mode values. */
 	uw_feats->uniwill_profile_v1_three_profs |=
-		dmi_match(DMI_SYS_VENDOR, "MECHREVO") &&
-		dmi_match(DMI_BOARD_NAME, "GX4HRXL");
+		(dmi_match(DMI_SYS_VENDOR, "MECHREVO") &&
+		 (dmi_match(DMI_BOARD_NAME, "GX4HRXL") ||
+		  (dmi_match(DMI_BOARD_NAME, "GM6BG0Q") &&
+		   dmi_match(DMI_PRODUCT_NAME, "Jiaolong16K Series GM6BG0Q") &&
+		   dmi_match(DMI_BIOS_VERSION, "N.1.19MRO15"))));
 
 	if (uw_has_charging_priority(&uw_feats->uniwill_has_charging_prio) != 0)
 		feats_loaded = false;
@@ -1994,6 +1999,12 @@ struct uniwill_device_features_t *uniwill_get_device_features(void)
 	return uw_feats;
 }
 EXPORT_SYMBOL(uniwill_get_device_features);
+
+bool uniwill_device_features_ready(void)
+{
+	return uw_feats_loaded;
+}
+EXPORT_SYMBOL(uniwill_device_features_ready);
 
 // Fn lock
 

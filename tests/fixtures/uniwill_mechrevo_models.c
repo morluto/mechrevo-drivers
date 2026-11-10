@@ -69,7 +69,7 @@ static void detect(const char *vendor, const char *board, const char *sku)
     uw_feats_loaded = false;
     dmi[0] = vendor; dmi[1] = board; dmi[2] = sku;
     uw_feats = uniwill_get_device_features();
-    uw_id_tdp();
+    uw_id_tdp(uw_feats->model);
     assert(writes == 0); /* Identification must never apply a power target. */
 }
 static void reset(void)
@@ -195,8 +195,17 @@ static void settings_identity(void)
         detect("MECHREVO", boards[board], NULL);
         assert(uw_feats->uniwill_has_ac_auto_boot && uw_feats->uniwill_has_usb_powershare);
         assert(!uw_feats->uniwill_profile_v1 && !uw_feats->uniwill_custom_profile_mode_needed);
-        assert(uw_get_performance_profile_count() == 0);
-        assert(uw_set_tdp(0, 50) == -ENODEV && writes == 0);
+        assert(uw_get_performance_profile_count() == (board == 1 ? 3 : 0));
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0)
+        if (board == 1) {
+            assert(uw_get_tdp_min(0) == 35 && uw_get_tdp_max(0) == 95);
+            assert(uw_get_tdp_min(1) == 35 && uw_get_tdp_max(1) == 95);
+            assert(uw_get_tdp_min(2) == 100 && uw_get_tdp_max(2) == 215);
+        } else
+#endif
+        {
+            assert(uw_set_tdp(0, 50) == -ENODEV && writes == 0);
+        }
         for (int field = 0; field < 5; field++) {
             if (field == DMI_PRODUCT_SKU || (board == 0 && field > DMI_BOARD_NAME)) continue;
             for (int variant = 0; variant < 3; variant++) {
@@ -206,6 +215,8 @@ static void settings_identity(void)
                 dmi[field] = variant == 0 ? NULL : variant == 1 ? "Other" : "MECHREVO extra";
                 detect(dmi[0], dmi[1], NULL);
                 assert(!uw_feats->uniwill_has_ac_auto_boot && !uw_feats->uniwill_has_usb_powershare);
+                assert(uw_get_performance_profile_count() == 0);
+                assert(uw_set_tdp(0, 50) == -ENODEV && writes == 0);
             }
         }
     }
@@ -262,6 +273,62 @@ static void settings_transactions(void)
         }
     }
 }
+static void gm6bg0q(void)
+{
+    reset(); dmi[3] = "Jiaolong16K Series GM6BG0Q"; dmi[4] = "N.1.19MRO15";
+    detect("MECHREVO", "GM6BG0Q", NULL);
+    assert(uw_get_performance_profile_count() == 3);
+    assert(!uw_feats->uniwill_profile_v1); /* Curves stay owned by the OEM EC. */
+    assert(!uw_feats->uniwill_custom_profile_mode_needed);
+    assert(!uw_feats->uniwill_has_double_pl4);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0)
+    for (int index = 0; index < 3; index++) {
+        int minimum = index < 2 ? 35 : 100;
+        int maximum = index < 2 ? 95 : 215;
+        assert(uw_get_tdp_min(index) == minimum);
+        assert(uw_get_tdp_max(index) == maximum);
+        for (int value = 0; value <= 200; value++) {
+            int before = writes;
+            bool valid = value >= minimum && value <= maximum;
+            assert(uw_set_tdp(index, value) == (valid ? 0 : -EINVAL));
+            assert(writes == before + valid);
+            if (valid) {
+                assert(written_index == index);
+                assert(written_value == value); /* No PL4 doubling on this model. */
+            }
+        }
+        ec[0x0783 + index] = 51;
+        assert(uw_get_tdp(index) == 51);
+    }
+#else
+    for (int index = 0; index < 3; index++) {
+        assert(uw_get_tdp_min(index) == -ENODEV);
+        assert(uw_set_tdp(index, 50) == -ENODEV && writes == 0);
+    }
+#endif
+    for (int initial = 0; initial <= 255; initial++) {
+        for (int profile = 1; profile <= 3; profile++) {
+            int bits[] = {0, 0xa0, 0, 0x10};
+            ec[0x0751] = initial;
+            assert(uw_set_performance_profile_v1(profile) == 0);
+            assert(ec[0x0751] == ((initial & ~0xb0) | bits[profile]));
+        }
+    }
+    int before = writes;
+    assert(uw_set_performance_profile_v1(0) == -EINVAL);
+    assert(uw_set_performance_profile_v1(4) == -EINVAL);
+    assert(writes == before);
+    /* BIOS or product mismatch removes modes, TDP and no EC write happens. */
+    reset(); dmi[3] = "Jiaolong16K Series GM6BG0Q"; dmi[4] = "N.1.19MRO14";
+    detect("MECHREVO", "GM6BG0Q", NULL);
+    assert(uw_get_performance_profile_count() == 0);
+    assert(uw_set_tdp(0, 50) == -ENODEV && writes == 0);
+    assert(uw_set_performance_profile_v1(PROFILE_POWERSAVE) == -ENODEV);
+    reset(); dmi[3] = "Jiaolong16K Series GM6BG0Q x"; dmi[4] = "N.1.19MRO15";
+    detect("MECHREVO", "GM6BG0Q", NULL);
+    assert(uw_get_performance_profile_count() == 0);
+    assert(uw_set_tdp(2, 100) == -ENODEV && writes == 0);
+}
 static void settings_init(void)
 {
     struct platform_device dev = {0};
@@ -298,6 +365,7 @@ int main(int argc, char **argv)
     else if (!strcmp(argv[1], "identity")) identity();
     else if (!strcmp(argv[1], "existing")) existing();
     else if (!strcmp(argv[1], "retry")) retry();
+    else if (!strcmp(argv[1], "gm6bg0q")) gm6bg0q();
     else if (!strcmp(argv[1], "settings_identity")) settings_identity();
     else if (!strcmp(argv[1], "settings_transactions")) settings_transactions();
     else if (!strcmp(argv[1], "settings_init")) settings_init();

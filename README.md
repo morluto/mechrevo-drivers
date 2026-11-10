@@ -33,9 +33,10 @@ DKMS 为当前内核编译模块
 | 范围 | 状态 | 说明 |
 | --- | --- | --- |
 | 旷世 16 Pro `GM6PX0X` | **部分实机验证** | 已安装、加载并验证部分背光、Fn 锁、传感器、功耗拒绝路径与状态保持；不是完整认证 |
+| 蛟龙 16K `GM6BG0Q` | **部分实机验证** | 本机核对 EC 温度、双风扇 RPM 与手动占空比、三档模式、PL1 写入效果；TDP 范围取自 OEM 控制台 profile 点，PL2/PL4 效果未测 |
 | 无界 14X `GX4HRXL` | 源码适配，待本项目实机验收 | 三档模式，未复制旧式风扇表 |
 | 蛟龙 16 Pro 2025 `JIAOLONG Series-X6xR55xK` | 精确身份接入，待实机验收 | 复用已有 TDP 范围和 custom-profile 流程 |
-| 无界 15X Pro、蛟龙 16K、翼龙 15 Pro | 精确型号/固件接入，待实机验收 | 接电开机、USB 供电等已有接口 |
+| 无界 15X Pro、翼龙 15 Pro | 精确型号/固件接入，待实机验收 | 接电开机、USB 供电等已有接口 |
 | 蛟龙 16 Pro 2023 `MRID6-23` | 原生 Bitland/Uniwill 接口整合 | 不移植其他机型 EC 参数 |
 | 无界 15 Pro HPT、星耀 P916F HPT-R | 精确识别与控制台适配 | 固件差异和未确认 OEM 控制保持封闭 |
 | 其他 MECHREVO 机型 | **未知** | 只命中品牌字符串不能推导功能安全性 |
@@ -44,6 +45,7 @@ DKMS 为当前内核编译模块
 
 - [机械革命支持范围与边界](docs/MECHREVO.md)
 - [GM6PX0X 实机记录](docs/hardware/GM6PX0X.md)
+- [GM6BG0Q 实机记录](docs/hardware/GM6BG0Q.md)
 - [其他机型证据](docs/hardware/OTHER-MODELS.md)
 - [原生内核控制范围](docs/hardware/NATIVE-KERNEL-CONTROLS.md)
 - [HPT / P916F 范围](docs/hardware/WUJIE-HPT-P916F.md)

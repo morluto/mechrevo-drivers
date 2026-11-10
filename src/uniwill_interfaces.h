@@ -176,6 +176,9 @@ struct uniwill_device_features_t {
 };
 
 struct uniwill_device_features_t *uniwill_get_device_features(void);
+/* False when the last feature probe was incomplete; callers that cache the
+ * returned pointer must not treat it as ready in that case. */
+bool uniwill_device_features_ready(void);
 
 union uw_ec_read_return {
 	u32 dword;

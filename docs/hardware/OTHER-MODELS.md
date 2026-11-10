@@ -1,12 +1,12 @@
 # 其他机械革命机型
 
-2026-10-29：以下是源码适配范围。开发机器仍是旷世 16 Pro GM6PX0X；没有这些新增型号可供实测，不能把本地测试或编译当成它们已通过硬件验收。
+2026-11-07：蛟龙 16K GM6BG0Q 已在本项目实机完成部分验收；其他新增型号仍只有源码适配或外部报告，不能把本地测试或编译当成硬件验收。
 
 | 型号 | 必须同时匹配的 DMI 字段 | 本次行为 | 证据与验收边界 |
 | --- | --- | --- | --- |
 | 无界 14X | 厂商 `MECHREVO`、板号 `GX4HRXL` | 通过既有 ioctl 提供节能、均衡、性能三档；只改模式位，保留强冷等其他位 | [mech-forza-kmod 固定版本](https://github.com/minortex/mech-forza-kmod/blob/00769343a82f66bcbf44f58924d88b7035066b71/mechrevo-ec.c) 确认 `0x0751` 的 `0xa0/0x00/0x10`；不启用 legacy 风扇表初始化、custom-profile 位或 CPU 功耗表；BIOS 范围待实测 |
 | 蛟龙 16 Pro 2025 | 厂商 `MECHREVO`、板号 `JIAOLONG Series-X6xR55xK` | 接入已有 `x6fr5xx` CPU 功耗表及 custom-profile；成功和失败沿用原来的完整事务 | [社区实测补丁固定版本](https://github.com/sklynic/pkgbuild-mechrevo-driver-dkms-16-pro/blob/cf71e4cc1b2d8d4ebdf68a98ca00910087f1678d/patch.diff) 和 [作者说明](https://github.com/sklynic/pkgbuild-mechrevo-driver-dkms-16-pro/blob/cf71e4cc1b2d8d4ebdf68a98ca00910087f1678d/README.md)；作者实测 9955HX，未据营销名称扩展到苍龙、XPro 或其他板号；本项目 BIOS 范围待实测 |
-| 蛟龙 16K | 厂商 `MECHREVO`、产品名 `Jiaolong16K Series GM6BG0Q`、板号 `GM6BG0Q`；新增控制另要求 BIOS `N.1.19MRO15` | 接电开机、USB 供电开关及控制台精确识别；不新增风扇传感器驱动 | [主线驱动投稿](https://lists.openwall.net/linux-kernel/2026/10/23/301) 报告该 BIOS、EC 1.24 的实测；[Uniwill 原始实现](https://github.com/Wer-Wolf/uniwill-laptop/blob/a9e5ac3b10ed09c6d9aedd23288d3c7887afb450/uniwill-acpi.c) 确认与本分支相同的两个寄存器和位；EC 版本不是本分支识别条件，其他 EC 版本仍待验证 |
+| 蛟龙 16K | 厂商 `MECHREVO`、产品名 `Jiaolong16K Series GM6BG0Q`、板号 `GM6BG0Q`；新增控制另要求 BIOS `N.1.19MRO15` | 接电开机、USB 供电、控制台精确识别、只读 EC 温度/双风扇 RPM、手动风扇占空比、三档模式和 TDP 范围（PL1/PL2 35–80 W，PL4 100 W）；不迁移 OEM 风扇曲线 | [本机记录](GM6BG0Q.md) 与 ACPI 反汇编；[主线驱动投稿](https://lists.openwall.net/linux-kernel/2026/10/23/301) 报告该 BIOS、EC 1.24 的实测；[Uniwill 原始实现](https://github.com/Wer-Wolf/uniwill-laptop/blob/a9e5ac3b10ed09c6d9aedd23288d3c7887afb450/uniwill-acpi.c) 确认寄存器布局；PL2/PL4 效果、睡眠恢复和其他 EC 版本仍待验证 |
 | 无界 15X Pro | 厂商 `MECHREVO`、板号 `WUJIE Series-X5SP4NAG` | 接电开机、USB 供电开关及控制台精确识别 | 投稿者的[实测说明](https://lists.openwall.net/linux-kernel/2026/09/28/2519)、[v4 补丁](https://lists.openwall.net/linux-kernel/2026/10/16/1522) 与上述 Uniwill 原始实现；投稿未限定 BIOS，不能据此认证所有固件；不启用其他机型功耗表、风扇曲线或 NVIDIA 控制 |
 | 翼龙 15 Pro | 厂商 `MECHREVO`、产品名 `Yilong15Pro Series GM5HG0A`、板号 `GM5HG0A`；本分支新增开关另要求 BIOS `N.1.09MRO19` | 接电开机、USB 供电开关及控制台精确识别；也可使用已加载原生 Uniwill 的有限接口 | [机主与维护者测试讨论](https://lore-kernel.gnuweeb.org/platform-driver-x86/tencent_36699D13D174660E0D76C4F5EFB825D86609%40qq.com/T/)中报告两个开关分别测试有效；不扩展触控板、充电档位或 USB-C 功率分配声明；本项目实机验收待完成 |
 | 蛟龙 16 Pro 2023 | 厂商 `MECHREVO`、产品名 `Jiaolong Series MRID6`、产品版本 `1`、板号 `MRID6-23` | 控制台精确识别，并接入已加载原生 `bitland_mifs_wmi` 的键盘背光亮度 | [机主硬件记录](https://github.com/Tanpinsary/JiaoLongOnArch/blob/f75e2522ab6cda6fd6990a3d8468cf0d27d067dd/docs/hardware.md)、[原生驱动测试记录](https://github.com/Tanpinsary/JiaoLongOnArch/blob/f75e2522ab6cda6fd6990a3d8468cf0d27d067dd/docs/linux-stage3-results.md)及 Linux v7.2 驱动；记录 BIOS 为 `MRID6_23_P_V35`，本项目未实测；不复制 Uniwill EC 路径、功耗表、风扇或 MUX 控制 |
@@ -14,7 +14,7 @@
 | 星耀 P916F HPT-R | 厂商 `MECHREVO`、产品 `XINGYAO Series`、板号 `XINGYAO Series-P916F-HPT-R` | 精确识别及实际存在的标准监测/性能档位接口；不新增 OEM 控制 | [固定源码与适配边界](WUJIE-HPT-P916F.md#p916f-证据与限制)；只读热键模块不等于背光、风扇或充电可控，不扩展到 STX/ARL |
 | 无界 14SAH P4HPLNAV | 厂商 `MECHREVO`、产品 `WUJIE Series`、板号 `WUJIE Series-P4HPLNAV` | 新增控制台精确识别；记录原生 AMD ACP6.3 / ES9356 声卡路径，不增加 EC、风扇或功耗写入 | [机型身份与 Linux 音频边界](WUJIE14SAH.md)；本项目未在该机上实测 |
 
-厂商、板号使用完整字段相等比较。类似前缀、后缀、缺失字段和其他厂商不会获得新增能力。控制台的匹配仍是 `upstream-source`，不会显示为本项目实机通过；GM6BG0Q 也不会继承蛟龙 16 Pro 的 CPU 功耗接口。
+厂商、板号使用完整字段相等比较。类似前缀、后缀、缺失字段和其他厂商不会获得新增能力。GM6BG0Q 的控制台证据等级为 `hardware-partial`，表示部分功能已在本机核对，不是完整认证；它不会继承蛟龙 16 Pro 的 CPU 功耗接口，其他型号仍为 `upstream-source`。
 
 接电开机复用 `0x0726.bit3`，USB 供电复用 `0x0767.bit4`，通过已有共享读改写事务保留其他位。新型号检测只增加功能标记，不在检测时更改开关状态；加载后的 sysfs 文件是否成功注册仍需单独检查。控制台沿用实际 sysfs 属性发现和回读，不会仅因机型命中就显示功能可用。投稿中的 RGB、充电模式、Fn、风扇等其他能力没有被整体照搬成本分支支持声明。
 

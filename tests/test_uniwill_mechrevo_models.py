@@ -87,6 +87,9 @@ class MechrevoModels(unittest.TestCase):
     def test_jiaolong_bounds_double_pl4_and_provider_errors(self):
         self.check_case('jiaolong')
 
+    def test_gm6bg0q_modes_and_oem_bounds_require_the_complete_identity(self):
+        self.check_case('gm6bg0q')
+
     def test_missing_foreign_and_similar_identities_never_inherit_support(self):
         self.check_case('identity')
 
