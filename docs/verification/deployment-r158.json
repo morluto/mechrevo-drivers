@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-18",
+  "source_commit": "a1904557bbea55f39aadab03dbc31813e64c3f9b",
+  "scope": "Local Arch installation and boot preparation on the qualified GM6PX0X; no reboot or post-boot hardware acceptance",
+  "source_verification_receipt": "driver-console-hardening.json",
+  "packages": {
+    "driver": {
+      "installed_package": "mechrevo-drivers-dkms-git 4.24.0.r158.ga190455-1",
+      "archive_sha256": "13e10c333c58e8016934d0a48920f466849e8d20e1aedd9da9c1c3dc30d2c399",
+      "payload_regular_files": 93,
+      "all_payload_bytes_modes_root_ownership_match": true,
+      "pacman_Qkk_exit_code": 0,
+      "pacman_Qkk": "mechrevo-drivers-dkms-git: 122 total files, 0 altered files"
+    },
+    "console": {
+      "installed_package": "mechrevo-console 0.1.0.r158.ga190455-1",
+      "archive_sha256": "91252dc7052cb5e0f7bab9ebb9ba4e75bf777d53de2862e03be4ee10ce47418d",
+      "payload_regular_files": 7,
+      "all_payload_bytes_modes_root_ownership_match": true,
+      "pacman_Qkk_exit_code": 0,
+      "pacman_Qkk": "mechrevo-console: 15 total files, 0 altered files"
+    }
+  },
+  "driver": {
+    "io_source_sha256": "ef6f7294a41661c67be4692989b401dcca393e21ea025934e12f4bdfc203a78c",
+    "pre_existing_webcam_wip_excluded": true,
+    "installed_signed_modules_per_kernel": {
+      "7.2.7-arch1-1": 28,
+      "7.2.9-arch1-1": 28
+    },
+    "verified_module_signatures": 56,
+    "dkms_origins_match_disk_bytes": true,
+    "signature_verifier": "OpenSSL CMS with the system PUBLIC DKMS certificate; -nointern",
+    "public_certificate_sha256": "db183544fe72cae0723a119b8167d8da40ba07f73392ba18a9e2ec00417cf82c",
+    "real_byte_mutation_negative_checks_rejected": 2,
+    "loaded_module_identities_unchanged": 6,
+    "loaded_tuxedo_io_build_id": "a0aeba3f4ea1cd34f3e88b6f255224ec2b0381ac",
+    "prepared_tuxedo_io_build_id": "aaa79196f1feea7aad5eb4c94e1ab96113ae2fc2",
+    "running_revision": "r106",
+    "new_kernel_code_loaded": false
+  },
+  "console": {
+    "source_sha256": "05cf713981d2f35b09c555a9cda057debc2760a9aeb1337f4521502601662314",
+    "release_build": "cargo build --release --workspace --all-features --locked --offline",
+    "installed_binary_sha256": {
+      "mechrevo-console": "6afc8870f17b8a2d5df17bc8b64197fff51a5223a084a522b7baf73135844c3f",
+      "mechrevo-console-gui": "b2feca34ddac7aa66021ebe968760c74110a79a05bbb9a183e8b471315277c3a"
+    },
+    "menu_entry": "机械革命控制台",
+    "desktop_file": "best.lmm.mechrevo-console.desktop",
+    "status": {
+      "telemetry_readings": 38,
+      "unique_ids": 38,
+      "canonical_hwmon_inputs": 33,
+      "runtime_kernel": "7.2.9-arch1-1",
+      "collection_epoch_ns_inside_process_interval": true,
+      "collection_monotonic_metadata_valid": true
+    },
+    "export": {
+      "telemetry_readings": 38,
+      "unique_ids": 38,
+      "canonical_hwmon_inputs": 33,
+      "runtime_kernel": "7.2.9-arch1-1",
+      "collection_epoch_ns_inside_process_interval": true,
+      "collection_monotonic_metadata_valid": true
+    },
+    "existing_export_refused_without_modification": true,
+    "symlink_export_refused_without_modification": true,
+    "native_gui": {
+      "width": 1280,
+      "height": 720,
+      "alive_at_capture_after_seconds": 16,
+      "screenshot_sha256": "2feaa4db386e061d4e5193dd271d43368e322e55d8dfc0ba2a8b4cf5647d6b6e",
+      "visually_reviewed": true,
+      "dedicated_process_group_empty_after_exit": true
+    },
+    "native_gui_scope": "Installed binary in a private headless compositor, isolated XDG paths; overview render and read-only telemetry; other views and hardware writes not exercised",
+    "new_services_or_autostart": false
+  },
+  "boot": {
+    "published": true,
+    "path": "/efi/EFI/Linux/omarchy_linux.efi",
+    "sha256": "c64932cd21f41c60cfc9e25a43ac909dcca0c26ae2eff58e56a468cddd6a3706",
+    "blake2b": "570b43ce1cd78cca1ab0fa19485744370212bdd75601ee67a603d1fc1af5bb31882173c64dc7c5a6c236980c797db5095fbfcf0e1abbb15e466eccd553ed39eb",
+    "bytes": 256728240,
+    "main_menu_sha256": "989f6e440454bfa6bfe92bf8f959d5283cba8a8b16e2e19ce2b75ad05bfd92a9",
+    "replaced_initrd_modules": 4,
+    "other_initrd_modules_byte_identical": 255,
+    "main_zstd_payload_byte_identical": true,
+    "non_initrd_PE_section_payloads_byte_identical": true,
+    "loader_entrypoint_RVAs_alignment_permissions_and_non_certificate_data_directories_verified": true,
+    "physical_PE_file_layout_byte_identical": false,
+    "signature_verified_on_actual_EFI_file": true,
+    "secure_boot_enabled": false,
+    "boot_tested": false,
+    "independent_readback_checks": 44,
+    "nvidia_core": "Pre-existing disk build differs from the loaded/r106 UKI build; original r106 initrd NVIDIA bytes preserved, not a GPU fix",
+    "recovery": {
+      "menu": "Omarchy (r106 recovery)",
+      "path": "/efi/EFI/Linux/omarchy_linux_r106.efi",
+      "sha256": "67febd41124b2dc9ce0770701962b64d3af4c7a44e6f42bc0a1633280cb410a2",
+      "file_and_entry_preserved": true,
+      "scope": "Boot/initrd recovery only, not a rollback of installed root-filesystem packages"
+    },
+    "free_bytes_after_publication": 557330432
+  },
+  "protected_runtime": {
+    "running_kernel": "7.2.9-arch1-1",
+    "checks": {
+      "boot_id_unchanged": true,
+      "uname_unchanged": true,
+      "service_states_pids_start_times_unchanged": true,
+      "all_6_loaded_module_identities_unchanged": true,
+      "legacy_daemon_pid_start_time_unchanged": true,
+      "tcc_profiles_settings_and_thermald_power_configs_unchanged": true,
+      "nvidia_smi_healthy": true,
+      "recent_kernel_error_counts_zero": true,
+      "both_packages_and_all_56_module_signatures_verified": true
+    },
+    "hardware_control_writes": false,
+    "modules_hot_reloaded": false,
+    "rebooted": false,
+    "keyboard_mapping": "Pre-existing local mapping migrated to /etc/udev/hwdb.d/90-mechrevo-local.hwdb; effective hardware-database query unchanged",
+    "scope": "Boot identity, six loaded modules, TCC profiles/settings, thermald/power configuration, three service identities and the legacy hotkey daemon compared; this does not prove thermal or noise improvement"
+  },
+  "recovery_archive": {
+    "directory": "~/Backups/mechrevo-drivers/light/2026-10-18/deploy-a190455",
+    "new_packages_and_signed_UKI_archived_and_readback_verified": true,
+    "prior_r106_package_and_56_signed_recovery_modules_preserved": true,
+    "prior_r106_package_sha256": "c01256efdbc4e3ac7b79059e3c937fb2241c9f0347435e9c7f6a7b1f366788e4",
+    "old_canonical_and_prepublication_menu_archived": true,
+    "older_recovery_image_archived_before_reviewed_EFI_slot_rotation": true
+  },
+  "private_evidence_sha256": {
+    "runtime-evidence/final-installed-validation.json": "e86ad59eaeb47751692710d7a6122f8d71612eadf8877383c9acfb5123582159",
+    "runtime-evidence/runtime-before-after-comparison.json": "dfdf058c4272b776815619518078c2d9fddf3960846b329512f5d650aef24a9f",
+    "recovery-tools/independent-acceptance/independent-boot-acceptance.json": "1ae3c50fdf1bcbaedc447332a92d2d6f388ad8edb727dc44976be6bb3f62fee5",
+    "uki-tools/r158-qualified.json": "d8866eca5a2aa620614175074b62899ec6347d05d875c4539151fdb28926058d",
+    "console-smoke/final-smoke-result.json": "5e703f9a4ab52c88ddccbf47bfbf37a84526092eb7f1597c11036feba6f9dad3",
+    "recovery-tools/publish-execution-result.json": "9fa8fa02d3cf7e419cc9dcc769ae85e8a7bf96160010596a771f207f0855cf07"
+  },
+  "tracking": {
+    "source_and_host": "Ready controlled watchers used for selected directories; permission, transient-file and build churn coverage is partial, not complete filesystem history",
+    "driver_install": {
+      "command_exit_code": 0,
+      "status": "partial",
+      "gaps": 6,
+      "unresolved_events": 4100
+    },
+    "console_install": {
+      "command_exit_code": 0,
+      "status": "partial",
+      "gaps": 0,
+      "unresolved_events": 4
+    },
+    "boot_publication": {
+      "command_exit_code": 0,
+      "status": "partial",
+      "gaps": 0,
+      "unresolved_events": 2
+    },
+    "console_smoke": {
+      "cli_gui_session": "87ffacc5-5c89-4107-92b2-57015580eee7",
+      "cli_gui_command_exit_code": 0,
+      "cli_gui_tracking_status": "partial",
+      "cli_gui_gap_count": 2,
+      "cli_gui_unresolved_event_count": 3,
+      "final_gui_session": "547fe86b-c044-4859-bfd1-f8bb2845517a",
+      "final_gui_command_exit_code": 0,
+      "final_gui_tracking_status": "partial",
+      "final_gui_gap_count": 0,
+      "final_gui_unresolved_event_count": 3,
+      "limitation": "Symlink refusal fixture and transient Wayland socket/lock events; tracking is not complete history."
+    },
+    "independent_installed_validation_and_boot_readback": "Complete selected-root tracking, zero gaps and unresolved events",
+    "scope_limit": "Host watcher does not cover depmod top-level metadata, /usr parent timestamps, or all /usr/share/doc/console activity; payload verification is independent of event tracking",
+    "cleanup": "Reviewed EFI recovery-slot rotation only after archival/readback; no general source/cache cleanup"
+  },
+  "limitations": [
+    "r158 is installed and prepared for the next boot; all six running core modules remain r106",
+    "Qualified GM6PX0X only; no post-reboot module or hardware acceptance, no Secure Boot acceptance",
+    "Fan noise, thermal spikes, sustained cooling, sleep/wake, GPU stability and full OEM parity remain unaccepted; hardware score stays 9/20",
+    "No AUR publication or Windows runtime/hardware acceptance; existing Windows target compilation is source evidence only",
+    "Existing local WIP excluded from installed packages; raw machine snapshots and screenshots stay private"
+  ],
+  "private_evidence_directory": ".local-tests/console-redesign/driver-continuation/deploy"
+}

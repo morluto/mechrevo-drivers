@@ -1,0 +1,4708 @@
+{
+  "utc": "2026-10-15T14:57:59.532981+00:00",
+  "kernel": "7.2.9-arch1-1",
+  "labels": {
+    "temp30_input": "Core 28",
+    "temp14_input": "Core 12",
+    "temp40_input": "Core 38",
+    "temp34_input": "Core 32",
+    "temp18_input": "Core 16",
+    "temp38_input": "Core 36",
+    "temp1_input": "Package id 0",
+    "temp41_input": "Core 39",
+    "temp35_input": "Core 33",
+    "temp39_input": "Core 37",
+    "temp22_input": "Core 20",
+    "temp2_input": "Core 0",
+    "temp26_input": "Core 24",
+    "temp36_input": "Core 34",
+    "temp6_input": "Core 4",
+    "temp10_input": "Core 8",
+    "temp37_input": "Core 35"
+  },
+  "energy_max_uj": 262143328850,
+  "sample_interval_s": 1,
+  "added_stress": false,
+  "samples": [
+    {
+      "t": 0.0,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 81000,
+        "temp6_input": 89000,
+        "temp10_input": 83000,
+        "temp37_input": 81000,
+        "temp30_input": 93000,
+        "temp14_input": 89000,
+        "temp40_input": 81000,
+        "temp34_input": 81000,
+        "temp18_input": 94000,
+        "temp38_input": 81000,
+        "temp1_input": 94000,
+        "temp41_input": 81000,
+        "temp35_input": 81000,
+        "temp39_input": 81000,
+        "temp22_input": 87000,
+        "temp2_input": 76000
+      },
+      "energy_uj": 34687277838,
+      "cpu0_throttle": {
+        "package_throttle_count": 37794,
+        "core_throttle_count": 66
+      },
+      "loadavg": [
+        "4.56",
+        "4.28",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.871
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 58.971
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.647
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.742
+        }
+      },
+      "package_after": 94000,
+      "end_t": 0.236
+    },
+    {
+      "t": 1.0001,
+      "core_before": {
+        "temp26_input": 75000,
+        "temp36_input": 81000,
+        "temp6_input": 89000,
+        "temp10_input": 83000,
+        "temp37_input": 81000,
+        "temp30_input": 93000,
+        "temp14_input": 89000,
+        "temp40_input": 81000,
+        "temp34_input": 81000,
+        "temp18_input": 73000,
+        "temp38_input": 75000,
+        "temp1_input": 80000,
+        "temp41_input": 75000,
+        "temp35_input": 73000,
+        "temp39_input": 75000,
+        "temp22_input": 79000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 34726743130,
+      "cpu0_throttle": {
+        "package_throttle_count": 37853,
+        "core_throttle_count": 66
+      },
+      "loadavg": [
+        "4.56",
+        "4.28",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 60.387
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 60.193
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 60.521
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 61.077
+        }
+      },
+      "package_after": 80000,
+      "end_t": 1.2444
+    },
+    {
+      "t": 2.0001,
+      "core_before": {
+        "temp26_input": 75000,
+        "temp36_input": 77000,
+        "temp6_input": 79000,
+        "temp10_input": 75000,
+        "temp37_input": 77000,
+        "temp30_input": 75000,
+        "temp14_input": 81000,
+        "temp40_input": 75000,
+        "temp34_input": 77000,
+        "temp18_input": 73000,
+        "temp38_input": 75000,
+        "temp1_input": 80000,
+        "temp41_input": 75000,
+        "temp35_input": 73000,
+        "temp39_input": 75000,
+        "temp22_input": 79000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 34755993238,
+      "cpu0_throttle": {
+        "package_throttle_count": 37880,
+        "core_throttle_count": 66
+      },
+      "loadavg": [
+        "4.56",
+        "4.28",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 57.882
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 59.03
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.793
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.262
+        }
+      },
+      "package_after": 92000,
+      "end_t": 2.2352
+    },
+    {
+      "t": 3.0001,
+      "core_before": {
+        "temp26_input": 86000,
+        "temp36_input": 77000,
+        "temp6_input": 79000,
+        "temp10_input": 75000,
+        "temp37_input": 77000,
+        "temp30_input": 75000,
+        "temp14_input": 81000,
+        "temp40_input": 75000,
+        "temp34_input": 77000,
+        "temp18_input": 85000,
+        "temp38_input": 80000,
+        "temp1_input": 92000,
+        "temp41_input": 80000,
+        "temp35_input": 81000,
+        "temp39_input": 80000,
+        "temp22_input": 85000,
+        "temp2_input": 76000
+      },
+      "energy_uj": 34793765908,
+      "cpu0_throttle": {
+        "package_throttle_count": 37931,
+        "core_throttle_count": 66
+      },
+      "loadavg": [
+        "4.56",
+        "4.28",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 90,
+          "ms": 59.287
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 59.973
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 59.189
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.137
+        }
+      },
+      "package_after": 94000,
+      "end_t": 3.2389
+    },
+    {
+      "t": 4.0001,
+      "core_before": {
+        "temp26_input": 86000,
+        "temp36_input": 77000,
+        "temp6_input": 75000,
+        "temp10_input": 74000,
+        "temp37_input": 76000,
+        "temp30_input": 75000,
+        "temp14_input": 83000,
+        "temp40_input": 75000,
+        "temp34_input": 76000,
+        "temp18_input": 81000,
+        "temp38_input": 75000,
+        "temp1_input": 94000,
+        "temp41_input": 75000,
+        "temp35_input": 76000,
+        "temp39_input": 75000,
+        "temp22_input": 81000,
+        "temp2_input": 72000
+      },
+      "energy_uj": 34836427053,
+      "cpu0_throttle": {
+        "package_throttle_count": 37988,
+        "core_throttle_count": 67
+      },
+      "loadavg": [
+        "4.44",
+        "4.26",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.348
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 58.635
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.966
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 57.803
+        }
+      },
+      "package_after": 94000,
+      "end_t": 4.2361
+    },
+    {
+      "t": 5.0001,
+      "core_before": {
+        "temp26_input": 95000,
+        "temp36_input": 77000,
+        "temp6_input": 75000,
+        "temp10_input": 74000,
+        "temp37_input": 76000,
+        "temp30_input": 75000,
+        "temp14_input": 83000,
+        "temp40_input": 75000,
+        "temp34_input": 76000,
+        "temp18_input": 81000,
+        "temp38_input": 75000,
+        "temp1_input": 96000,
+        "temp41_input": 75000,
+        "temp35_input": 76000,
+        "temp39_input": 75000,
+        "temp22_input": 81000,
+        "temp2_input": 72000
+      },
+      "energy_uj": 34872628316,
+      "cpu0_throttle": {
+        "package_throttle_count": 38050,
+        "core_throttle_count": 67
+      },
+      "loadavg": [
+        "4.44",
+        "4.26",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 59.022
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 57.7
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.993
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.537
+        }
+      },
+      "package_after": 96000,
+      "end_t": 5.2352
+    },
+    {
+      "t": 6.0001,
+      "core_before": {
+        "temp26_input": 95000,
+        "temp36_input": 82000,
+        "temp6_input": 78000,
+        "temp10_input": 72000,
+        "temp37_input": 82000,
+        "temp30_input": 75000,
+        "temp14_input": 81000,
+        "temp40_input": 74000,
+        "temp34_input": 82000,
+        "temp18_input": 83000,
+        "temp38_input": 74000,
+        "temp1_input": 96000,
+        "temp41_input": 74000,
+        "temp35_input": 82000,
+        "temp39_input": 74000,
+        "temp22_input": 77000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 34906282282,
+      "cpu0_throttle": {
+        "package_throttle_count": 38115,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.44",
+        "4.26",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.636
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 58.817
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.198
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.564
+        }
+      },
+      "package_after": 96000,
+      "end_t": 6.2352
+    },
+    {
+      "t": 7.0001,
+      "core_before": {
+        "temp26_input": 87000,
+        "temp36_input": 81000,
+        "temp6_input": 84000,
+        "temp10_input": 75000,
+        "temp37_input": 81000,
+        "temp30_input": 79000,
+        "temp14_input": 91000,
+        "temp40_input": 76000,
+        "temp34_input": 81000,
+        "temp18_input": 87000,
+        "temp38_input": 76000,
+        "temp1_input": 96000,
+        "temp41_input": 76000,
+        "temp35_input": 81000,
+        "temp39_input": 76000,
+        "temp22_input": 89000,
+        "temp2_input": 79000
+      },
+      "energy_uj": 34943736471,
+      "cpu0_throttle": {
+        "package_throttle_count": 38179,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.44",
+        "4.26",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.366
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 58.579
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.588
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 57.734
+        }
+      },
+      "package_after": 96000,
+      "end_t": 7.234
+    },
+    {
+      "t": 8.0001,
+      "core_before": {
+        "temp26_input": 87000,
+        "temp36_input": 81000,
+        "temp6_input": 84000,
+        "temp10_input": 75000,
+        "temp37_input": 81000,
+        "temp30_input": 79000,
+        "temp14_input": 91000,
+        "temp40_input": 76000,
+        "temp34_input": 81000,
+        "temp18_input": 87000,
+        "temp38_input": 76000,
+        "temp1_input": 98000,
+        "temp41_input": 76000,
+        "temp35_input": 81000,
+        "temp39_input": 76000,
+        "temp22_input": 89000,
+        "temp2_input": 79000
+      },
+      "energy_uj": 34978314080,
+      "cpu0_throttle": {
+        "package_throttle_count": 38241,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.44",
+        "4.26",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.768
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 58.698
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.113
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.38
+        }
+      },
+      "package_after": 98000,
+      "end_t": 8.2351
+    },
+    {
+      "t": 9.0002,
+      "core_before": {
+        "temp26_input": 87000,
+        "temp36_input": 76000,
+        "temp6_input": 75000,
+        "temp10_input": 76000,
+        "temp37_input": 76000,
+        "temp30_input": 74000,
+        "temp14_input": 79000,
+        "temp40_input": 74000,
+        "temp34_input": 76000,
+        "temp18_input": 95000,
+        "temp38_input": 74000,
+        "temp1_input": 98000,
+        "temp41_input": 74000,
+        "temp35_input": 76000,
+        "temp39_input": 74000,
+        "temp22_input": 76000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 35014596031,
+      "cpu0_throttle": {
+        "package_throttle_count": 38290,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.24",
+        "4.22",
+        "3.00"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 57.431
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 59.145
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.61
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.144
+        }
+      },
+      "package_after": 96000,
+      "end_t": 9.2343
+    },
+    {
+      "t": 10.0001,
+      "core_before": {
+        "temp26_input": 87000,
+        "temp36_input": 76000,
+        "temp6_input": 75000,
+        "temp10_input": 76000,
+        "temp37_input": 76000,
+        "temp30_input": 74000,
+        "temp14_input": 79000,
+        "temp40_input": 74000,
+        "temp34_input": 76000,
+        "temp18_input": 95000,
+        "temp38_input": 74000,
+        "temp1_input": 96000,
+        "temp41_input": 74000,
+        "temp35_input": 76000,
+        "temp39_input": 74000,
+        "temp22_input": 76000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 35046111514,
+      "cpu0_throttle": {
+        "package_throttle_count": 38356,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.24",
+        "4.22",
+        "3.00"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.752
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 58.128
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.725
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 57.306
+        }
+      },
+      "package_after": 96000,
+      "end_t": 10.234
+    },
+    {
+      "t": 11.0001,
+      "core_before": {
+        "temp26_input": 84000,
+        "temp36_input": 77000,
+        "temp6_input": 82000,
+        "temp10_input": 75000,
+        "temp37_input": 77000,
+        "temp30_input": 86000,
+        "temp14_input": 91000,
+        "temp40_input": 77000,
+        "temp34_input": 77000,
+        "temp18_input": 90000,
+        "temp38_input": 77000,
+        "temp1_input": 92000,
+        "temp41_input": 77000,
+        "temp35_input": 77000,
+        "temp39_input": 77000,
+        "temp22_input": 92000,
+        "temp2_input": 74000
+      },
+      "energy_uj": 35081782016,
+      "cpu0_throttle": {
+        "package_throttle_count": 38410,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.24",
+        "4.22",
+        "3.00"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 59.204
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 57.031
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 59.684
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.784
+        }
+      },
+      "package_after": 92000,
+      "end_t": 11.2356
+    },
+    {
+      "t": 12.0001,
+      "core_before": {
+        "temp26_input": 90000,
+        "temp36_input": 73000,
+        "temp6_input": 75000,
+        "temp10_input": 77000,
+        "temp37_input": 73000,
+        "temp30_input": 74000,
+        "temp14_input": 77000,
+        "temp40_input": 72000,
+        "temp34_input": 73000,
+        "temp18_input": 92000,
+        "temp38_input": 72000,
+        "temp1_input": 92000,
+        "temp41_input": 72000,
+        "temp35_input": 73000,
+        "temp39_input": 72000,
+        "temp22_input": 75000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 35117352909,
+      "cpu0_throttle": {
+        "package_throttle_count": 38477,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.24",
+        "4.22",
+        "3.00"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 57.168
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 59.187
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 59.351
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.6
+        }
+      },
+      "package_after": 92000,
+      "end_t": 12.2355
+    },
+    {
+      "t": 13.0001,
+      "core_before": {
+        "temp26_input": 90000,
+        "temp36_input": 73000,
+        "temp6_input": 75000,
+        "temp10_input": 77000,
+        "temp37_input": 73000,
+        "temp30_input": 74000,
+        "temp14_input": 77000,
+        "temp40_input": 72000,
+        "temp34_input": 73000,
+        "temp18_input": 92000,
+        "temp38_input": 72000,
+        "temp1_input": 92000,
+        "temp41_input": 72000,
+        "temp35_input": 73000,
+        "temp39_input": 72000,
+        "temp22_input": 75000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 35152155554,
+      "cpu0_throttle": {
+        "package_throttle_count": 38547,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.24",
+        "4.22",
+        "3.00"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.381
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 58.446
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.38
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.724
+        }
+      },
+      "package_after": 94000,
+      "end_t": 13.2352
+    },
+    {
+      "t": 14.0001,
+      "core_before": {
+        "temp26_input": 94000,
+        "temp36_input": 79000,
+        "temp6_input": 75000,
+        "temp10_input": 71000,
+        "temp37_input": 79000,
+        "temp30_input": 73000,
+        "temp14_input": 74000,
+        "temp40_input": 72000,
+        "temp34_input": 79000,
+        "temp18_input": 78000,
+        "temp38_input": 72000,
+        "temp1_input": 94000,
+        "temp41_input": 72000,
+        "temp35_input": 79000,
+        "temp39_input": 72000,
+        "temp22_input": 73000,
+        "temp2_input": 69000
+      },
+      "energy_uj": 35182345479,
+      "cpu0_throttle": {
+        "package_throttle_count": 38610,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.22",
+        "4.22",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 57.843
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 58.575
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.642
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.799
+        }
+      },
+      "package_after": 94000,
+      "end_t": 14.2344
+    },
+    {
+      "t": 15.0001,
+      "core_before": {
+        "temp26_input": 94000,
+        "temp36_input": 79000,
+        "temp6_input": 75000,
+        "temp10_input": 71000,
+        "temp37_input": 79000,
+        "temp30_input": 73000,
+        "temp14_input": 74000,
+        "temp40_input": 72000,
+        "temp34_input": 79000,
+        "temp18_input": 78000,
+        "temp38_input": 72000,
+        "temp1_input": 95000,
+        "temp41_input": 72000,
+        "temp35_input": 79000,
+        "temp39_input": 72000,
+        "temp22_input": 73000,
+        "temp2_input": 69000
+      },
+      "energy_uj": 35217186699,
+      "cpu0_throttle": {
+        "package_throttle_count": 38673,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.22",
+        "4.22",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 57.79
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 58.47
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.62
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.166
+        }
+      },
+      "package_after": 95000,
+      "end_t": 15.2341
+    },
+    {
+      "t": 16.0001,
+      "core_before": {
+        "temp26_input": 91000,
+        "temp36_input": 79000,
+        "temp6_input": 82000,
+        "temp10_input": 80000,
+        "temp37_input": 79000,
+        "temp30_input": 82000,
+        "temp14_input": 85000,
+        "temp40_input": 76000,
+        "temp34_input": 79000,
+        "temp18_input": 96000,
+        "temp38_input": 76000,
+        "temp1_input": 95000,
+        "temp41_input": 76000,
+        "temp35_input": 79000,
+        "temp39_input": 76000,
+        "temp22_input": 87000,
+        "temp2_input": 82000
+      },
+      "energy_uj": 35253028892,
+      "cpu0_throttle": {
+        "package_throttle_count": 38752,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.22",
+        "4.22",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 59.521
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.07
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.041
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.364
+        }
+      },
+      "package_after": 95000,
+      "end_t": 16.2361
+    },
+    {
+      "t": 17.0001,
+      "core_before": {
+        "temp26_input": 92000,
+        "temp36_input": 81000,
+        "temp6_input": 74000,
+        "temp10_input": 71000,
+        "temp37_input": 81000,
+        "temp30_input": 74000,
+        "temp14_input": 76000,
+        "temp40_input": 74000,
+        "temp34_input": 81000,
+        "temp18_input": 78000,
+        "temp38_input": 74000,
+        "temp1_input": 95000,
+        "temp41_input": 74000,
+        "temp35_input": 81000,
+        "temp39_input": 72000,
+        "temp22_input": 75000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 35287195309,
+      "cpu0_throttle": {
+        "package_throttle_count": 38819,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.22",
+        "4.22",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 57.852
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.336
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.153
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.614
+        }
+      },
+      "package_after": 95000,
+      "end_t": 17.2341
+    },
+    {
+      "t": 18.0001,
+      "core_before": {
+        "temp26_input": 92000,
+        "temp36_input": 81000,
+        "temp6_input": 74000,
+        "temp10_input": 71000,
+        "temp37_input": 81000,
+        "temp30_input": 74000,
+        "temp14_input": 76000,
+        "temp40_input": 74000,
+        "temp34_input": 81000,
+        "temp18_input": 78000,
+        "temp38_input": 74000,
+        "temp1_input": 74000,
+        "temp41_input": 72000,
+        "temp35_input": 72000,
+        "temp39_input": 72000,
+        "temp22_input": 73000,
+        "temp2_input": 68000
+      },
+      "energy_uj": 35319153357,
+      "cpu0_throttle": {
+        "package_throttle_count": 38871,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.22",
+        "4.22",
+        "3.01"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 93,
+          "ms": 58.411
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.083
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 59.103
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.737
+        }
+      },
+      "package_after": 74000,
+      "end_t": 18.2362
+    },
+    {
+      "t": 19.0002,
+      "core_before": {
+        "temp26_input": 96000,
+        "temp36_input": 81000,
+        "temp6_input": 83000,
+        "temp10_input": 97000,
+        "temp37_input": 81000,
+        "temp30_input": 78000,
+        "temp14_input": 85000,
+        "temp40_input": 74000,
+        "temp34_input": 81000,
+        "temp18_input": 88000,
+        "temp38_input": 74000,
+        "temp1_input": 74000,
+        "temp41_input": 72000,
+        "temp35_input": 72000,
+        "temp39_input": 72000,
+        "temp22_input": 73000,
+        "temp2_input": 68000
+      },
+      "energy_uj": 35358658627,
+      "cpu0_throttle": {
+        "package_throttle_count": 38928,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.61",
+        "4.30",
+        "3.04"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 57.947
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 59.179
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.208
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.105
+        }
+      },
+      "package_after": 94000,
+      "end_t": 19.236
+    },
+    {
+      "t": 20.0001,
+      "core_before": {
+        "temp26_input": 96000,
+        "temp36_input": 81000,
+        "temp6_input": 83000,
+        "temp10_input": 97000,
+        "temp37_input": 81000,
+        "temp30_input": 78000,
+        "temp14_input": 85000,
+        "temp40_input": 74000,
+        "temp34_input": 68000,
+        "temp18_input": 69000,
+        "temp38_input": 70000,
+        "temp1_input": 94000,
+        "temp41_input": 70000,
+        "temp35_input": 68000,
+        "temp39_input": 70000,
+        "temp22_input": 72000,
+        "temp2_input": 67000
+      },
+      "energy_uj": 35390329383,
+      "cpu0_throttle": {
+        "package_throttle_count": 38988,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.61",
+        "4.30",
+        "3.04"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 59.564
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 60.421
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 61.34
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 63.606
+        }
+      },
+      "package_after": 69000,
+      "end_t": 20.2474
+    },
+    {
+      "t": 21.0001,
+      "core_before": {
+        "temp26_input": 70000,
+        "temp36_input": 70000,
+        "temp6_input": 73000,
+        "temp10_input": 67000,
+        "temp37_input": 70000,
+        "temp30_input": 70000,
+        "temp14_input": 72000,
+        "temp40_input": 69000,
+        "temp34_input": 68000,
+        "temp18_input": 69000,
+        "temp38_input": 70000,
+        "temp1_input": 69000,
+        "temp41_input": 70000,
+        "temp35_input": 68000,
+        "temp39_input": 70000,
+        "temp22_input": 72000,
+        "temp2_input": 67000
+      },
+      "energy_uj": 35408734548,
+      "cpu0_throttle": {
+        "package_throttle_count": 38988,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.61",
+        "4.30",
+        "3.04"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 77,
+          "ms": 61.479
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 60.146
+        },
+        "fan1_raw": {
+          "value": 168,
+          "ms": 60.207
+        },
+        "fan2_raw": {
+          "value": 167,
+          "ms": 59.897
+        }
+      },
+      "package_after": 69000,
+      "end_t": 21.2441
+    },
+    {
+      "t": 22.0001,
+      "core_before": {
+        "temp26_input": 63000,
+        "temp36_input": 62000,
+        "temp6_input": 64000,
+        "temp10_input": 62000,
+        "temp37_input": 63000,
+        "temp30_input": 61000,
+        "temp14_input": 62000,
+        "temp40_input": 64000,
+        "temp34_input": 63000,
+        "temp18_input": 62000,
+        "temp38_input": 64000,
+        "temp1_input": 65000,
+        "temp41_input": 64000,
+        "temp35_input": 63000,
+        "temp39_input": 64000,
+        "temp22_input": 61000,
+        "temp2_input": 60000
+      },
+      "energy_uj": 35421623614,
+      "cpu0_throttle": {
+        "package_throttle_count": 38988,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.61",
+        "4.30",
+        "3.04"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 67,
+          "ms": 61.389
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 60.44
+        },
+        "fan1_raw": {
+          "value": 164,
+          "ms": 60.501
+        },
+        "fan2_raw": {
+          "value": 164,
+          "ms": 59.696
+        }
+      },
+      "package_after": 65000,
+      "end_t": 22.2452
+    },
+    {
+      "t": 23.0001,
+      "core_before": {
+        "temp26_input": 63000,
+        "temp36_input": 62000,
+        "temp6_input": 64000,
+        "temp10_input": 62000,
+        "temp37_input": 63000,
+        "temp30_input": 61000,
+        "temp14_input": 62000,
+        "temp40_input": 64000,
+        "temp34_input": 63000,
+        "temp18_input": 62000,
+        "temp38_input": 64000,
+        "temp1_input": 65000,
+        "temp41_input": 64000,
+        "temp35_input": 63000,
+        "temp39_input": 64000,
+        "temp22_input": 61000,
+        "temp2_input": 60000
+      },
+      "energy_uj": 35459638410,
+      "cpu0_throttle": {
+        "package_throttle_count": 39037,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.61",
+        "4.30",
+        "3.04"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 67,
+          "ms": 58.881
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.378
+        },
+        "fan1_raw": {
+          "value": 161,
+          "ms": 58.814
+        },
+        "fan2_raw": {
+          "value": 161,
+          "ms": 58.879
+        }
+      },
+      "package_after": 94000,
+      "end_t": 23.2361
+    },
+    {
+      "t": 24.0001,
+      "core_before": {
+        "temp26_input": 96000,
+        "temp36_input": 81000,
+        "temp6_input": 73000,
+        "temp10_input": 70000,
+        "temp37_input": 81000,
+        "temp30_input": 71000,
+        "temp14_input": 74000,
+        "temp40_input": 70000,
+        "temp34_input": 81000,
+        "temp18_input": 78000,
+        "temp38_input": 70000,
+        "temp1_input": 94000,
+        "temp41_input": 70000,
+        "temp35_input": 81000,
+        "temp39_input": 70000,
+        "temp22_input": 71000,
+        "temp2_input": 67000
+      },
+      "energy_uj": 35491158898,
+      "cpu0_throttle": {
+        "package_throttle_count": 39106,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.64",
+        "4.31",
+        "3.05"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 59.021
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 59.046
+        },
+        "fan1_raw": {
+          "value": 160,
+          "ms": 57.693
+        },
+        "fan2_raw": {
+          "value": 160,
+          "ms": 58.605
+        }
+      },
+      "package_after": 94000,
+      "end_t": 24.2357
+    },
+    {
+      "t": 25.0001,
+      "core_before": {
+        "temp26_input": 96000,
+        "temp36_input": 81000,
+        "temp6_input": 73000,
+        "temp10_input": 70000,
+        "temp37_input": 81000,
+        "temp30_input": 71000,
+        "temp14_input": 74000,
+        "temp40_input": 70000,
+        "temp34_input": 81000,
+        "temp18_input": 78000,
+        "temp38_input": 70000,
+        "temp1_input": 92000,
+        "temp41_input": 70000,
+        "temp35_input": 81000,
+        "temp39_input": 70000,
+        "temp22_input": 71000,
+        "temp2_input": 67000
+      },
+      "energy_uj": 35525156430,
+      "cpu0_throttle": {
+        "package_throttle_count": 39152,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.64",
+        "4.31",
+        "3.05"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 57.967
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.407
+        },
+        "fan1_raw": {
+          "value": 164,
+          "ms": 58.696
+        },
+        "fan2_raw": {
+          "value": 164,
+          "ms": 57.878
+        }
+      },
+      "package_after": 92000,
+      "end_t": 25.2342
+    },
+    {
+      "t": 26.0001,
+      "core_before": {
+        "temp26_input": 94000,
+        "temp36_input": 79000,
+        "temp6_input": 75000,
+        "temp10_input": 71000,
+        "temp37_input": 79000,
+        "temp30_input": 71000,
+        "temp14_input": 73000,
+        "temp40_input": 72000,
+        "temp34_input": 79000,
+        "temp18_input": 72000,
+        "temp38_input": 72000,
+        "temp1_input": 92000,
+        "temp41_input": 72000,
+        "temp35_input": 79000,
+        "temp39_input": 72000,
+        "temp22_input": 70000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 35557939122,
+      "cpu0_throttle": {
+        "package_throttle_count": 39222,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.64",
+        "4.31",
+        "3.05"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.992
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 59.085
+        },
+        "fan1_raw": {
+          "value": 167,
+          "ms": 57.859
+        },
+        "fan2_raw": {
+          "value": 167,
+          "ms": 59.094
+        }
+      },
+      "package_after": 92000,
+      "end_t": 26.2364
+    },
+    {
+      "t": 27.0001,
+      "core_before": {
+        "temp26_input": 83000,
+        "temp36_input": 82000,
+        "temp6_input": 84000,
+        "temp10_input": 80000,
+        "temp37_input": 82000,
+        "temp30_input": 78000,
+        "temp14_input": 86000,
+        "temp40_input": 76000,
+        "temp34_input": 82000,
+        "temp18_input": 92000,
+        "temp38_input": 76000,
+        "temp1_input": 92000,
+        "temp41_input": 76000,
+        "temp35_input": 82000,
+        "temp39_input": 76000,
+        "temp22_input": 83000,
+        "temp2_input": 75000
+      },
+      "energy_uj": 35598358452,
+      "cpu0_throttle": {
+        "package_throttle_count": 39294,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.64",
+        "4.31",
+        "3.05"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 61.885
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 62.973
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.427
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.846
+        }
+      },
+      "package_after": 95000,
+      "end_t": 27.2435
+    },
+    {
+      "t": 28.0001,
+      "core_before": {
+        "temp26_input": 83000,
+        "temp36_input": 82000,
+        "temp6_input": 84000,
+        "temp10_input": 80000,
+        "temp37_input": 82000,
+        "temp30_input": 78000,
+        "temp14_input": 86000,
+        "temp40_input": 76000,
+        "temp34_input": 82000,
+        "temp18_input": 92000,
+        "temp38_input": 76000,
+        "temp1_input": 95000,
+        "temp41_input": 76000,
+        "temp35_input": 82000,
+        "temp39_input": 76000,
+        "temp22_input": 83000,
+        "temp2_input": 75000
+      },
+      "energy_uj": 35632380094,
+      "cpu0_throttle": {
+        "package_throttle_count": 39356,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.64",
+        "4.31",
+        "3.05"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.168
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 58.419
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.971
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.9
+        }
+      },
+      "package_after": 95000,
+      "end_t": 28.2354
+    },
+    {
+      "t": 29.0001,
+      "core_before": {
+        "temp26_input": 86000,
+        "temp36_input": 72000,
+        "temp6_input": 74000,
+        "temp10_input": 74000,
+        "temp37_input": 72000,
+        "temp30_input": 71000,
+        "temp14_input": 74000,
+        "temp40_input": 72000,
+        "temp34_input": 72000,
+        "temp18_input": 91000,
+        "temp38_input": 71000,
+        "temp1_input": 94000,
+        "temp41_input": 71000,
+        "temp35_input": 73000,
+        "temp39_input": 71000,
+        "temp22_input": 72000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 35663389109,
+      "cpu0_throttle": {
+        "package_throttle_count": 39413,
+        "core_throttle_count": 68
+      },
+      "loadavg": [
+        "4.43",
+        "4.27",
+        "3.04"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.9
+        },
+        "gpu_temp": {
+          "value": 57,
+          "ms": 58.786
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 59.423
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.175
+        }
+      },
+      "package_after": 94000,
+      "end_t": 29.2366
+    },
+    {
+      "t": 30.0001,
+      "core_before": {
+        "temp26_input": 86000,
+        "temp36_input": 72000,
+        "temp6_input": 74000,
+        "temp10_input": 74000,
+        "temp37_input": 72000,
+        "temp30_input": 71000,
+        "temp14_input": 74000,
+        "temp40_input": 72000,
+        "temp34_input": 72000,
+        "temp18_input": 91000,
+        "temp38_input": 71000,
+        "temp1_input": 94000,
+        "temp41_input": 71000,
+        "temp35_input": 73000,
+        "temp39_input": 71000,
+        "temp22_input": 72000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 35697629255,
+      "cpu0_throttle": {
+        "package_throttle_count": 39470,
+        "core_throttle_count": 69
+      },
+      "loadavg": [
+        "4.43",
+        "4.27",
+        "3.04"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.631
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 59.243
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 59.138
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.906
+        }
+      },
+      "package_after": 95000,
+      "end_t": 30.2377
+    },
+    {
+      "t": 31.0001,
+      "core_before": {
+        "temp26_input": 94000,
+        "temp36_input": 79000,
+        "temp6_input": 79000,
+        "temp10_input": 75000,
+        "temp37_input": 79000,
+        "temp30_input": 74000,
+        "temp14_input": 79000,
+        "temp40_input": 72000,
+        "temp34_input": 79000,
+        "temp18_input": 91000,
+        "temp38_input": 72000,
+        "temp1_input": 95000,
+        "temp41_input": 72000,
+        "temp35_input": 79000,
+        "temp39_input": 72000,
+        "temp22_input": 76000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 35737022709,
+      "cpu0_throttle": {
+        "package_throttle_count": 39543,
+        "core_throttle_count": 69
+      },
+      "loadavg": [
+        "4.43",
+        "4.27",
+        "3.04"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 60.131
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 59.288
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.596
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.722
+        }
+      },
+      "package_after": 95000,
+      "end_t": 31.2378
+    },
+    {
+      "t": 32.0001,
+      "core_before": {
+        "temp26_input": 96000,
+        "temp36_input": 82000,
+        "temp6_input": 74000,
+        "temp10_input": 71000,
+        "temp37_input": 82000,
+        "temp30_input": 73000,
+        "temp14_input": 75000,
+        "temp40_input": 72000,
+        "temp34_input": 82000,
+        "temp18_input": 80000,
+        "temp38_input": 72000,
+        "temp1_input": 96000,
+        "temp41_input": 73000,
+        "temp35_input": 82000,
+        "temp39_input": 73000,
+        "temp22_input": 75000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 35768674789,
+      "cpu0_throttle": {
+        "package_throttle_count": 39599,
+        "core_throttle_count": 69
+      },
+      "loadavg": [
+        "4.43",
+        "4.27",
+        "3.04"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.485
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 59.331
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.192
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.687
+        }
+      },
+      "package_after": 96000,
+      "end_t": 32.2359
+    },
+    {
+      "t": 33.0001,
+      "core_before": {
+        "temp26_input": 96000,
+        "temp36_input": 82000,
+        "temp6_input": 74000,
+        "temp10_input": 71000,
+        "temp37_input": 82000,
+        "temp30_input": 73000,
+        "temp14_input": 75000,
+        "temp40_input": 72000,
+        "temp34_input": 82000,
+        "temp18_input": 80000,
+        "temp38_input": 72000,
+        "temp1_input": 96000,
+        "temp41_input": 73000,
+        "temp35_input": 82000,
+        "temp39_input": 73000,
+        "temp22_input": 75000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 35801732138,
+      "cpu0_throttle": {
+        "package_throttle_count": 39657,
+        "core_throttle_count": 71
+      },
+      "loadavg": [
+        "4.43",
+        "4.27",
+        "3.04"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.248
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.793
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 59.106
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.264
+        }
+      },
+      "package_after": 96000,
+      "end_t": 33.2357
+    },
+    {
+      "t": 34.0001,
+      "core_before": {
+        "temp26_input": 92000,
+        "temp36_input": 82000,
+        "temp6_input": 84000,
+        "temp10_input": 76000,
+        "temp37_input": 82000,
+        "temp30_input": 79000,
+        "temp14_input": 84000,
+        "temp40_input": 79000,
+        "temp34_input": 82000,
+        "temp18_input": 95000,
+        "temp38_input": 79000,
+        "temp1_input": 96000,
+        "temp41_input": 79000,
+        "temp35_input": 82000,
+        "temp39_input": 79000,
+        "temp22_input": 81000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 35836232355,
+      "cpu0_throttle": {
+        "package_throttle_count": 39719,
+        "core_throttle_count": 71
+      },
+      "loadavg": [
+        "4.79",
+        "4.35",
+        "3.08"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 57.536
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.697
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.79
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.309
+        }
+      },
+      "package_after": 96000,
+      "end_t": 34.2341
+    },
+    {
+      "t": 35.0001,
+      "core_before": {
+        "temp26_input": 92000,
+        "temp36_input": 82000,
+        "temp6_input": 84000,
+        "temp10_input": 76000,
+        "temp37_input": 82000,
+        "temp30_input": 79000,
+        "temp14_input": 84000,
+        "temp40_input": 79000,
+        "temp34_input": 82000,
+        "temp18_input": 95000,
+        "temp38_input": 79000,
+        "temp1_input": 97000,
+        "temp41_input": 79000,
+        "temp35_input": 82000,
+        "temp39_input": 79000,
+        "temp22_input": 81000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 35874972735,
+      "cpu0_throttle": {
+        "package_throttle_count": 39787,
+        "core_throttle_count": 71
+      },
+      "loadavg": [
+        "4.79",
+        "4.35",
+        "3.08"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.741
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.868
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.136
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.709
+        }
+      },
+      "package_after": 97000,
+      "end_t": 35.2355
+    },
+    {
+      "t": 36.0001,
+      "core_before": {
+        "temp26_input": 87000,
+        "temp36_input": 74000,
+        "temp6_input": 74000,
+        "temp10_input": 74000,
+        "temp37_input": 74000,
+        "temp30_input": 73000,
+        "temp14_input": 76000,
+        "temp40_input": 72000,
+        "temp34_input": 74000,
+        "temp18_input": 94000,
+        "temp38_input": 72000,
+        "temp1_input": 97000,
+        "temp41_input": 72000,
+        "temp35_input": 74000,
+        "temp39_input": 72000,
+        "temp22_input": 73000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 35906488584,
+      "cpu0_throttle": {
+        "package_throttle_count": 39856,
+        "core_throttle_count": 71
+      },
+      "loadavg": [
+        "4.79",
+        "4.35",
+        "3.08"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 57.944
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.181
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.702
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.656
+        }
+      },
+      "package_after": 95000,
+      "end_t": 36.2346
+    },
+    {
+      "t": 37.0001,
+      "core_before": {
+        "temp26_input": 92000,
+        "temp36_input": 81000,
+        "temp6_input": 73000,
+        "temp10_input": 70000,
+        "temp37_input": 81000,
+        "temp30_input": 71000,
+        "temp14_input": 74000,
+        "temp40_input": 72000,
+        "temp34_input": 81000,
+        "temp18_input": 80000,
+        "temp38_input": 71000,
+        "temp1_input": 95000,
+        "temp41_input": 71000,
+        "temp35_input": 81000,
+        "temp39_input": 71000,
+        "temp22_input": 72000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 35937539469,
+      "cpu0_throttle": {
+        "package_throttle_count": 39919,
+        "core_throttle_count": 71
+      },
+      "loadavg": [
+        "4.79",
+        "4.35",
+        "3.08"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 59.197
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 57.451
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.581
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.389
+        }
+      },
+      "package_after": 97000,
+      "end_t": 37.2361
+    },
+    {
+      "t": 38.0001,
+      "core_before": {
+        "temp26_input": 92000,
+        "temp36_input": 81000,
+        "temp6_input": 73000,
+        "temp10_input": 70000,
+        "temp37_input": 81000,
+        "temp30_input": 71000,
+        "temp14_input": 74000,
+        "temp40_input": 72000,
+        "temp34_input": 81000,
+        "temp18_input": 80000,
+        "temp38_input": 71000,
+        "temp1_input": 97000,
+        "temp41_input": 71000,
+        "temp35_input": 81000,
+        "temp39_input": 71000,
+        "temp22_input": 72000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 35972151624,
+      "cpu0_throttle": {
+        "package_throttle_count": 39970,
+        "core_throttle_count": 71
+      },
+      "loadavg": [
+        "4.79",
+        "4.35",
+        "3.08"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.908
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 60.345
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.659
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.682
+        }
+      },
+      "package_after": 92000,
+      "end_t": 38.2374
+    },
+    {
+      "t": 39.0001,
+      "core_before": {
+        "temp26_input": 95000,
+        "temp36_input": 79000,
+        "temp6_input": 74000,
+        "temp10_input": 71000,
+        "temp37_input": 79000,
+        "temp30_input": 71000,
+        "temp14_input": 78000,
+        "temp40_input": 72000,
+        "temp34_input": 79000,
+        "temp18_input": 80000,
+        "temp38_input": 72000,
+        "temp1_input": 92000,
+        "temp41_input": 72000,
+        "temp35_input": 79000,
+        "temp39_input": 72000,
+        "temp22_input": 77000,
+        "temp2_input": 69000
+      },
+      "energy_uj": 36006837326,
+      "cpu0_throttle": {
+        "package_throttle_count": 40029,
+        "core_throttle_count": 71
+      },
+      "loadavg": [
+        "4.57",
+        "4.31",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 57.969
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.855
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.298
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 57.675
+        }
+      },
+      "package_after": 92000,
+      "end_t": 39.2341
+    },
+    {
+      "t": 40.0002,
+      "core_before": {
+        "temp26_input": 95000,
+        "temp36_input": 79000,
+        "temp6_input": 74000,
+        "temp10_input": 71000,
+        "temp37_input": 79000,
+        "temp30_input": 71000,
+        "temp14_input": 78000,
+        "temp40_input": 72000,
+        "temp34_input": 79000,
+        "temp18_input": 80000,
+        "temp38_input": 72000,
+        "temp1_input": 88000,
+        "temp41_input": 72000,
+        "temp35_input": 74000,
+        "temp39_input": 72000,
+        "temp22_input": 74000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 36039351708,
+      "cpu0_throttle": {
+        "package_throttle_count": 40079,
+        "core_throttle_count": 71
+      },
+      "loadavg": [
+        "4.57",
+        "4.31",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 93,
+          "ms": 58.089
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.941
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.693
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.926
+        }
+      },
+      "package_after": 88000,
+      "end_t": 40.2357
+    },
+    {
+      "t": 41.0001,
+      "core_before": {
+        "temp26_input": 95000,
+        "temp36_input": 82000,
+        "temp6_input": 71000,
+        "temp10_input": 70000,
+        "temp37_input": 82000,
+        "temp30_input": 71000,
+        "temp14_input": 73000,
+        "temp40_input": 72000,
+        "temp34_input": 82000,
+        "temp18_input": 78000,
+        "temp38_input": 72000,
+        "temp1_input": 73000,
+        "temp41_input": 70000,
+        "temp35_input": 73000,
+        "temp39_input": 70000,
+        "temp22_input": 69000,
+        "temp2_input": 66000
+      },
+      "energy_uj": 36069460640,
+      "cpu0_throttle": {
+        "package_throttle_count": 40140,
+        "core_throttle_count": 71
+      },
+      "loadavg": [
+        "4.57",
+        "4.31",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 93,
+          "ms": 62.506
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 61.408
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 60.692
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 60.453
+        }
+      },
+      "package_after": 73000,
+      "end_t": 41.2494
+    },
+    {
+      "t": 42.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 79000,
+        "temp6_input": 84000,
+        "temp10_input": 79000,
+        "temp37_input": 79000,
+        "temp30_input": 82000,
+        "temp14_input": 88000,
+        "temp40_input": 76000,
+        "temp34_input": 79000,
+        "temp18_input": 94000,
+        "temp38_input": 76000,
+        "temp1_input": 73000,
+        "temp41_input": 70000,
+        "temp35_input": 73000,
+        "temp39_input": 70000,
+        "temp22_input": 69000,
+        "temp2_input": 66000
+      },
+      "energy_uj": 36100936389,
+      "cpu0_throttle": {
+        "package_throttle_count": 40165,
+        "core_throttle_count": 71
+      },
+      "loadavg": [
+        "4.57",
+        "4.31",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 74,
+          "ms": 58.713
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.625
+        },
+        "fan1_raw": {
+          "value": 168,
+          "ms": 58.813
+        },
+        "fan2_raw": {
+          "value": 168,
+          "ms": 58.644
+        }
+      },
+      "package_after": 95000,
+      "end_t": 42.2358
+    },
+    {
+      "t": 43.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 79000,
+        "temp6_input": 84000,
+        "temp10_input": 79000,
+        "temp37_input": 79000,
+        "temp30_input": 82000,
+        "temp14_input": 88000,
+        "temp40_input": 76000,
+        "temp34_input": 79000,
+        "temp18_input": 94000,
+        "temp38_input": 76000,
+        "temp1_input": 95000,
+        "temp41_input": 73000,
+        "temp35_input": 73000,
+        "temp39_input": 73000,
+        "temp22_input": 76000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 36137121722,
+      "cpu0_throttle": {
+        "package_throttle_count": 40225,
+        "core_throttle_count": 71
+      },
+      "loadavg": [
+        "4.57",
+        "4.31",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 59.112
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.789
+        },
+        "fan1_raw": {
+          "value": 165,
+          "ms": 58.107
+        },
+        "fan2_raw": {
+          "value": 166,
+          "ms": 58.392
+        }
+      },
+      "package_after": 95000,
+      "end_t": 43.2355
+    },
+    {
+      "t": 44.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 81000,
+        "temp6_input": 74000,
+        "temp10_input": 70000,
+        "temp37_input": 81000,
+        "temp30_input": 71000,
+        "temp14_input": 76000,
+        "temp40_input": 72000,
+        "temp34_input": 81000,
+        "temp18_input": 78000,
+        "temp38_input": 72000,
+        "temp1_input": 88000,
+        "temp41_input": 73000,
+        "temp35_input": 73000,
+        "temp39_input": 73000,
+        "temp22_input": 76000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 36168558409,
+      "cpu0_throttle": {
+        "package_throttle_count": 40284,
+        "core_throttle_count": 71
+      },
+      "loadavg": [
+        "4.44",
+        "4.29",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 57.73
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.83
+        },
+        "fan1_raw": {
+          "value": 169,
+          "ms": 58.724
+        },
+        "fan2_raw": {
+          "value": 169,
+          "ms": 57.679
+        }
+      },
+      "package_after": 88000,
+      "end_t": 44.234
+    },
+    {
+      "t": 45.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 81000,
+        "temp6_input": 74000,
+        "temp10_input": 70000,
+        "temp37_input": 81000,
+        "temp30_input": 71000,
+        "temp14_input": 76000,
+        "temp40_input": 72000,
+        "temp34_input": 81000,
+        "temp18_input": 78000,
+        "temp38_input": 72000,
+        "temp1_input": 88000,
+        "temp41_input": 73000,
+        "temp35_input": 81000,
+        "temp39_input": 73000,
+        "temp22_input": 75000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 36200849281,
+      "cpu0_throttle": {
+        "package_throttle_count": 40340,
+        "core_throttle_count": 71
+      },
+      "loadavg": [
+        "4.44",
+        "4.29",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 59.18
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 59.265
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.483
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.191
+        }
+      },
+      "package_after": 88000,
+      "end_t": 45.2361
+    },
+    {
+      "t": 46.0001,
+      "core_before": {
+        "temp26_input": 79000,
+        "temp36_input": 77000,
+        "temp6_input": 74000,
+        "temp10_input": 72000,
+        "temp37_input": 77000,
+        "temp30_input": 97000,
+        "temp14_input": 76000,
+        "temp40_input": 79000,
+        "temp34_input": 77000,
+        "temp18_input": 77000,
+        "temp38_input": 79000,
+        "temp1_input": 88000,
+        "temp41_input": 73000,
+        "temp35_input": 81000,
+        "temp39_input": 73000,
+        "temp22_input": 75000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 36235917367,
+      "cpu0_throttle": {
+        "package_throttle_count": 40400,
+        "core_throttle_count": 72
+      },
+      "loadavg": [
+        "4.44",
+        "4.29",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.191
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.835
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 59.512
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 57.672
+        }
+      },
+      "package_after": 88000,
+      "end_t": 46.2353
+    },
+    {
+      "t": 47.0001,
+      "core_before": {
+        "temp26_input": 92000,
+        "temp36_input": 79000,
+        "temp6_input": 80000,
+        "temp10_input": 75000,
+        "temp37_input": 79000,
+        "temp30_input": 78000,
+        "temp14_input": 83000,
+        "temp40_input": 75000,
+        "temp34_input": 79000,
+        "temp18_input": 96000,
+        "temp38_input": 75000,
+        "temp1_input": 96000,
+        "temp41_input": 75000,
+        "temp35_input": 79000,
+        "temp39_input": 75000,
+        "temp22_input": 84000,
+        "temp2_input": 72000
+      },
+      "energy_uj": 36272423927,
+      "cpu0_throttle": {
+        "package_throttle_count": 40462,
+        "core_throttle_count": 72
+      },
+      "loadavg": [
+        "4.44",
+        "4.29",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 60.224
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 57.634
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.508
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.514
+        }
+      },
+      "package_after": 96000,
+      "end_t": 47.236
+    },
+    {
+      "t": 48.0002,
+      "core_before": {
+        "temp26_input": 92000,
+        "temp36_input": 79000,
+        "temp6_input": 80000,
+        "temp10_input": 75000,
+        "temp37_input": 79000,
+        "temp30_input": 78000,
+        "temp14_input": 83000,
+        "temp40_input": 75000,
+        "temp34_input": 79000,
+        "temp18_input": 96000,
+        "temp38_input": 75000,
+        "temp1_input": 96000,
+        "temp41_input": 75000,
+        "temp35_input": 79000,
+        "temp39_input": 72000,
+        "temp22_input": 71000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 36303895282,
+      "cpu0_throttle": {
+        "package_throttle_count": 40521,
+        "core_throttle_count": 72
+      },
+      "loadavg": [
+        "4.44",
+        "4.29",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 59.268
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.721
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.258
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.026
+        }
+      },
+      "package_after": 100000,
+      "end_t": 48.2368
+    },
+    {
+      "t": 49.0001,
+      "core_before": {
+        "temp26_input": 87000,
+        "temp36_input": 74000,
+        "temp6_input": 74000,
+        "temp10_input": 74000,
+        "temp37_input": 74000,
+        "temp30_input": 73000,
+        "temp14_input": 74000,
+        "temp40_input": 72000,
+        "temp34_input": 74000,
+        "temp18_input": 95000,
+        "temp38_input": 72000,
+        "temp1_input": 100000,
+        "temp41_input": 72000,
+        "temp35_input": 73000,
+        "temp39_input": 72000,
+        "temp22_input": 71000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 36335160277,
+      "cpu0_throttle": {
+        "package_throttle_count": 40582,
+        "core_throttle_count": 72
+      },
+      "loadavg": [
+        "4.33",
+        "4.27",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 93,
+          "ms": 58.206
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.583
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 59.06
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 57.743
+        }
+      },
+      "package_after": 100000,
+      "end_t": 49.2351
+    },
+    {
+      "t": 50.0001,
+      "core_before": {
+        "temp26_input": 87000,
+        "temp36_input": 74000,
+        "temp6_input": 74000,
+        "temp10_input": 74000,
+        "temp37_input": 74000,
+        "temp30_input": 73000,
+        "temp14_input": 74000,
+        "temp40_input": 72000,
+        "temp34_input": 74000,
+        "temp18_input": 95000,
+        "temp38_input": 72000,
+        "temp1_input": 92000,
+        "temp41_input": 72000,
+        "temp35_input": 73000,
+        "temp39_input": 75000,
+        "temp22_input": 87000,
+        "temp2_input": 74000
+      },
+      "energy_uj": 36374572713,
+      "cpu0_throttle": {
+        "package_throttle_count": 40640,
+        "core_throttle_count": 72
+      },
+      "loadavg": [
+        "4.33",
+        "4.27",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 93,
+          "ms": 58.921
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.462
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.457
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.803
+        }
+      },
+      "package_after": 92000,
+      "end_t": 50.2367
+    },
+    {
+      "t": 51.0001,
+      "core_before": {
+        "temp26_input": 95000,
+        "temp36_input": 81000,
+        "temp6_input": 74000,
+        "temp10_input": 72000,
+        "temp37_input": 81000,
+        "temp30_input": 71000,
+        "temp14_input": 76000,
+        "temp40_input": 71000,
+        "temp34_input": 81000,
+        "temp18_input": 82000,
+        "temp38_input": 71000,
+        "temp1_input": 92000,
+        "temp41_input": 71000,
+        "temp35_input": 81000,
+        "temp39_input": 75000,
+        "temp22_input": 79000,
+        "temp2_input": 87000
+      },
+      "energy_uj": 36409768424,
+      "cpu0_throttle": {
+        "package_throttle_count": 40698,
+        "core_throttle_count": 72
+      },
+      "loadavg": [
+        "4.33",
+        "4.27",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.997
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.187
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.564
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.9
+        }
+      },
+      "package_after": 96000,
+      "end_t": 51.2361
+    },
+    {
+      "t": 52.0001,
+      "core_before": {
+        "temp26_input": 84000,
+        "temp36_input": 72000,
+        "temp6_input": 74000,
+        "temp10_input": 75000,
+        "temp37_input": 72000,
+        "temp30_input": 73000,
+        "temp14_input": 77000,
+        "temp40_input": 72000,
+        "temp34_input": 72000,
+        "temp18_input": 91000,
+        "temp38_input": 72000,
+        "temp1_input": 96000,
+        "temp41_input": 72000,
+        "temp35_input": 72000,
+        "temp39_input": 72000,
+        "temp22_input": 79000,
+        "temp2_input": 87000
+      },
+      "energy_uj": 36441905976,
+      "cpu0_throttle": {
+        "package_throttle_count": 40758,
+        "core_throttle_count": 72
+      },
+      "loadavg": [
+        "4.33",
+        "4.27",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.34
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 59.03
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.816
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 57.832
+        }
+      },
+      "package_after": 96000,
+      "end_t": 52.2353
+    },
+    {
+      "t": 53.0001,
+      "core_before": {
+        "temp26_input": 84000,
+        "temp36_input": 72000,
+        "temp6_input": 74000,
+        "temp10_input": 75000,
+        "temp37_input": 72000,
+        "temp30_input": 73000,
+        "temp14_input": 77000,
+        "temp40_input": 72000,
+        "temp34_input": 72000,
+        "temp18_input": 91000,
+        "temp38_input": 72000,
+        "temp1_input": 86000,
+        "temp41_input": 72000,
+        "temp35_input": 72000,
+        "temp39_input": 72000,
+        "temp22_input": 74000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 36471390336,
+      "cpu0_throttle": {
+        "package_throttle_count": 40827,
+        "core_throttle_count": 72
+      },
+      "loadavg": [
+        "4.33",
+        "4.27",
+        "3.07"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 57.253
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.42
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.96
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 57.822
+        }
+      },
+      "package_after": 86000,
+      "end_t": 53.2333
+    },
+    {
+      "t": 54.0001,
+      "core_before": {
+        "temp26_input": 99000,
+        "temp36_input": 82000,
+        "temp6_input": 79000,
+        "temp10_input": 77000,
+        "temp37_input": 82000,
+        "temp30_input": 76000,
+        "temp14_input": 81000,
+        "temp40_input": 75000,
+        "temp34_input": 82000,
+        "temp18_input": 94000,
+        "temp38_input": 75000,
+        "temp1_input": 86000,
+        "temp41_input": 75000,
+        "temp35_input": 82000,
+        "temp39_input": 75000,
+        "temp22_input": 74000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 36512633211,
+      "cpu0_throttle": {
+        "package_throttle_count": 40894,
+        "core_throttle_count": 72
+      },
+      "loadavg": [
+        "4.46",
+        "4.29",
+        "3.08"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.334
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.857
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.02
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 62.127
+        }
+      },
+      "package_after": 91000,
+      "end_t": 54.2384
+    },
+    {
+      "t": 55.0001,
+      "core_before": {
+        "temp26_input": 99000,
+        "temp36_input": 82000,
+        "temp6_input": 79000,
+        "temp10_input": 77000,
+        "temp37_input": 82000,
+        "temp30_input": 76000,
+        "temp14_input": 81000,
+        "temp40_input": 75000,
+        "temp34_input": 82000,
+        "temp18_input": 94000,
+        "temp38_input": 75000,
+        "temp1_input": 91000,
+        "temp41_input": 75000,
+        "temp35_input": 82000,
+        "temp39_input": 75000,
+        "temp22_input": 73000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 36547696354,
+      "cpu0_throttle": {
+        "package_throttle_count": 40966,
+        "core_throttle_count": 72
+      },
+      "loadavg": [
+        "4.46",
+        "4.29",
+        "3.08"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.329
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.7
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.509
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 57.972
+        }
+      },
+      "package_after": 91000,
+      "end_t": 55.2347
+    },
+    {
+      "t": 56.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 74000,
+        "temp6_input": 74000,
+        "temp10_input": 77000,
+        "temp37_input": 74000,
+        "temp30_input": 74000,
+        "temp14_input": 77000,
+        "temp40_input": 72000,
+        "temp34_input": 74000,
+        "temp18_input": 95000,
+        "temp38_input": 72000,
+        "temp1_input": 95000,
+        "temp41_input": 72000,
+        "temp35_input": 74000,
+        "temp39_input": 72000,
+        "temp22_input": 73000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 36582843786,
+      "cpu0_throttle": {
+        "package_throttle_count": 41028,
+        "core_throttle_count": 74
+      },
+      "loadavg": [
+        "4.46",
+        "4.29",
+        "3.08"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.784
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 59.219
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.581
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.616
+        }
+      },
+      "package_after": 95000,
+      "end_t": 56.2357
+    },
+    {
+      "t": 57.0002,
+      "core_before": {
+        "temp26_input": 78000,
+        "temp36_input": 74000,
+        "temp6_input": 75000,
+        "temp10_input": 81000,
+        "temp37_input": 74000,
+        "temp30_input": 71000,
+        "temp14_input": 80000,
+        "temp40_input": 72000,
+        "temp34_input": 74000,
+        "temp18_input": 74000,
+        "temp38_input": 72000,
+        "temp1_input": 97000,
+        "temp41_input": 72000,
+        "temp35_input": 74000,
+        "temp39_input": 72000,
+        "temp22_input": 76000,
+        "temp2_input": 97000
+      },
+      "energy_uj": 36615409682,
+      "cpu0_throttle": {
+        "package_throttle_count": 41092,
+        "core_throttle_count": 76
+      },
+      "loadavg": [
+        "4.46",
+        "4.29",
+        "3.08"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.224
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.967
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.811
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.635
+        }
+      },
+      "package_after": 97000,
+      "end_t": 57.2363
+    },
+    {
+      "t": 58.0001,
+      "core_before": {
+        "temp26_input": 78000,
+        "temp36_input": 74000,
+        "temp6_input": 75000,
+        "temp10_input": 81000,
+        "temp37_input": 74000,
+        "temp30_input": 71000,
+        "temp14_input": 80000,
+        "temp40_input": 72000,
+        "temp34_input": 74000,
+        "temp18_input": 74000,
+        "temp38_input": 72000,
+        "temp1_input": 97000,
+        "temp41_input": 72000,
+        "temp35_input": 74000,
+        "temp39_input": 72000,
+        "temp22_input": 76000,
+        "temp2_input": 97000
+      },
+      "energy_uj": 36649508838,
+      "cpu0_throttle": {
+        "package_throttle_count": 41152,
+        "core_throttle_count": 76
+      },
+      "loadavg": [
+        "4.46",
+        "4.29",
+        "3.08"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 59.519
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 59.418
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.818
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.154
+        }
+      },
+      "package_after": 92000,
+      "end_t": 58.2362
+    },
+    {
+      "t": 59.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 76000,
+        "temp6_input": 88000,
+        "temp10_input": 74000,
+        "temp37_input": 76000,
+        "temp30_input": 76000,
+        "temp14_input": 86000,
+        "temp40_input": 75000,
+        "temp34_input": 76000,
+        "temp18_input": 76000,
+        "temp38_input": 75000,
+        "temp1_input": 92000,
+        "temp41_input": 75000,
+        "temp35_input": 76000,
+        "temp39_input": 75000,
+        "temp22_input": 83000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 36686969557,
+      "cpu0_throttle": {
+        "package_throttle_count": 41214,
+        "core_throttle_count": 76
+      },
+      "loadavg": [
+        "4.50",
+        "4.31",
+        "3.10"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.822
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.296
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.304
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.143
+        }
+      },
+      "package_after": 92000,
+      "end_t": 59.2342
+    },
+    {
+      "t": 60.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 76000,
+        "temp6_input": 88000,
+        "temp10_input": 74000,
+        "temp37_input": 76000,
+        "temp30_input": 76000,
+        "temp14_input": 86000,
+        "temp40_input": 75000,
+        "temp34_input": 76000,
+        "temp18_input": 76000,
+        "temp38_input": 75000,
+        "temp1_input": 96000,
+        "temp41_input": 75000,
+        "temp35_input": 76000,
+        "temp39_input": 75000,
+        "temp22_input": 83000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 36718340021,
+      "cpu0_throttle": {
+        "package_throttle_count": 41262,
+        "core_throttle_count": 76
+      },
+      "loadavg": [
+        "4.50",
+        "4.31",
+        "3.10"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 57.598
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.112
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.591
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.765
+        }
+      },
+      "package_after": 96000,
+      "end_t": 60.2334
+    },
+    {
+      "t": 61.0001,
+      "core_before": {
+        "temp26_input": 90000,
+        "temp36_input": 79000,
+        "temp6_input": 76000,
+        "temp10_input": 74000,
+        "temp37_input": 79000,
+        "temp30_input": 74000,
+        "temp14_input": 77000,
+        "temp40_input": 72000,
+        "temp34_input": 79000,
+        "temp18_input": 82000,
+        "temp38_input": 72000,
+        "temp1_input": 96000,
+        "temp41_input": 72000,
+        "temp35_input": 79000,
+        "temp39_input": 72000,
+        "temp22_input": 80000,
+        "temp2_input": 74000
+      },
+      "energy_uj": 36752053436,
+      "cpu0_throttle": {
+        "package_throttle_count": 41341,
+        "core_throttle_count": 76
+      },
+      "loadavg": [
+        "4.50",
+        "4.31",
+        "3.10"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.9
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.45
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.754
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.435
+        }
+      },
+      "package_after": 94000,
+      "end_t": 61.2362
+    },
+    {
+      "t": 62.0001,
+      "core_before": {
+        "temp26_input": 90000,
+        "temp36_input": 74000,
+        "temp6_input": 74000,
+        "temp10_input": 75000,
+        "temp37_input": 74000,
+        "temp30_input": 71000,
+        "temp14_input": 74000,
+        "temp40_input": 71000,
+        "temp34_input": 74000,
+        "temp18_input": 96000,
+        "temp38_input": 71000,
+        "temp1_input": 94000,
+        "temp41_input": 71000,
+        "temp35_input": 74000,
+        "temp39_input": 71000,
+        "temp22_input": 73000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 36787947082,
+      "cpu0_throttle": {
+        "package_throttle_count": 41409,
+        "core_throttle_count": 76
+      },
+      "loadavg": [
+        "4.50",
+        "4.31",
+        "3.10"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 59.239
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 59.086
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.679
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.825
+        }
+      },
+      "package_after": 94000,
+      "end_t": 62.236
+    },
+    {
+      "t": 63.0002,
+      "core_before": {
+        "temp26_input": 90000,
+        "temp36_input": 74000,
+        "temp6_input": 74000,
+        "temp10_input": 75000,
+        "temp37_input": 74000,
+        "temp30_input": 71000,
+        "temp14_input": 74000,
+        "temp40_input": 71000,
+        "temp34_input": 74000,
+        "temp18_input": 96000,
+        "temp38_input": 71000,
+        "temp1_input": 95000,
+        "temp41_input": 72000,
+        "temp35_input": 76000,
+        "temp39_input": 72000,
+        "temp22_input": 75000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 36826847373,
+      "cpu0_throttle": {
+        "package_throttle_count": 41481,
+        "core_throttle_count": 76
+      },
+      "loadavg": [
+        "4.50",
+        "4.31",
+        "3.10"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.055
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.954
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 59.145
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.203
+        }
+      },
+      "package_after": 95000,
+      "end_t": 63.2372
+    },
+    {
+      "t": 64.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 77000,
+        "temp6_input": 74000,
+        "temp10_input": 83000,
+        "temp37_input": 77000,
+        "temp30_input": 73000,
+        "temp14_input": 75000,
+        "temp40_input": 72000,
+        "temp34_input": 77000,
+        "temp18_input": 92000,
+        "temp38_input": 72000,
+        "temp1_input": 95000,
+        "temp41_input": 72000,
+        "temp35_input": 76000,
+        "temp39_input": 72000,
+        "temp22_input": 75000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 36859932371,
+      "cpu0_throttle": {
+        "package_throttle_count": 41547,
+        "core_throttle_count": 77
+      },
+      "loadavg": [
+        "4.30",
+        "4.27",
+        "3.09"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.27
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.278
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.533
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 57.534
+        }
+      },
+      "package_after": 86000,
+      "end_t": 64.2338
+    },
+    {
+      "t": 65.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 77000,
+        "temp6_input": 74000,
+        "temp10_input": 83000,
+        "temp37_input": 77000,
+        "temp30_input": 73000,
+        "temp14_input": 75000,
+        "temp40_input": 72000,
+        "temp34_input": 77000,
+        "temp18_input": 92000,
+        "temp38_input": 72000,
+        "temp1_input": 86000,
+        "temp41_input": 79000,
+        "temp35_input": 82000,
+        "temp39_input": 79000,
+        "temp22_input": 84000,
+        "temp2_input": 72000
+      },
+      "energy_uj": 36894962677,
+      "cpu0_throttle": {
+        "package_throttle_count": 41601,
+        "core_throttle_count": 77
+      },
+      "loadavg": [
+        "4.30",
+        "4.27",
+        "3.09"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 58.322
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.783
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.694
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.945
+        }
+      },
+      "package_after": 95000,
+      "end_t": 65.2348
+    },
+    {
+      "t": 66.0001,
+      "core_before": {
+        "temp26_input": 94000,
+        "temp36_input": 81000,
+        "temp6_input": 85000,
+        "temp10_input": 75000,
+        "temp37_input": 81000,
+        "temp30_input": 79000,
+        "temp14_input": 85000,
+        "temp40_input": 76000,
+        "temp34_input": 81000,
+        "temp18_input": 94000,
+        "temp38_input": 76000,
+        "temp1_input": 95000,
+        "temp41_input": 79000,
+        "temp35_input": 82000,
+        "temp39_input": 79000,
+        "temp22_input": 84000,
+        "temp2_input": 72000
+      },
+      "energy_uj": 36936746262,
+      "cpu0_throttle": {
+        "package_throttle_count": 41679,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.30",
+        "4.27",
+        "3.09"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 57.455
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 59.253
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.83
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.44
+        }
+      },
+      "package_after": 94000,
+      "end_t": 66.2352
+    },
+    {
+      "t": 67.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 76000,
+        "temp6_input": 75000,
+        "temp10_input": 74000,
+        "temp37_input": 76000,
+        "temp30_input": 75000,
+        "temp14_input": 81000,
+        "temp40_input": 74000,
+        "temp34_input": 76000,
+        "temp18_input": 94000,
+        "temp38_input": 74000,
+        "temp1_input": 94000,
+        "temp41_input": 74000,
+        "temp35_input": 76000,
+        "temp39_input": 74000,
+        "temp22_input": 87000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 36972521988,
+      "cpu0_throttle": {
+        "package_throttle_count": 41753,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.30",
+        "4.27",
+        "3.09"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.675
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 59.329
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.298
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.585
+        }
+      },
+      "package_after": 92000,
+      "end_t": 67.2369
+    },
+    {
+      "t": 68.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 76000,
+        "temp6_input": 75000,
+        "temp10_input": 74000,
+        "temp37_input": 76000,
+        "temp30_input": 75000,
+        "temp14_input": 81000,
+        "temp40_input": 74000,
+        "temp34_input": 76000,
+        "temp18_input": 94000,
+        "temp38_input": 74000,
+        "temp1_input": 92000,
+        "temp41_input": 74000,
+        "temp35_input": 76000,
+        "temp39_input": 74000,
+        "temp22_input": 87000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 37003904720,
+      "cpu0_throttle": {
+        "package_throttle_count": 41823,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.30",
+        "4.27",
+        "3.09"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.12
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 58.375
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.148
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.466
+        }
+      },
+      "package_after": 92000,
+      "end_t": 68.2343
+    },
+    {
+      "t": 69.0001,
+      "core_before": {
+        "temp26_input": 87000,
+        "temp36_input": 79000,
+        "temp6_input": 87000,
+        "temp10_input": 76000,
+        "temp37_input": 79000,
+        "temp30_input": 78000,
+        "temp14_input": 96000,
+        "temp40_input": 75000,
+        "temp34_input": 79000,
+        "temp18_input": 82000,
+        "temp38_input": 75000,
+        "temp1_input": 96000,
+        "temp41_input": 75000,
+        "temp35_input": 79000,
+        "temp39_input": 75000,
+        "temp22_input": 87000,
+        "temp2_input": 72000
+      },
+      "energy_uj": 37042126180,
+      "cpu0_throttle": {
+        "package_throttle_count": 41893,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.52",
+        "4.31",
+        "3.11"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 60.339
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 60.655
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 61.053
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.983
+        }
+      },
+      "package_after": 96000,
+      "end_t": 69.2431
+    },
+    {
+      "t": 70.0001,
+      "core_before": {
+        "temp26_input": 87000,
+        "temp36_input": 79000,
+        "temp6_input": 87000,
+        "temp10_input": 76000,
+        "temp37_input": 79000,
+        "temp30_input": 78000,
+        "temp14_input": 96000,
+        "temp40_input": 75000,
+        "temp34_input": 79000,
+        "temp18_input": 82000,
+        "temp38_input": 75000,
+        "temp1_input": 96000,
+        "temp41_input": 75000,
+        "temp35_input": 79000,
+        "temp39_input": 75000,
+        "temp22_input": 87000,
+        "temp2_input": 72000
+      },
+      "energy_uj": 37079686569,
+      "cpu0_throttle": {
+        "package_throttle_count": 41958,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.52",
+        "4.31",
+        "3.11"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 60.365
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 60.531
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 60.067
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.395
+        }
+      },
+      "package_after": 95000,
+      "end_t": 70.2413
+    },
+    {
+      "t": 71.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 74000,
+        "temp6_input": 82000,
+        "temp10_input": 74000,
+        "temp37_input": 74000,
+        "temp30_input": 73000,
+        "temp14_input": 81000,
+        "temp40_input": 72000,
+        "temp34_input": 74000,
+        "temp18_input": 78000,
+        "temp38_input": 72000,
+        "temp1_input": 95000,
+        "temp41_input": 72000,
+        "temp35_input": 74000,
+        "temp39_input": 72000,
+        "temp22_input": 76000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 37110607572,
+      "cpu0_throttle": {
+        "package_throttle_count": 42013,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.52",
+        "4.31",
+        "3.11"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 59.608
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 60.029
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 59.253
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.312
+        }
+      },
+      "package_after": 95000,
+      "end_t": 71.2384
+    },
+    {
+      "t": 72.0001,
+      "core_before": {
+        "temp26_input": 80000,
+        "temp36_input": 73000,
+        "temp6_input": 76000,
+        "temp10_input": 71000,
+        "temp37_input": 73000,
+        "temp30_input": 78000,
+        "temp14_input": 86000,
+        "temp40_input": 72000,
+        "temp34_input": 73000,
+        "temp18_input": 71000,
+        "temp38_input": 72000,
+        "temp1_input": 92000,
+        "temp41_input": 72000,
+        "temp35_input": 73000,
+        "temp39_input": 72000,
+        "temp22_input": 92000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 37142812506,
+      "cpu0_throttle": {
+        "package_throttle_count": 42061,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.52",
+        "4.31",
+        "3.11"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 60.538
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 59.227
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.187
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.531
+        }
+      },
+      "package_after": 92000,
+      "end_t": 72.2368
+    },
+    {
+      "t": 73.0001,
+      "core_before": {
+        "temp26_input": 80000,
+        "temp36_input": 73000,
+        "temp6_input": 76000,
+        "temp10_input": 71000,
+        "temp37_input": 73000,
+        "temp30_input": 78000,
+        "temp14_input": 86000,
+        "temp40_input": 72000,
+        "temp34_input": 73000,
+        "temp18_input": 71000,
+        "temp38_input": 72000,
+        "temp1_input": 92000,
+        "temp41_input": 72000,
+        "temp35_input": 73000,
+        "temp39_input": 72000,
+        "temp22_input": 92000,
+        "temp2_input": 70000
+      },
+      "energy_uj": 37179834934,
+      "cpu0_throttle": {
+        "package_throttle_count": 42126,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.52",
+        "4.31",
+        "3.11"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 59.823
+        },
+        "gpu_temp": {
+          "value": 55,
+          "ms": 61.135
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 60.293
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 60.128
+        }
+      },
+      "package_after": 96000,
+      "end_t": 73.2423
+    },
+    {
+      "t": 74.0001,
+      "core_before": {
+        "temp26_input": 97000,
+        "temp36_input": 82000,
+        "temp6_input": 79000,
+        "temp10_input": 76000,
+        "temp37_input": 82000,
+        "temp30_input": 86000,
+        "temp14_input": 85000,
+        "temp40_input": 75000,
+        "temp34_input": 82000,
+        "temp18_input": 86000,
+        "temp38_input": 75000,
+        "temp1_input": 96000,
+        "temp41_input": 75000,
+        "temp35_input": 82000,
+        "temp39_input": 75000,
+        "temp22_input": 91000,
+        "temp2_input": 72000
+      },
+      "energy_uj": 37222261034,
+      "cpu0_throttle": {
+        "package_throttle_count": 42199,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.40",
+        "4.29",
+        "3.11"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 60.449
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 60.664
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.233
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.061
+        }
+      },
+      "package_after": 96000,
+      "end_t": 74.2398
+    },
+    {
+      "t": 75.0001,
+      "core_before": {
+        "temp26_input": 97000,
+        "temp36_input": 82000,
+        "temp6_input": 79000,
+        "temp10_input": 76000,
+        "temp37_input": 82000,
+        "temp30_input": 86000,
+        "temp14_input": 85000,
+        "temp40_input": 75000,
+        "temp34_input": 82000,
+        "temp18_input": 86000,
+        "temp38_input": 75000,
+        "temp1_input": 92000,
+        "temp41_input": 75000,
+        "temp35_input": 82000,
+        "temp39_input": 75000,
+        "temp22_input": 91000,
+        "temp2_input": 72000
+      },
+      "energy_uj": 37260752268,
+      "cpu0_throttle": {
+        "package_throttle_count": 42268,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.40",
+        "4.29",
+        "3.11"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 57.57
+        },
+        "gpu_temp": {
+          "value": 57,
+          "ms": 58.666
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.497
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 57.774
+        }
+      },
+      "package_after": 92000,
+      "end_t": 75.2334
+    },
+    {
+      "t": 76.0001,
+      "core_before": {
+        "temp26_input": 84000,
+        "temp36_input": 77000,
+        "temp6_input": 86000,
+        "temp10_input": 71000,
+        "temp37_input": 77000,
+        "temp30_input": 78000,
+        "temp14_input": 96000,
+        "temp40_input": 76000,
+        "temp34_input": 77000,
+        "temp18_input": 80000,
+        "temp38_input": 76000,
+        "temp1_input": 92000,
+        "temp41_input": 76000,
+        "temp35_input": 77000,
+        "temp39_input": 76000,
+        "temp22_input": 84000,
+        "temp2_input": 71000
+      },
+      "energy_uj": 37301540860,
+      "cpu0_throttle": {
+        "package_throttle_count": 42346,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.40",
+        "4.29",
+        "3.11"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.907
+        },
+        "gpu_temp": {
+          "value": 57,
+          "ms": 58.833
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.924
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.813
+        }
+      },
+      "package_after": 96000,
+      "end_t": 76.2353
+    },
+    {
+      "t": 77.0001,
+      "core_before": {
+        "temp26_input": 90000,
+        "temp36_input": 79000,
+        "temp6_input": 87000,
+        "temp10_input": 77000,
+        "temp37_input": 79000,
+        "temp30_input": 82000,
+        "temp14_input": 91000,
+        "temp40_input": 80000,
+        "temp34_input": 79000,
+        "temp18_input": 91000,
+        "temp38_input": 79000,
+        "temp1_input": 96000,
+        "temp41_input": 79000,
+        "temp35_input": 81000,
+        "temp39_input": 79000,
+        "temp22_input": 87000,
+        "temp2_input": 76000
+      },
+      "energy_uj": 37341562486,
+      "cpu0_throttle": {
+        "package_throttle_count": 42399,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.40",
+        "4.29",
+        "3.11"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.267
+        },
+        "gpu_temp": {
+          "value": 57,
+          "ms": 58.423
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.704
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.766
+        }
+      },
+      "package_after": 96000,
+      "end_t": 77.234
+    },
+    {
+      "t": 78.0001,
+      "core_before": {
+        "temp26_input": 90000,
+        "temp36_input": 79000,
+        "temp6_input": 87000,
+        "temp10_input": 77000,
+        "temp37_input": 79000,
+        "temp30_input": 82000,
+        "temp14_input": 91000,
+        "temp40_input": 80000,
+        "temp34_input": 79000,
+        "temp18_input": 91000,
+        "temp38_input": 79000,
+        "temp1_input": 96000,
+        "temp41_input": 79000,
+        "temp35_input": 81000,
+        "temp39_input": 79000,
+        "temp22_input": 87000,
+        "temp2_input": 76000
+      },
+      "energy_uj": 37385495418,
+      "cpu0_throttle": {
+        "package_throttle_count": 42451,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.40",
+        "4.29",
+        "3.11"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.943
+        },
+        "gpu_temp": {
+          "value": 57,
+          "ms": 58.051
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.821
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.143
+        }
+      },
+      "package_after": 96000,
+      "end_t": 78.2361
+    },
+    {
+      "t": 79.0001,
+      "core_before": {
+        "temp26_input": 92000,
+        "temp36_input": 79000,
+        "temp6_input": 84000,
+        "temp10_input": 89000,
+        "temp37_input": 79000,
+        "temp30_input": 79000,
+        "temp14_input": 85000,
+        "temp40_input": 80000,
+        "temp34_input": 79000,
+        "temp18_input": 87000,
+        "temp38_input": 80000,
+        "temp1_input": 96000,
+        "temp41_input": 80000,
+        "temp35_input": 79000,
+        "temp39_input": 80000,
+        "temp22_input": 85000,
+        "temp2_input": 76000
+      },
+      "energy_uj": 37428294503,
+      "cpu0_throttle": {
+        "package_throttle_count": 42503,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.53",
+        "4.32",
+        "3.12"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 61.662
+        },
+        "gpu_temp": {
+          "value": 58,
+          "ms": 61.935
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 60.972
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 61.051
+        }
+      },
+      "package_after": 96000,
+      "end_t": 79.2465
+    },
+    {
+      "t": 80.0001,
+      "core_before": {
+        "temp26_input": 92000,
+        "temp36_input": 79000,
+        "temp6_input": 84000,
+        "temp10_input": 89000,
+        "temp37_input": 79000,
+        "temp30_input": 79000,
+        "temp14_input": 85000,
+        "temp40_input": 80000,
+        "temp34_input": 79000,
+        "temp18_input": 87000,
+        "temp38_input": 80000,
+        "temp1_input": 96000,
+        "temp41_input": 80000,
+        "temp35_input": 79000,
+        "temp39_input": 80000,
+        "temp22_input": 85000,
+        "temp2_input": 76000
+      },
+      "energy_uj": 37466569734,
+      "cpu0_throttle": {
+        "package_throttle_count": 42557,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.53",
+        "4.32",
+        "3.12"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 60.563
+        },
+        "gpu_temp": {
+          "value": 58,
+          "ms": 60.087
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 61.119
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 61.866
+        }
+      },
+      "package_after": 96000,
+      "end_t": 80.2451
+    },
+    {
+      "t": 81.0001,
+      "core_before": {
+        "temp26_input": 83000,
+        "temp36_input": 79000,
+        "temp6_input": 86000,
+        "temp10_input": 77000,
+        "temp37_input": 79000,
+        "temp30_input": 83000,
+        "temp14_input": 92000,
+        "temp40_input": 81000,
+        "temp34_input": 79000,
+        "temp18_input": 83000,
+        "temp38_input": 81000,
+        "temp1_input": 95000,
+        "temp41_input": 81000,
+        "temp35_input": 79000,
+        "temp39_input": 81000,
+        "temp22_input": 95000,
+        "temp2_input": 77000
+      },
+      "energy_uj": 37508659959,
+      "cpu0_throttle": {
+        "package_throttle_count": 42600,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.53",
+        "4.32",
+        "3.12"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 60.919
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 61.133
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 60.637
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 60.462
+        }
+      },
+      "package_after": 95000,
+      "end_t": 81.2445
+    },
+    {
+      "t": 82.0001,
+      "core_before": {
+        "temp26_input": 91000,
+        "temp36_input": 79000,
+        "temp6_input": 84000,
+        "temp10_input": 79000,
+        "temp37_input": 81000,
+        "temp30_input": 80000,
+        "temp14_input": 87000,
+        "temp40_input": 76000,
+        "temp34_input": 81000,
+        "temp18_input": 92000,
+        "temp38_input": 76000,
+        "temp1_input": 92000,
+        "temp41_input": 76000,
+        "temp35_input": 81000,
+        "temp39_input": 76000,
+        "temp22_input": 85000,
+        "temp2_input": 76000
+      },
+      "energy_uj": 37549424503,
+      "cpu0_throttle": {
+        "package_throttle_count": 42652,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.53",
+        "4.32",
+        "3.12"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 59.834
+        },
+        "gpu_temp": {
+          "value": 58,
+          "ms": 60.77
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 60.218
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 63.944
+        }
+      },
+      "package_after": 92000,
+      "end_t": 82.2457
+    },
+    {
+      "t": 83.0002,
+      "core_before": {
+        "temp26_input": 91000,
+        "temp36_input": 79000,
+        "temp6_input": 84000,
+        "temp10_input": 79000,
+        "temp37_input": 81000,
+        "temp30_input": 80000,
+        "temp14_input": 87000,
+        "temp40_input": 76000,
+        "temp34_input": 81000,
+        "temp18_input": 92000,
+        "temp38_input": 76000,
+        "temp1_input": 92000,
+        "temp41_input": 76000,
+        "temp35_input": 83000,
+        "temp39_input": 77000,
+        "temp22_input": 85000,
+        "temp2_input": 76000
+      },
+      "energy_uj": 37595098702,
+      "cpu0_throttle": {
+        "package_throttle_count": 42708,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.53",
+        "4.32",
+        "3.12"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 59.053
+        },
+        "gpu_temp": {
+          "value": 58,
+          "ms": 61.714
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 60.643
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 61.095
+        }
+      },
+      "package_after": 96000,
+      "end_t": 83.2442
+    },
+    {
+      "t": 84.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 83000,
+        "temp6_input": 88000,
+        "temp10_input": 81000,
+        "temp37_input": 83000,
+        "temp30_input": 84000,
+        "temp14_input": 93000,
+        "temp40_input": 81000,
+        "temp34_input": 83000,
+        "temp18_input": 88000,
+        "temp38_input": 81000,
+        "temp1_input": 96000,
+        "temp41_input": 81000,
+        "temp35_input": 83000,
+        "temp39_input": 77000,
+        "temp22_input": 85000,
+        "temp2_input": 76000
+      },
+      "energy_uj": 37635986720,
+      "cpu0_throttle": {
+        "package_throttle_count": 42758,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.72",
+        "4.37",
+        "3.15"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 59.833
+        },
+        "gpu_temp": {
+          "value": 59,
+          "ms": 59.312
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.384
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.766
+        }
+      },
+      "package_after": 96000,
+      "end_t": 84.2373
+    },
+    {
+      "t": 85.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 83000,
+        "temp6_input": 88000,
+        "temp10_input": 81000,
+        "temp37_input": 83000,
+        "temp30_input": 84000,
+        "temp14_input": 93000,
+        "temp40_input": 81000,
+        "temp34_input": 83000,
+        "temp18_input": 88000,
+        "temp38_input": 81000,
+        "temp1_input": 97000,
+        "temp41_input": 81000,
+        "temp35_input": 82000,
+        "temp39_input": 82000,
+        "temp22_input": 95000,
+        "temp2_input": 77000
+      },
+      "energy_uj": 37680476291,
+      "cpu0_throttle": {
+        "package_throttle_count": 42848,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.72",
+        "4.37",
+        "3.15"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 59.65
+        },
+        "gpu_temp": {
+          "value": 59,
+          "ms": 62.67
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 61.43
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.491
+        }
+      },
+      "package_after": 97000,
+      "end_t": 85.2445
+    },
+    {
+      "t": 86.0001,
+      "core_before": {
+        "temp26_input": 88000,
+        "temp36_input": 84000,
+        "temp6_input": 90000,
+        "temp10_input": 83000,
+        "temp37_input": 84000,
+        "temp30_input": 92000,
+        "temp14_input": 96000,
+        "temp40_input": 89000,
+        "temp34_input": 83000,
+        "temp18_input": 87000,
+        "temp38_input": 89000,
+        "temp1_input": 90000,
+        "temp41_input": 89000,
+        "temp35_input": 81000,
+        "temp39_input": 82000,
+        "temp22_input": 88000,
+        "temp2_input": 84000
+      },
+      "energy_uj": 37725262859,
+      "cpu0_throttle": {
+        "package_throttle_count": 42931,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.72",
+        "4.37",
+        "3.15"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 59.163
+        },
+        "gpu_temp": {
+          "value": 57,
+          "ms": 58.623
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.906
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 59.55
+        }
+      },
+      "package_after": 90000,
+      "end_t": 86.238
+    },
+    {
+      "t": 87.0001,
+      "core_before": {
+        "temp26_input": 82000,
+        "temp36_input": 77000,
+        "temp6_input": 87000,
+        "temp10_input": 82000,
+        "temp37_input": 77000,
+        "temp30_input": 86000,
+        "temp14_input": 94000,
+        "temp40_input": 80000,
+        "temp34_input": 77000,
+        "temp18_input": 82000,
+        "temp38_input": 80000,
+        "temp1_input": 90000,
+        "temp41_input": 81000,
+        "temp35_input": 81000,
+        "temp39_input": 82000,
+        "temp22_input": 88000,
+        "temp2_input": 84000
+      },
+      "energy_uj": 37765750182,
+      "cpu0_throttle": {
+        "package_throttle_count": 42976,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.72",
+        "4.37",
+        "3.15"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 60.832
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 59.899
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 59.658
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 61.305
+        }
+      },
+      "package_after": 96000,
+      "end_t": 87.2426
+    },
+    {
+      "t": 88.0001,
+      "core_before": {
+        "temp26_input": 82000,
+        "temp36_input": 77000,
+        "temp6_input": 87000,
+        "temp10_input": 82000,
+        "temp37_input": 77000,
+        "temp30_input": 86000,
+        "temp14_input": 94000,
+        "temp40_input": 80000,
+        "temp34_input": 77000,
+        "temp18_input": 82000,
+        "temp38_input": 80000,
+        "temp1_input": 96000,
+        "temp41_input": 81000,
+        "temp35_input": 79000,
+        "temp39_input": 82000,
+        "temp22_input": 89000,
+        "temp2_input": 76000
+      },
+      "energy_uj": 37808008069,
+      "cpu0_throttle": {
+        "package_throttle_count": 43019,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.72",
+        "4.37",
+        "3.15"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 95,
+          "ms": 58.07
+        },
+        "gpu_temp": {
+          "value": 56,
+          "ms": 58.743
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 57.732
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 60.546
+        }
+      },
+      "package_after": 96000,
+      "end_t": 88.2359
+    },
+    {
+      "t": 89.0001,
+      "core_before": {
+        "temp26_input": 91000,
+        "temp36_input": 79000,
+        "temp6_input": 79000,
+        "temp10_input": 81000,
+        "temp37_input": 79000,
+        "temp30_input": 75000,
+        "temp14_input": 77000,
+        "temp40_input": 74000,
+        "temp34_input": 78000,
+        "temp18_input": 96000,
+        "temp38_input": 74000,
+        "temp1_input": 96000,
+        "temp41_input": 74000,
+        "temp35_input": 79000,
+        "temp39_input": 82000,
+        "temp22_input": 89000,
+        "temp2_input": 76000
+      },
+      "energy_uj": 37844237896,
+      "cpu0_throttle": {
+        "package_throttle_count": 43077,
+        "core_throttle_count": 81
+      },
+      "loadavg": [
+        "4.51",
+        "4.33",
+        "3.14"
+      ],
+      "ec": {
+        "cpu_temp": {
+          "value": 94,
+          "ms": 59.362
+        },
+        "gpu_temp": {
+          "value": 57,
+          "ms": 58.372
+        },
+        "fan1_raw": {
+          "value": 170,
+          "ms": 58.702
+        },
+        "fan2_raw": {
+          "value": 170,
+          "ms": 58.547
+        }
+      },
+      "package_after": 96000,
+      "end_t": 89.236
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "scope": "Frosted native Rust UI, local tests, linked development bundles; no release/install or new OEM control qualification",
+  "source_sha256": "4d372256d681815c76c0a42642a122dbbf7c602f647bf0bcb6b1f7b4b5d28914",
+  "source_inputs_include_embedded_fonts_and_licenses": true,
+  "rust_checks": {
+    "fmt": "passed",
+    "test": "passed",
+    "clippy": "passed",
+    "windows": "passed"
+  },
+  "rust_test_totals": {
+    "passed": 71,
+    "failed": 0,
+    "ignored": 0,
+    "measured": 0,
+    "filtered_out": 0
+  },
+  "python_console_tests": {
+    "outcome": "passed",
+    "ran": 73,
+    "skipped": 0
+  },
+  "layout_scenarios": {
+    "count": 94,
+    "logical_sizes": [
+      [
+        360,
+        280
+      ],
+      [
+        800,
+        600
+      ],
+      [
+        1120,
+        760
+      ]
+    ],
+    "native_dpi_factors": [
+      1.0,
+      1.25,
+      1.5,
+      2.0
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "coverage": [
+      "real renderer; long identities and sources",
+      "missing and unavailable readings",
+      "expanded source details",
+      "real pointer and Tab/Enter navigation",
+      "reduced-motion setting",
+      "bottom reachable; no horizontal overflow; missing glyphs fail"
+    ]
+  },
+  "native_linux_capture": {
+    "binary_sha256": "b8df56e6fdc8a1b353152c57a9173465f0a4b3138aac1449f3aa66cd0e59d056",
+    "screenshot_sha256": "79a47847366f6eb22365ec57076fe16437bed4d3a0000c616083c310e080ce55",
+    "width": 1280,
+    "height": 720,
+    "compositor": "cage headless / pixman",
+    "scope": "native Linux render and read-only startup; no user desktop or hardware control"
+  },
+  "development_archives": [
+    {
+      "file": "mechrevo-console-0.1.0-frosted-linux-x86_64.tar.gz",
+      "bytes": 14436762,
+      "sha256": "ee063c8b78b8a84674242faa90e965eac30ada6dd8bd9c5f1dec863bb11ba657",
+      "all_members_verified": true
+    },
+    {
+      "file": "mechrevo-console-0.1.0-frosted-windows-x86_64.zip",
+      "bytes": 15620765,
+      "sha256": "f66a78b4ddb0b5308f1b2ce27c84be2a5a32f599020ab747032afcd6eea589e1",
+      "all_members_verified": true
+    }
+  ],
+  "font_licenses_in_both_archives": true,
+  "material": "cached application-owned diffuse texture and translucent surfaces; not desktop background capture or OS backdrop blur",
+  "limitations": [
+    "Windows compile and link only; no Windows runtime or hardware acceptance",
+    "Linux capture is read-only on development hardware; not cross-distribution acceptance",
+    "OEM EC/fan/MUX/RGB/water-cooler controls remain unimplemented in Rust console",
+    "Separate private fan-floor experiments do not establish a noise fix or any other model support"
+  ],
+  "tracking": "Source watcher active; command tracking partial for build/transient compositor paths; no cleanup performed"
+}

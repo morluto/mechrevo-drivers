@@ -154,6 +154,8 @@ struct uniwill_device_features_t {
 	 *   graphics card often called "power save", "balanced"
 	 *   and "enthusiast"
 	 */
+	/* Legacy fan-curve initialization; mode-only devices advertise counts
+	 * separately without enabling that probe-time EC table copy. */
 	bool uniwill_profile_v1;
 	bool uniwill_profile_v1_two_profs;
 	bool uniwill_profile_v1_three_profs;
@@ -174,6 +176,9 @@ struct uniwill_device_features_t {
 };
 
 struct uniwill_device_features_t *uniwill_get_device_features(void);
+/* False when the last feature probe was incomplete; callers that cache the
+ * returned pointer must not treat it as ready in that case. */
+bool uniwill_device_features_ready(void);
 
 union uw_ec_read_return {
 	u32 dword;

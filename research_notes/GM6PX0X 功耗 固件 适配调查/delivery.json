@@ -1,0 +1,41 @@
+{
+  "head": "e68a1bf82c9e76529c9a392e35a7362bc302e9e4",
+  "remote_main": "e68a1bf82c9e76529c9a392e35a7362bc302e9e4",
+  "public_sha256": {
+    "docs/NVIDIA-0xC5.md": "059b5389ebbf048c2ab4481a763519e1499fd58536958fad9933583a6c86826c",
+    "docs/hardware/GM6PX0X.md": "1c20ad602ae9e5230b1dcbcc46be8aabb4c8b6d9fd2bff0c11b64483815d7dab",
+    "reports/GM6PX0X \u529f\u8017 \u56fa\u4ef6 \u9002\u914d\u8c03\u67e5.md": "78cff1a34b3f5f91ec0807244bb1cdc66bdfaf3ae2d4644effa5ab60bbdd932b"
+  },
+  "relative_links_checked": [
+    {
+      "file": "docs/NVIDIA-0xC5.md",
+      "link": "../reports/GM6PX0X \u529f\u8017 \u56fa\u4ef6 \u9002\u914d\u8c03\u67e5.md"
+    },
+    {
+      "file": "docs/hardware/GM6PX0X.md",
+      "link": "../../reports/GM6PX0X \u529f\u8017 \u56fa\u4ef6 \u9002\u914d\u8c03\u67e5.md"
+    },
+    {
+      "file": "docs/hardware/GM6PX0X.md",
+      "link": "../POWER-CONTROL.md"
+    },
+    {
+      "file": "docs/hardware/GM6PX0X.md",
+      "link": "../NVIDIA-0xC5.md"
+    },
+    {
+      "file": "docs/hardware/GM6PX0X.md",
+      "link": "../NVIDIA-0xC5.md"
+    }
+  ],
+  "commit_output": "[main e68a1bf] docs: trace GM6PX0X firmware and power-control evidence\n 3 files changed, 62 insertions(+), 6 deletions(-)\n create mode 100644 \"reports/GM6PX0X \\345\\212\\237\\350\\200\\227 \\345\\233\\272\\344\\273\\266 \\351\\200\\202\\351\\205\\215\\350\\260\\203\\346\\237\\245.md\"\n",
+  "push_output": "\n** (process:149527): CRITICAL **: 17:17:11.664: store failed: Cannot autolaunch D-Bus without X11 $DISPLAY\nTo https://github.com/LIghtJUNction/mechrevo-drivers.git\n   8859a6f..e68a1bf  main -> main\n",
+  "tracked_worktree_clean": true,
+  "untracked_local_notes": "?? research_notes/\n",
+  "source_code_changed": false,
+  "installed": false,
+  "loaded": false,
+  "aur_published": false,
+  "hardware_checked": "Private local-runtime.json: unchanged module IDs/kernel/packages and active services; no new hardware acceptance",
+  "earlier_sync_attempt": "Stopped after staging when non-NUL git output quoted Chinese filename; reconciled exact staged paths using -z before commit"
+}

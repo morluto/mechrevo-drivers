@@ -121,6 +121,9 @@ class ClevoIoctlRuntime(unittest.TestCase):
     def test_disabled_webcam_dmi_models_keep_read_write_policy(self):
         self.check_case("webcam_dmi")
 
+    def test_uniwill_only_webcam_leaves_clevo_and_clevo_still_owns_shared_platforms(self):
+        self.check_case("webcam_platform_route")
+
     def test_unknown_commands_return_enotty_without_user_copy_or_hardware_access(self):
         self.check_case("unknown_commands")
 

@@ -1,0 +1,327 @@
+{
+  "verified_at": "2026-11-02T11:33:32.284684+08:00",
+  "source_commit": "6bb0590737d42d10e4175a18890523014bd0be1e",
+  "machine_product": "Kuangshi16Pro Series GM6PX0X",
+  "cpu": "12th Gen Intel(R) Core(TM) i9-12900HX",
+  "installed_package": "mechrevo-console 0.1.0.r1531.g6bb0590-1",
+  "package_sha256": "79d63065b890f6b4c01cdbcf4d2da7d7e3219488744ed4ac08cd1ac1cb01fad4",
+  "package_integrity": "pacman -Qkk: 27 files, zero altered; five executable/policy files also compared byte-for-byte against archive",
+  "gui_smoke": "Own newly launched GUI mapped a window in Hyprland and remained alive for 4 seconds; own process then terminated; no visual/human usability claim",
+  "tests": {
+    "command": "python -m unittest discover -s tests -p 'test_*.py'",
+    "run": 1098,
+    "skipped": 22,
+    "result": "OK"
+  },
+  "hotkey": {
+    "root_cause": "Same driver-generated SUPER+ALT+F6 handled by both Hyprland binding and mechrevo-control evdev daemon; removed duplicate local Hyprland binding, retained daemon",
+    "test_method": "Injected the exact driver key chord into the existing tuxedo_keyboard evdev node; observed tccd D-Bus calls, EC readback and profile stability",
+    "calls_per_press_before": 2,
+    "cycles_after_install": [
+      {
+        "label": "installed-office",
+        "profile_before": "mechrevo_turbo",
+        "profile_after": "mechrevo_office",
+        "profile_change_calls": 1,
+        "ec_readback_hex": "0xa0"
+      },
+      {
+        "label": "installed-gaming",
+        "profile_before": "mechrevo_office",
+        "profile_after": "mechrevo_gaming",
+        "profile_change_calls": 1,
+        "ec_readback_hex": "0x0"
+      },
+      {
+        "label": "installed-turbo",
+        "profile_before": "mechrevo_gaming",
+        "profile_after": "mechrevo_turbo",
+        "profile_change_calls": 1,
+        "ec_readback_hex": "0x10"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "mode": "office",
+      "profile": "mechrevo_office",
+      "sample_offsets_seconds": [
+        2,
+        13
+      ],
+      "policies_checked_each_sample": 24,
+      "governors": [
+        "powersave"
+      ],
+      "epp": [
+        "balance_power"
+      ],
+      "minimum_frequency_requests_khz": [
+        800000
+      ],
+      "maximum_frequency_requests_khz": [
+        3200000
+      ],
+      "ec_readback_hex": "0xa0",
+      "fan_request": {
+        "fanProfile": "Quiet",
+        "minimumFanspeed": 60,
+        "maximumFanspeed": 100
+      },
+      "fan_rpm_samples": [
+        {
+          "mechrevo_ec:fan1_input": 4400,
+          "mechrevo_ec:fan2_input": 5165
+        },
+        {
+          "mechrevo_ec:fan1_input": 3433,
+          "mechrevo_ec:fan2_input": 4141
+        }
+      ],
+      "brightness_unchanged": true,
+      "package_pl1_samples_uw": [
+        {
+          "/sys/class/powercap/intel-rapl:0": "55000000",
+          "/sys/class/powercap/intel-rapl-mmio:0": "55000000"
+        },
+        {
+          "/sys/class/powercap/intel-rapl:0": "55000000",
+          "/sys/class/powercap/intel-rapl-mmio:0": "55000000"
+        }
+      ]
+    },
+    {
+      "mode": "gaming",
+      "profile": "mechrevo_gaming",
+      "sample_offsets_seconds": [
+        2,
+        13
+      ],
+      "policies_checked_each_sample": 24,
+      "governors": [
+        "powersave"
+      ],
+      "epp": [
+        "balance_performance"
+      ],
+      "minimum_frequency_requests_khz": [
+        800000
+      ],
+      "maximum_frequency_requests_khz": [
+        3600000,
+        4900000
+      ],
+      "ec_readback_hex": "0x0",
+      "fan_request": {
+        "fanProfile": "Balanced",
+        "minimumFanspeed": 60,
+        "maximumFanspeed": 100
+      },
+      "fan_rpm_samples": [
+        {
+          "mechrevo_ec:fan1_input": 3134,
+          "mechrevo_ec:fan2_input": 3915
+        },
+        {
+          "mechrevo_ec:fan1_input": 3080,
+          "mechrevo_ec:fan2_input": 3659
+        }
+      ],
+      "brightness_unchanged": true,
+      "package_pl1_samples_uw": [
+        {
+          "/sys/class/powercap/intel-rapl:0": "55000000",
+          "/sys/class/powercap/intel-rapl-mmio:0": "55000000"
+        },
+        {
+          "/sys/class/powercap/intel-rapl:0": "55000000",
+          "/sys/class/powercap/intel-rapl-mmio:0": "55000000"
+        }
+      ]
+    },
+    {
+      "mode": "gaming-quiet",
+      "profile": "mechrevo_gaming_quiet",
+      "sample_offsets_seconds": [
+        2,
+        13
+      ],
+      "policies_checked_each_sample": 24,
+      "governors": [
+        "powersave"
+      ],
+      "epp": [
+        "balance_performance"
+      ],
+      "minimum_frequency_requests_khz": [
+        800000
+      ],
+      "maximum_frequency_requests_khz": [
+        3600000,
+        4900000
+      ],
+      "ec_readback_hex": "0x0",
+      "fan_request": {
+        "fanProfile": "Balanced",
+        "minimumFanspeed": 50,
+        "maximumFanspeed": 100
+      },
+      "fan_rpm_samples": [
+        {
+          "mechrevo_ec:fan1_input": 2909,
+          "mechrevo_ec:fan2_input": 3659
+        },
+        {
+          "mechrevo_ec:fan1_input": 2642,
+          "mechrevo_ec:fan2_input": 3403
+        }
+      ],
+      "brightness_unchanged": true,
+      "package_pl1_samples_uw": [
+        {
+          "/sys/class/powercap/intel-rapl:0": "55000000",
+          "/sys/class/powercap/intel-rapl-mmio:0": "55000000"
+        },
+        {
+          "/sys/class/powercap/intel-rapl:0": "55000000",
+          "/sys/class/powercap/intel-rapl-mmio:0": "55000000"
+        }
+      ]
+    },
+    {
+      "mode": "turbo",
+      "profile": "mechrevo_turbo",
+      "sample_offsets_seconds": [
+        2,
+        13
+      ],
+      "policies_checked_each_sample": 24,
+      "governors": [
+        "powersave"
+      ],
+      "epp": [
+        "performance"
+      ],
+      "minimum_frequency_requests_khz": [
+        800000
+      ],
+      "maximum_frequency_requests_khz": [
+        3600000,
+        4900000,
+        5000000
+      ],
+      "ec_readback_hex": "0x10",
+      "fan_request": {
+        "fanProfile": "Freezy",
+        "minimumFanspeed": 60,
+        "maximumFanspeed": 100
+      },
+      "fan_rpm_samples": [
+        {
+          "mechrevo_ec:fan1_input": 3147,
+          "mechrevo_ec:fan2_input": 3970
+        },
+        {
+          "mechrevo_ec:fan1_input": 4269,
+          "mechrevo_ec:fan2_input": 5250
+        }
+      ],
+      "brightness_unchanged": true,
+      "package_pl1_samples_uw": [
+        {
+          "/sys/class/powercap/intel-rapl:0": "55000000",
+          "/sys/class/powercap/intel-rapl-mmio:0": "55000000"
+        },
+        {
+          "/sys/class/powercap/intel-rapl:0": "55000000",
+          "/sys/class/powercap/intel-rapl-mmio:0": "55000000"
+        }
+      ]
+    },
+    {
+      "mode": "boost",
+      "profile": "mechrevo_fan_boost",
+      "sample_offsets_seconds": [
+        2,
+        13
+      ],
+      "policies_checked_each_sample": 24,
+      "governors": [
+        "powersave"
+      ],
+      "epp": [
+        "balance_performance"
+      ],
+      "minimum_frequency_requests_khz": [
+        800000
+      ],
+      "maximum_frequency_requests_khz": [
+        3600000,
+        4900000
+      ],
+      "ec_readback_hex": "0x10",
+      "fan_request": {
+        "fanProfile": "Freezy",
+        "minimumFanspeed": 100,
+        "maximumFanspeed": 100
+      },
+      "fan_rpm_samples": [
+        {
+          "mechrevo_ec:fan1_input": 4781,
+          "mechrevo_ec:fan2_input": 5506
+        },
+        {
+          "mechrevo_ec:fan1_input": 4867,
+          "mechrevo_ec:fan2_input": 5506
+        }
+      ],
+      "brightness_unchanged": true,
+      "package_pl1_samples_uw": [
+        {
+          "/sys/class/powercap/intel-rapl:0": "55000000",
+          "/sys/class/powercap/intel-rapl-mmio:0": "55000000"
+        },
+        {
+          "/sys/class/powercap/intel-rapl:0": "55000000",
+          "/sys/class/powercap/intel-rapl-mmio:0": "55000000"
+        }
+      ]
+    }
+  ],
+  "fan_profiles_changed": false,
+  "final_profile": "mechrevo_turbo",
+  "independent_power_control": {
+    "policy_changed": false,
+    "holding_at_final_sample": true,
+    "desired_limit_uw": 55000000,
+    "errors": []
+  },
+  "independent_thermald": {
+    "active": "active",
+    "target_millicelsius": [
+      90000
+    ],
+    "hysteresis_millicelsius": [
+      3000
+    ],
+    "config_sha256": "e36b5396c4cf15d04ec46dd96f0f4215b98bd313b43ebd063032ad336419d2ea"
+  },
+  "local_config": {
+    "profile_before_sha256": "b146c6caa532f1828db9afec8029906984d08236bb266d391ea9fb4525a89510",
+    "profile_after_sha256": "55329b7861d516af8e008123c7c9181408190e2c4782fd505400cf2cb0932732",
+    "tcc_settings_unchanged": true
+  },
+  "scope_limits": [
+    "Exact machine only; not compatibility qualification for other models.",
+    "No physical button press, human LED observation, acoustic measurement, game FPS, battery-runtime or sustained thermal benchmark.",
+    "EC byte readback does not prove the physical lamp is lit.",
+    "Frequency values are policy requests, not a guarantee of delivered clocks or 130W performance.",
+    "Fan Boost requests 100%; sampled RPM does not qualify 100% hardware speed.",
+    "Early probe assumptions were corrected: only package RAPL domains are checked, PL1 may be lowered by thermald, and Boost EC byte is 0x10 per existing source mapping; no hardware code was changed for these probe corrections.",
+    "Python regression fixture corrected for existing thermald 3C hysteresis; runtime thermal/power protection left unchanged."
+  ],
+  "publication": {
+    "aur_published": false,
+    "local_package_installed": true
+  }
+}

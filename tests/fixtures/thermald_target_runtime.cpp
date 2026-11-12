@@ -148,7 +148,7 @@ static void native_trips(cthd_zone &zone) {
 }
 static bool qualified(cthd_zone &zone) {
     auto &trip = zone.passive();
-    if (sensor_errors || trip.get_trip_temp() != 90000 || trip.get_trip_hyst() != 0
+    if (sensor_errors || trip.get_trip_temp() != 90000 || trip.get_trip_hyst() != 3000
             || trip.get_sensor_id() != 7 || trip.get_cdev_count() != native_order.size()) return false;
     for (unsigned i = 0; i < native_order.size(); ++i) {
         auto &binding = trip.get_cdev_at_index(i);
@@ -273,12 +273,25 @@ int main(int argc, char **argv) {
             "actual trip did not escalate to native intel_pstate");
     require(powerclamp.writes == 0 && cpufreq.writes == 0 && processor.writes == 0,
             "SEQUENTIAL activated later devices too early");
-    // Cool readings release the most recently active device first, then RAPL.
+    // Within the 3C hysteresis band, neither 89C nor exactly 87C may release.
+    const int held_pstate = pstate.get_curr_state();
+    const auto held_rapl_writes = rapl.hardware().writes.size();
+    const int held_pstate_writes = pstate.writes;
+    for (const auto reading : {89000, 87000}) {
+        fixture_seconds += 3;
+        require(passive.thd_trip_point_check(7, reading, PREF_ENERGY_CONSERVE, &reset),
+                "hysteresis-band observation rejected");
+        require(rapl.get_curr_state() == floor && pstate.get_curr_state() == held_pstate
+                && rapl.hardware().writes.size() == held_rapl_writes
+                && pstate.writes == held_pstate_writes,
+                "cooling released inside hysteresis band or at exact boundary");
+    }
+    // Below 87C, release the most recently active device first, then RAPL.
     // The native RAPL release must restore the configured ceiling, never the
     // unqualified 140 W power-on value retained by the sysfs double.
     for (int i = 0; i < 40 && (pstate.get_curr_state() || rapl.get_curr_state() != ceiling); ++i) {
         fixture_seconds += 1;
-        require(passive.thd_trip_point_check(7, 89000, PREF_ENERGY_CONSERVE, &reset),
+        require(passive.thd_trip_point_check(7, 86999, PREF_ENERGY_CONSERVE, &reset),
                 "cool reading failed to release native cooling");
         require(rapl.get_curr_state() >= floor && rapl.get_curr_state() <= ceiling,
                 "release escaped configured RAPL range");

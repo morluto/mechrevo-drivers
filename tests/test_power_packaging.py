@@ -125,7 +125,7 @@ class PowerPackaging(unittest.TestCase):
         self.assertEqual(metadata["pkgbase"], [PKGNAME])
         self.assertEqual(metadata["pkgname"], [PKGNAME])
         self.assertEqual(metadata["pkgver"], ["0.1.0"])
-        self.assertEqual(metadata["pkgrel"], ["17"])
+        self.assertEqual(metadata["pkgrel"], ["19"])
         self.assertEqual(metadata["arch"], ["x86_64"])
         self.assertEqual(metadata["depends"], ["python", "thermald=2:2.5.13", "systemd"])
         self.assertEqual(metadata["makedepends"], ["git"])

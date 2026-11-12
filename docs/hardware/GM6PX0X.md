@@ -1,8 +1,93 @@
 # 旷世 16 Pro GM6PX0X 本机验证
 
-日期：2026-10-14；2026-10-15／16／17 续验（Asia/Taipei）。这是单台机器的部分功能验证，不是完整兼容认证。
+日期：2026-10-14；2026-10-15／16／17／18 续验（Asia/Taipei）。这是单台机器的部分功能验证，不是完整兼容认证。
 
 当前状态与剩余验收见[适配进度](../ADAPTATION-STATUS.md)。以下各节为历史记录，包版本和运行结论以各节时间为准。
+
+## 2026-10-23 低速风扇配置调整
+
+本机运行内核 `7.2.11-arch1-1`、驱动包 `4.24.0.r165.gfc48597-1` 和
+stock TCC `3.0.10-1`；`tuxedo_keyboard` 运行与磁盘 srcversion 均为
+`5899CC006083121EA48734C`。用户报告风扇偏慢，读取到狂暴模式下 CPU 约 61°C、
+CPU 风扇约 1750 RPM、GPU 风扇约 3343 RPM。未复现驱动读取错误。
+模式切换时的风扇重新初始化由用户测试触发；未开启采集时 D-Bus 速度 `-1`
+是 TCC 的既有行为，均不作为故障依据。
+
+办公配置已有 60% 最低转速，但游戏、狂暴与默认配置仍为 0%。本轮仅将这三个
+现有配置的 `minimumFanspeed` 提到 60，保留其余字段、100% 上限和温度调速。
+通过 SIGHUP 重读配置后，活动狂暴模式回读为 60；26 个约一秒间隔样本中
+CPU 风扇为 2619–2782 RPM、GPU 为 3599–3855 RPM，CPU EC 温度为 59–60°C。
+自然负载下的这段观察证明最低请求与转速发生变化，不证明满载散热、其他模式的
+物理效果、重启保持或其他型号兼容。百分比请求也不等于固定机械转速。
+
+源码中的办公、游戏、狂暴新建配置采用相同 60% 下限；同步逻辑仍保留已有用户
+配置，不自动覆盖旧下限。已有安装需要单独调整其配置。原配置及采样保存在
+`~/Backups/mechrevo-drivers/light/2026-10-23/fan-floor/`，私有日志不提交。
+未更换内核模块或 TCC 包，未发布 AUR。
+
+## 2026-10-24 thermald 功耗抖动修复
+
+只读检查发现当前受管 `thermald` 配置在 `x86_pkg_temp` 达到 90°C 时，日志反复记录
+`rapl_controller` 在 55W、48W、34W 和 27.5W 之间切换，随后在温度回落后立即回到
+55W。该循环与 1 秒轮询和原先的零滞回一致，会把温度采样噪声变成可见的功耗／性能抖动；
+它不是风扇 RPM 读错的证据。
+
+源码把这个已限定在 GM6PX0X / N.1.09MRO07 的 90°C 软件控制点改为 3°C 滞回：降温动作
+仍在 90°C 触发，需低于 87°C 才释放热限制。55W 上限、双 RAPL 接口、原生降温设备顺序
+和硬件 TCC 均不变。离线功耗回归覆盖 124 项且通过。
+
+本机随后备份旧状态，先用旧版工具清除原配置（两路 PL1 回到 140W），再安装固定源码
+`c60aee5e6ffe8ac46a57a7922112a79ae1b063df` 构建的 `mechrevo-power-control 0.1.0-19`，
+重新设置 `55W + 90°C + 1 秒轮询`。安装后的 `thermald` 日志解析到 `hyst:3000`，两路
+PL1 回读均为 55W，服务 active，`pacman -Qkk` 为 22 项零改动。复核时 CPU package 约
+83–85°C、CPU/GPU 风扇约 3575/4939 RPM；当时系统 load 约 26–29，属于背景负载观察，
+不能当作满载性能、长期稳定性或完整散热验收。恢复材料在
+`~/Backups/projects/mechrevo-drivers/light/thermal-hysteresis-20261024/`。
+
+## 2026-10-18 r158 驱动与 Rust 控制台部署（待重启）
+
+固定干净源码 `a1904557bbea55f39aadab03dbc31813e64c3f9b` 构建的两个包已实际安装：
+`mechrevo-drivers-dkms-git 4.24.0.r158.ga190455-1`、
+`mechrevo-console 0.1.0.r158.ga190455-1`。
+安装文件的字节、模式、root 归属及 `pacman -Qkk` 检查通过。
+内核 `7.2.9-arch1-1` 与 `7.2.7-arch1-1` 各安装 28 个模块，56 份模块均通过系统公开证书的 CMS 验签；
+实际损坏内容的负对照被拒绝。构建和验签不能代替启动及硬件验收。
+
+签名启动镜像已发布至 `/efi/EFI/Linux/omarchy_linux.efi`，主菜单已同步其摘要。
+新镜像仅替换 r106 启动 initrd 中的四个 Mechrevo 模块；
+其余 255 个模块及主 zstd 载荷保留原字节。
+原有 NVIDIA 核心模块的磁盘构建与当前运行／旧镜像构建不同，本次保留旧镜像的 NVIDIA 字节，
+没有将这项既有差异算作 NVIDIA 修复。`sbverify` 验签通过，Secure Boot 当前关闭，尚未实际启动新镜像。
+
+没有热重载或重启。当前 `7.2.9-arch1-1` 下六个运行核心模块的身份仍为 r106，
+不能写成 r158 已运行。TCC 的 profiles／settings、风扇与功耗配置、
+`tccd`／`thermald`／`nvidia-powerd` 及旧 `mechrevo-control daemon` 的进程身份均保持。
+既有键盘映射移至 `/etc/udev/hwdb.d/90-mechrevo-local.hwdb`，更新数据库后实际查询结果不变。
+Rust 图形界面入口为应用菜单“机械革命控制台”，CLI 入口为 `mechrevo-console`；
+没有新增常驻服务，也未替换 stock TCC。
+
+Recovery 菜单仍指向原 `/efi/EFI/Linux/omarchy_linux_r106.efi`。
+它只恢复启动镜像与 initrd，不会自动回退根文件系统中的软件包。
+新的恢复材料统一存于 `~/Backups/mechrevo-drivers/light/2026-10-18/deploy-a190455/`；
+旧 r106 恢复包及 56 个签名恢复模块仍保留原位置。
+本轮构建及安装的文件跟踪保留 partial 缺口，不能用后验载荷核对补称完整写入历史。
+公开版本、摘要和验收范围见[部署收据](../verification/deployment-r158.json)。
+
+本次未发布 AUR、未执行 Windows 实机验收，也未解决风扇异响、温度尖峰或 NVIDIA 长期稳定性。
+硬件验收仍为 **9/20**；下一阶段是重启后核对实际加载身份，再逐项验收硬件功能。
+
+## 2026-10-18 IO 模块身份只读复核（部署前）
+
+内核 `7.2.9-arch1-1`，已安装 `mechrevo-drivers-dkms-git 4.24.0.r106.gaaf6b36-1`。
+从磁盘模块 ELF 与 `/sys/module/tuxedo_io/notes/.note.gnu.build-id` 分别读取身份：
+两者 GNU build ID 均为 `a0aeba3f4ea1cd34f3e88b6f255224ec2b0381ac`，
+srcversion 均为 `36810A4292AEA1531F6D02B`。这更新了此前 IO 仍运行 r37 的历史结论，
+但不补称其他模块也已复核。
+
+本轮未安装/加载新模块，未切换服务或写入功耗、风扇、EC 控件。
+未绑定特征保护的模拟回归和编译属于源码验证，不是本机 NULL 故障复现、
+transport 并发解绑修复或风扇噪声的实机验收；硬件验收评分不变。
+私有身份与配置快照保存在 `.local-tests/console-redesign/driver-continuation/runtime-before.json`。
 
 ## 2026-10-17 功耗试验恢复修复 r17 与快速采样
 

@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-18",
+  "outcome": "verified_candidate",
+  "scope": "Linux OEM control candidate source, offline contracts, native read-only GUI and qualified local EC/LED requested-state transactions; installation and activation have separate receipts",
+  "source": {
+    "base_commit": "ed204c4b707fb80868821b440a67c6fe580f9625",
+    "rust_input_snapshot_sha256": "13b160f02fe7b35f7118e9ed9558e01d58664b10c41bb3eb5a0bba31f4fb92ba",
+    "rust_input_files": 31,
+    "source_unchanged_during_verification": true,
+    "all_snapshot_file_hashes_rechecked": true,
+    "verification_runner_sha256": "e2c42088de09aa61d3e4d24fd127ca38ea08399687656ff5fbbeb79f8c62fe9b",
+    "policy_sha256": "61872098435090906cb0b4d6ada336edd883dc712e102a8d6e6e07733100d47f",
+    "commit_note": "The feature commit containing this receipt is identified by Git history; no future self-referential commit hash is claimed."
+  },
+  "source_change_statistics": {
+    "scope": "console plus its Python verification runner/tests; excludes inherited kernel/webcam/Makefile WIP, documentation and packaging",
+    "tracked_files_changed": 17,
+    "tracked_lines_added": 2266,
+    "tracked_lines_removed": 79,
+    "new_files": 6,
+    "new_file_lines": 2714
+  },
+  "rust": {
+    "checks_expected": 4,
+    "checks_executed": 4,
+    "checks": [
+      {
+        "name": "fmt",
+        "status": "passed",
+        "exit_code": 0
+      },
+      {
+        "name": "test",
+        "status": "passed",
+        "exit_code": 0
+      },
+      {
+        "name": "clippy",
+        "status": "passed",
+        "exit_code": 0
+      },
+      {
+        "name": "windows",
+        "status": "passed",
+        "exit_code": 0
+      }
+    ],
+    "tests": {
+      "passed": 146,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered_out": 0
+    },
+    "stable_test_summary_count": 9,
+    "elapsed_seconds": 63.4799563810011,
+    "windows_scope": "x86_64-pc-windows-gnu compile check only; no Windows runtime or hardware acceptance"
+  },
+  "python": {
+    "domain": "console",
+    "discovered": 95,
+    "ran": 95,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "verifier_regressions_included_in_domain": 31,
+    "no_test_count_double_counting": true
+  },
+  "candidate_binaries": {
+    "mechrevo-console": {
+      "sha256": "40388c709c15c54996d317cfb17bebf270ef0dd4d06f4aa8bba3839064d27ae8",
+      "bytes": 10939136
+    },
+    "mechrevo-console-oem-helper": {
+      "sha256": "dfbdb7e6c00436b204b2ddeff02d9cb41ff139730d35577cb59fb133e0890477",
+      "bytes": 8828384
+    },
+    "mechrevo-console-gui": {
+      "sha256": "7f87335e6094c3e92d132063876518294bd1f40d29d80fb19a6365bb963de72c",
+      "bytes": 106763512
+    }
+  },
+  "native_gui": {
+    "candidate_binary_sha256": "7f87335e6094c3e92d132063876518294bd1f40d29d80fb19a6365bb963de72c",
+    "read_only_render_and_navigation_passed": true,
+    "dimensions": [
+      1280,
+      720
+    ],
+    "overview_visually_confirmed": true,
+    "controls_navigation_visually_confirmed": true,
+    "hardware_setter_or_preview_activated": false,
+    "all_owned_processes_ended": true,
+    "tracking_status": "partial",
+    "tracking_gap_count": 0,
+    "tracking_unresolved_event_count": 3,
+    "tracking_limitation": "Transient Wayland socket and lock lifecycle events; runtime success does not imply complete file history.",
+    "scope": "Candidate GUI overview and Controls navigation rendered; four OEM selectors and the Fn-lock panel were visually confirmed. The other three panels, GUI preview/apply, authorization dialog and hardware writes were not exercised in this native run."
+  },
+  "hardware": {
+    "outcome": "driver_readback_verified_and_restored",
+    "qualified_model_scope": "Local GM6PX0X only",
+    "helper_execution": "Candidate helper as root through a held executable file descriptor; installation/polkit flow not exercised",
+    "helper_sha256": "dfbdb7e6c00436b204b2ddeff02d9cb41ff139730d35577cb59fb133e0890477",
+    "indexed_step_files": 56,
+    "indexed_hashes_and_sequential_indices_verified": true,
+    "helper_transactions": 18,
+    "applied_verified": 11,
+    "rejected_before_write": 7,
+    "already_at_target_without_write": 2,
+    "applied_counts_by_control": {
+      "fn-lock": 2,
+      "charging-profile": 3,
+      "keyboard-brightness:rgb:kbd_backlight": 3,
+      "keyboard-color:rgb:kbd_backlight": 3
+    },
+    "rejected_cases": [
+      "forged-source",
+      "invalid-target-type",
+      "unknown-control",
+      "brightness-out-of-range",
+      "forged-domain",
+      "global-lock-busy",
+      "stale-plan-replay"
+    ],
+    "all_controls_restored": true,
+    "unknown_state_seen": false,
+    "independent_live_readback_matches_final_and_baseline": true,
+    "protected_configuration_hashes_unchanged": 7,
+    "loaded_module_identities_unchanged": 6,
+    "unrelated_runtime_guard_unchanged": true,
+    "offline_safety_guard_tests_exit_code": 0,
+    "scope": "Driver EC/LED requested-state readback only. No stop-charging, emitted-light, fan/noise, power, reboot, or persistence acceptance is inferred.",
+    "no_fan_power_reload_or_reboot_operations": true
+  },
+  "deployment_boundary": {
+    "prior_installed_packages": [
+      "mechrevo-console 0.1.0.r158.ga190455-1",
+      "mechrevo-drivers-dkms-git 4.24.0.r158.ga190455-1"
+    ],
+    "prior_installed_console_sha256": {
+      "mechrevo-console": "6afc8870f17b8a2d5df17bc8b64197fff51a5223a084a522b7baf73135844c3f",
+      "mechrevo-console-gui": "b2feca34ddac7aa66021ebe968760c74110a79a05bbb9a183e8b471315277c3a"
+    },
+    "loaded_kernel_driver_revision": "r106",
+    "installed_kernel_driver_revision": "r158",
+    "new_kernel_code_loaded": false,
+    "note": "Historical candidate capture before r160 installation. The false installed-at-capture values describe that earlier phase; current release installation and installed acceptance are recorded separately in deployment-console-r160.json.",
+    "recorded_before_r160_install": true,
+    "subsequent_deployment_receipt": "deployment-console-r160.json",
+    "new_oem_source_installed_at_capture": false,
+    "new_oem_helper_and_policy_installed_at_capture": false
+  },
+  "markref": {
+    "version": "0.2.2",
+    "files_scanned": 231,
+    "marks": 22,
+    "errors": 0,
+    "warnings": 0
+  },
+  "private_evidence_sha256": {
+    "final-rust-v4.json": "1c999042ab1bdbc1ddb623448cbbf7500aef4c364b54b1367574ee9b13fecaed",
+    "python-domain.json": "8da0df42b8d2afc15a8e3ac30ab833ca844e966c2f4b50e5ed7efe489644e75c",
+    "candidate-build.json": "1779301290a01b4ded106c3365710be6c8ee1c7856b6de44d927dd579f1500c6",
+    "native/native-review.json": "0880712d0620b1539cf4fff0ad0d15e98ba83eaf1f8f9eb1586c8ddc1fac0e62",
+    "hardware/execution-summary.json": "d34ae07ce9cc5966a8289d1432236331ddc94c393f1852ce798f6db7a6f4c90c",
+    "hardware/offline-guard-tests-v3.json": "435f27d9fbdd6631d8c10b719c00d995eb7b09760238ecdbecfbae497e68cad9",
+    "verifier/hardware-independent-audit.json": "8a88aed7ab377ba1589d0875ee4412f0540deec7844fba31fc6c0e6f7560324d",
+    "verifier/verification.json": "d46fb90c25423fb220c61040b6525a55586e8009b9d6279d4b483f0ac8e29015"
+  },
+  "limitations": [
+    "Windows has compile verification only; no other model is hardware-qualified by this receipt.",
+    "Charging-profile success is EC readback, not measured stop-charging behavior.",
+    "Keyboard brightness/color success is LED core requested-state readback, not measured emitted light.",
+    "Fn-lock success is EC readback, not physical Fn-key or persistence validation.",
+    "No fan/noise, CPU/GPU power, suspend/resume, reboot or persistence acceptance is claimed.",
+    "Installed pkexec/polkit authorization and installed GUI write flows remain outside this candidate receipt."
+  ],
+  "recorded_before_r160_install": true,
+  "subsequent_deployment_receipt": "deployment-console-r160.json"
+}

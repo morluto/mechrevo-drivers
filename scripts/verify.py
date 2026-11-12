@@ -6,6 +6,7 @@ import argparse
 from contextlib import contextmanager, redirect_stdout
 from dataclasses import dataclass, replace
 from enum import Enum
+import importlib
 import json
 import os
 from pathlib import Path
@@ -24,6 +25,8 @@ class Domain(str, Enum):
     TCC = "tcc"
     THERMALD = "thermald"
     DRIVER = "driver"
+    CONSOLE = "console"
+    FAN_AUDIO = "fan-audio"
     ALL = "all"
 
 
@@ -34,8 +37,13 @@ PATTERNS: dict[Domain, tuple[str, ...]] = {
     Domain.THERMALD: ("test_thermald_*.py",),
     Domain.DRIVER: ("test_uniwill_*.py", "test_clevo_ioctl_runtime.py", "test_nvidia_power_runtime.py",
                     "test_mechrevo_ec*.py", "test_compare_ec_paths.py", "test_factory_policy_probe.py"),
+    Domain.CONSOLE: ("test_console_*.py", "test_mechrevo_catalog.py", "test_mechrevo_hotkey.py"),
+    Domain.FAN_AUDIO: ("test_analyze_fan_audio.py",),
     Domain.ALL: ("test_*.py",),
 }
+
+# Keep optional tests in ALL; a missing prerequisite makes that scope incomplete.
+OPTIONAL_DEPENDENCIES = {"test_analyze_fan_audio.py": ("numpy",)}
 
 
 class Outcome(str, Enum):
@@ -60,6 +68,7 @@ class Report:
     expected_failures: int = 0
     unexpected_successes: int = 0
     load_errors: tuple[str, ...] = ()
+    prerequisites: tuple[tuple[str, str], ...] = ()
     details: tuple[tuple[str, str, str], ...] = ()
     fatal_error: str | None = None
     temporary_directory: str | None = None
@@ -74,7 +83,7 @@ class Report:
     def outcome(self) -> Outcome:
         if self.fatal_error or self.failures or self.errors or self.load_errors or self.unexpected_successes:
             return Outcome.FAILED
-        if not self.ran or self.skipped or self.expected_failures or self.ran != self.discovered:
+        if self.prerequisites or not self.ran or self.skipped or self.expected_failures or self.ran != self.discovered:
             return Outcome.INCOMPLETE
         return Outcome.PASSED
 
@@ -86,6 +95,8 @@ class Report:
             "failures": self.failures, "errors": self.errors, "skipped": self.skipped,
             "expected_failures": self.expected_failures, "unexpected_successes": self.unexpected_successes,
             "load_errors": list(self.load_errors),
+            "prerequisites": [{"dependency": dependency, "reason": reason}
+                              for dependency, reason in self.prerequisites],
             "details": [{"kind": k, "test": t, "message": m} for k, t, m in self.details],
             "fatal_error": self.fatal_error, "temporary_directory": self.temporary_directory,
             "elapsed_seconds": self.elapsed_seconds,
@@ -151,11 +162,23 @@ def verify(root: Path, domain: Domain, stream: TextIO) -> Report:
         with test_environment(directory), redirect_stdout(stream):
             tests = root / "tests"
             files = sorted({p for pattern in PATTERNS[domain] for p in tests.glob(pattern) if p.is_file()})
-            report = replace(report, modules=tuple(p.name for p in files))
+            blocked: set[str] = set()
+            prerequisites: list[tuple[str, str]] = []
+            for path in files:
+                for dependency in OPTIONAL_DEPENDENCIES.get(path.name, ()):
+                    try:
+                        importlib.import_module(dependency)
+                    except Exception as exc:
+                        blocked.add(path.name)
+                        prerequisites.append((dependency, path.name + " requires " + dependency + ": "
+                                              + type(exc).__name__ + ": " + str(exc)))
+            report = replace(report, modules=tuple(p.name for p in files),
+                             prerequisites=tuple(prerequisites))
             loader = unittest.TestLoader()
             suite = unittest.TestSuite()
             for path in files:
-                suite.addTests(loader.discover(str(tests), pattern=path.name, top_level_dir=str(tests)))
+                if path.name not in blocked:
+                    suite.addTests(loader.discover(str(tests), pattern=path.name, top_level_dir=str(tests)))
             report = evaluate(suite, loader, report, stream)
     except (Exception, KeyboardInterrupt) as exc:
         report = replace(report, fatal_error=type(exc).__name__ + ": " + str(exc))

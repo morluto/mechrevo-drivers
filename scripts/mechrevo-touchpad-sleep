@@ -1,0 +1,11 @@
+#!/bin/sh
+# Reapply the saved hardware touchpad state after resume.
+# Installed as /usr/lib/systemd/system-sleep/mechrevo-touchpad.
+# Only a state written by `mechrevo-control touchpad off|on` is restored;
+# KDE/libinput-only toggles do not create this state file.
+set -eu
+
+[ "${1:-}" = "post" ] || exit 0
+state=/var/lib/mechrevo-control/touchpad_state
+[ -r "$state" ] || exit 0
+exec /usr/bin/mechrevo-control touchpad restore

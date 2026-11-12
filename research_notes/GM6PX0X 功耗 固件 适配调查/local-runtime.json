@@ -1,0 +1,69 @@
+{
+  "time": "2026-10-15T08:47:07.954825+00:00",
+  "scope": "read-only current kernel and loaded module GNU build-ID notes vs previous followup preflight; no module actions",
+  "baseline": ".local-tests/followup-20261015/preflight.json",
+  "kernel": {
+    "current": "7.2.9-arch1-1",
+    "previous": "7.2.9-arch1-1",
+    "matches": true
+  },
+  "loaded_modules": {
+    "tuxedo_compatibility_check": {
+      "note_hex": "040000001400000003000000474e550012e2cbb15c9febdfd8dbda1bebd559f5b6cc71d5",
+      "gnu_build_id": "12e2cbb15c9febdfd8dbda1bebd559f5b6cc71d5",
+      "matches_baseline": true,
+      "runtime_version": null
+    },
+    "tuxedo_keyboard": {
+      "note_hex": "040000001400000003000000474e55008abdf49022822ba89875a129cda58d7377fcf303",
+      "gnu_build_id": "8abdf49022822ba89875a129cda58d7377fcf303",
+      "matches_baseline": true,
+      "runtime_version": null
+    },
+    "uniwill_wmi": {
+      "note_hex": "040000001400000003000000474e55003918d3e37e2016b13d25fd9e4d64467937024886",
+      "gnu_build_id": "3918d3e37e2016b13d25fd9e4d64467937024886",
+      "matches_baseline": true,
+      "runtime_version": null
+    },
+    "tuxedo_io": {
+      "note_hex": "040000001400000003000000474e55005527aa64ed28f91901a495559687c113af350fe3",
+      "gnu_build_id": "5527aa64ed28f91901a495559687c113af350fe3",
+      "matches_baseline": true,
+      "runtime_version": "0.3.9"
+    },
+    "tuxedo_nb02_nvidia_power_ctrl": {
+      "note_hex": "040000001400000003000000474e550052903fe5d5db9b369338b21725e9073bdafa3fca",
+      "gnu_build_id": "52903fe5d5db9b369338b21725e9073bdafa3fca",
+      "matches_baseline": true,
+      "runtime_version": null
+    }
+  },
+  "commands": [
+    {
+      "argv": [
+        "pacman",
+        "-Q",
+        "mechrevo-drivers-dkms-git",
+        "mechrevo-power-control"
+      ],
+      "returncode": 0,
+      "stdout": "mechrevo-drivers-dkms-git 4.24.0.r37.gbd8f514-1\nmechrevo-power-control 0.1.0-2\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "systemctl",
+        "is-active",
+        "tccd",
+        "thermald",
+        "nvidia-powerd",
+        "power-profiles-daemon"
+      ],
+      "returncode": 0,
+      "stdout": "active\nactive\nactive\nactive\n",
+      "stderr": ""
+    }
+  ],
+  "all_five_module_notes_match": true
+}

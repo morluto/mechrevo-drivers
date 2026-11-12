@@ -55,6 +55,11 @@ QUALIFIED_THERMALD_SHA256 = "fbe6b27d2854fa8636c7bbdbcc953d1665a2c3b23534026dd42
 # writable limit. Keep host qualification separate from the user cap range.
 THERMAL_SPEC_POWER_UW = 55_000_000
 MIN_LIMIT_UW = 35_000_000
+# A zero hysteresis made the qualified 90 C trip point chatter under a
+# fluctuating workload: thermald repeatedly dropped PL1 to the floor and
+# released it on the next one-second sample. Keep the qualified trip point,
+# but require the package to cool 3 C before releasing the thermal clamp.
+THERMAL_HYSTERESIS_MILLICELSIUS = 3_000
 CPU_COOLING_DEVICES = ("rapl_controller", "intel_pstate", "intel_powerclamp", "cpufreq", "Processor")
 CPU_TARGET_OVERRIDES = ("/run/thermald/thd_user_psv_temp.cpu.conf",
                         "/run/thermald/thd_user_set_max.cpu.conf")
@@ -861,7 +866,7 @@ class PowerController:
             trip = ET.SubElement(trips, "TripPoint")
             ET.SubElement(trip, "SensorType").text = "x86_pkg_temp"
             ET.SubElement(trip, "Temperature").text = str(target_celsius * 1000)
-            ET.SubElement(trip, "Hyst").text = "0"
+            ET.SubElement(trip, "Hyst").text = str(THERMAL_HYSTERESIS_MILLICELSIUS)
             ET.SubElement(trip, "type").text = "passive"
             ET.SubElement(trip, "ControlType").text = "SEQUENTIAL"
             # Valid-sensor XML replaces the native PASSIVE trip. Reconstruct

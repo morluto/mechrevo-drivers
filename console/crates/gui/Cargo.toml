@@ -1,0 +1,29 @@
+[package]
+name = "mechrevo-console-gui"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version = "1.95"
+description = "Evidence-backed native Windows/Linux control console"
+
+[features]
+default = []
+gui = ["dep:eframe", "dep:egui_system_font_provider"]
+screenshot = ["gui", "eframe/__screenshot"]
+
+[dependencies]
+mechrevo-console-core = { path = "../core" }
+serde.workspace = true
+serde_json.workspace = true
+eframe = { version = "0.37.0", optional = true, default-features = false, features = ["default_fonts", "system_fonts", "glow", "x11", "wayland", "persistence", "accesskit"] }
+egui_system_font_provider = { version = "0.37.0", optional = true }
+
+[[bin]]
+name = "mechrevo-console-gui"
+path = "src/main.rs"
+required-features = ["gui"]
+
+[[example]]
+name = "ui_preview"
+path = "examples/ui_preview.rs"
+required-features = ["screenshot"]

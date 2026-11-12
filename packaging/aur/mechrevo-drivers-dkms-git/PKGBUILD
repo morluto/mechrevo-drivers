@@ -78,5 +78,5 @@ package() {
     while IFS= read -r -d '' doc; do
         install -Dm644 "$doc" \
             "${pkgdir}/usr/share/doc/${pkgname}/docs/${doc#"${srcdir}/${_pkgname}/docs/"}"
-    done < <(find "${srcdir}/${_pkgname}/docs" -type f -name '*.md' -print0)
+    done < <(find "${srcdir}/${_pkgname}/docs" -type f -print0)
 }

@@ -18,8 +18,10 @@ struct acpi_object_list { unsigned count; union acpi_object *pointer; };
 static void mutex_lock(int *lock) { assert(!*lock); *lock = 1; }
 static void mutex_unlock(int *lock) { assert(*lock); *lock = 0; }
 static int handle_error, method_missing, acpi_calls, acpi_fail_at, acpi_range_at;
+static int low_b_reads, low_d_reads;
 static u8 project_id = 0x10, capability = 0xec;
 static unsigned long long rpm_bytes[4] = {15, 38, 19, 75};
+static u8 temps[2];
 static u8 high_script[6];
 static unsigned high_script_count, high_script_position;
 static acpi_status acpi_get_handle(acpi_handle parent, const char *path, acpi_handle *handle)
@@ -37,17 +39,22 @@ static acpi_status acpi_evaluate_integer(acpi_handle handle, const char *method,
     switch (args->pointer->integer.value) {
     case 0x0740: *value = project_id; break;
     case 0x078e: *value = capability; break;
+    case 0x043e: *value = temps[0]; break;
+    case 0x044f: *value = temps[1]; break;
     case 0x0464: case 0x046c:
         if (high_script_position < high_script_count)
             *value = high_script[high_script_position++];
         else *value = rpm_bytes[args->pointer->integer.value == 0x0464 ? 0 : 2];
         break;
     case 0x0465: *value = rpm_bytes[1]; break;
-    case 0x046b: *value = rpm_bytes[3]; break;
+    case 0x046b: low_b_reads++; *value = rpm_bytes[3]; break;
+    case 0x046d: low_d_reads++; *value = rpm_bytes[3]; break;
     default: assert(false);
     }
     return 0;
 }
+static void usleep_range(unsigned int min, unsigned int max)
+{ assert(min == 6000 && max == 12000); }
 typedef unsigned short umode_t;
 #define __init
 #define __exit
@@ -59,10 +66,10 @@ typedef unsigned short umode_t;
 #define DMI_SYS_VENDOR 0
 #define DMI_PRODUCT_NAME 1
 #define DMI_BIOS_VERSION 2
+#define DMI_BOARD_NAME 3
 struct dmi_system_id { int matches[4]; };
 #define DMI_EXACT_MATCH(a,b) (a + 1)
 #define PLATFORM_DEVID_NONE (-1)
-#define UNIWILL_INTERFACE_WMI_STRID "uniwill_wmi"
 #define ERR_PTR(e) ((void *)(intptr_t)(e))
 #define IS_ERR(p) ((uintptr_t)(p) >= (uintptr_t)-4095)
 #define PTR_ERR(p) ((intptr_t)(p))
@@ -89,37 +96,21 @@ struct hwmon_chip_info {
     const struct hwmon_ops *ops;
     const struct hwmon_channel_info *const *info;
 };
-static const char *identity[] = { "MECHREVO", "Kuangshi16Pro Series GM6PX0X", "N.1.09MRO07" };
-static const char *dmi_values[3];
-static char *active_id;
-static int active_ret, active_calls, ec_calls, ec_ret[2], register_ret[2];
-static int load_ret, load_calls, after_load_ret;
+static const char *identities[][4] = {
+    {"MECHREVO", "Kuangshi16Pro Series GM6PX0X", "N.1.09MRO07", "GM6PX0X"},
+    {"MECHREVO", "Jiaolong16K Series GM6BG0Q", "N.1.19MRO15", "GM6BG0Q"},
+};
+#define MODEL_COUNT (sizeof(identities) / sizeof(identities[0]))
+static int model_index;
+static const char *dmi_values[4];
+static int register_ret[2];
 static int platform_registers, platform_unregisters, hwmon_registers, hwmon_unregisters;
-static u8 temps[2];
 static struct platform_device mock_platform;
 static struct device mock_hwmon;
 static char events[16];
 static unsigned event_count;
 static bool dmi_match(int field, const char *value)
 { return dmi_values[field] && strcmp(dmi_values[field], value) == 0; }
-static int uniwill_get_active_interface_id(char **id)
-{ active_calls++; if (!active_ret) *id = active_id; return active_ret; }
-static int request_module(const char *name)
-{
-    assert(strcmp(name, "uniwill_wmi") == 0);
-    load_calls++;
-    if (!load_ret) active_ret = after_load_ret;
-    return load_ret;
-}
-static int uniwill_read_ec_ram(u16 address, u8 *value)
-{
-    assert(address == 0x043e || address == 0x044f);
-    int channel = address == 0x043e ? 0 : 1;
-    ec_calls++;
-    if (ec_ret[channel]) return ec_ret[channel];
-    *value = temps[channel];
-    return 0;
-}
 static struct platform_device *platform_device_register_simple(
     const char *name, int id, const void *resources, unsigned count)
 {
@@ -152,17 +143,22 @@ static void hwmon_device_unregister(struct device *device)
     hwmon_unregisters++; events[event_count++] = 'h';
 }
 /* @DRIVER@ */
+static void select_model(int model)
+{
+    model_index = model;
+    for (int i = 0; i < 4; i++) dmi_values[i] = identities[model][i];
+}
 static void reset(void)
 {
     handle_error = method_missing = acpi_calls = acpi_fail_at = acpi_range_at = 0;
+    low_b_reads = low_d_reads = 0;
     project_id = 0x10; capability = 0xec;
     rpm_bytes[0] = 15; rpm_bytes[1] = 38; rpm_bytes[2] = 19; rpm_bytes[3] = 75;
     high_script_count = high_script_position = 0;
     mechrevo_sensors_inou = (void *)1; mechrevo_sensors_rpm_lock = 0;
-    for (int i = 0; i < 3; i++) dmi_values[i] = identity[i];
-    active_id = "uniwill_wmi"; active_ret = 0; active_calls = 0; ec_calls = 0;
-    load_ret = load_calls = after_load_ret = 0;
-    ec_ret[0] = ec_ret[1] = register_ret[0] = register_ret[1] = 0;
+    select_model(0);
+    mechrevo_sensors_profile = &mechrevo_sensors_profiles[0];
+    register_ret[0] = register_ret[1] = 0;
     temps[0] = 63; temps[1] = 55;
     platform_registers = platform_unregisters = hwmon_registers = hwmon_unregisters = 0;
     event_count = 0; memset(events, 0, sizeof(events));
@@ -171,64 +167,42 @@ static void reset(void)
 static void identity_case(void)
 {
     char suffixed[100];
-    for (int field = 0; field < 3; field++) {
-        for (int variant = 0; variant < 3; variant++) {
-            reset(); snprintf(suffixed, sizeof(suffixed), "%s extra", identity[field]);
-            dmi_values[field] = variant == 0 ? NULL : variant == 1 ? "other" : suffixed;
-            assert(mechrevo_sensors_init() == -ENODEV);
-            assert(active_calls == 0 && load_calls == 0 && ec_calls == 0 && platform_registers == 0);
+    for (int model = 0; model < (int)MODEL_COUNT; model++) {
+        for (int field = 0; field < 4; field++) {
+            for (int variant = 0; variant < 3; variant++) {
+                reset(); select_model(model);
+                snprintf(suffixed, sizeof(suffixed), "%s extra", identities[model][field]);
+                dmi_values[field] = variant == 0 ? NULL : variant == 1 ? "other" : suffixed;
+                assert(mechrevo_sensors_init() == -ENODEV);
+                assert(acpi_calls == 0 && platform_registers == 0);
+            }
         }
     }
 }
 static void transport_case(void)
 {
-    int errors[] = {-ENODEV, -EIO, -ETIMEDOUT, 1};
-    for (unsigned i = 0; i < sizeof(errors)/sizeof(errors[0]); i++) {
-        reset(); active_ret = after_load_ret = errors[i];
-        assert(mechrevo_sensors_init() == (errors[i] < 0 ? errors[i] : -EIO));
-        assert(ec_calls == 0 && platform_registers == 0);
-        for (int channel = 0; channel < 2; channel++) {
-            reset(); ec_ret[channel] = errors[i]; long value = 777;
-            assert(mechrevo_sensors_temperature(channel, &value) == (errors[i] < 0 ? errors[i] : -EIO));
-            assert(value == 777);
-            ec_calls = 0;
-            assert(mechrevo_sensors_init() == (errors[i] < 0 ? errors[i] : -EIO));
-            assert(ec_calls == channel + 1 && platform_registers == 0);
-        }
+    for (int channel = 0; channel < 2; channel++) {
+        reset(); acpi_fail_at = 1; long value = 777;
+        assert(mechrevo_sensors_temperature(channel, &value) == -EIO);
+        assert(value == 777 && acpi_calls == 1);
+        reset(); acpi_range_at = 1; value = 777;
+        assert(mechrevo_sensors_temperature(channel, &value) == -ERANGE);
+        assert(value == 777 && acpi_calls == 1);
     }
-    reset(); active_id = NULL; assert(mechrevo_sensors_init() == -ENODEV);
-    assert(ec_calls == 0);
-    reset(); active_id = "other"; assert(mechrevo_sensors_init() == -ENODEV);
-    assert(ec_calls == 0);
+    reset(); acpi_fail_at = 3;
+    assert(mechrevo_sensors_init() == -EIO);
+    assert(!platform_registers && !hwmon_registers);
+    reset(); acpi_range_at = 4;
+    assert(mechrevo_sensors_init() == -ERANGE);
+    assert(!platform_registers && !hwmon_registers);
 }
-static void loading_case(void)
+static void independent_transport_case(void)
 {
     reset();
-    assert(mechrevo_sensors_init() == 0 && load_calls == 0 && active_calls == 1);
+    assert(mechrevo_sensors_init() == 0);
+    assert(acpi_calls == 10);
     mechrevo_sensors_exit();
-    assert(load_calls == 0);
-    reset(); active_ret = -ENODEV;
-    assert(mechrevo_sensors_init() == 0 && load_calls == 1 && active_calls == 2);
-    assert(ec_calls == 2);
-    mechrevo_sensors_exit();
-    assert(load_calls == 1); /* Exit never touches the transport lifecycle. */
-    int errors[] = {-ENOENT, -EPERM, -ETIMEDOUT, 1};
-    for (unsigned i = 0; i < sizeof(errors)/sizeof(errors[0]); i++) {
-        reset(); active_ret = -ENODEV; load_ret = errors[i];
-        assert(mechrevo_sensors_init() == (errors[i] < 0 ? errors[i] : -EIO));
-        assert(load_calls == 1 && active_calls == 1 && ec_calls == 0 && platform_registers == 0);
-    }
-    for (unsigned i = 0; i < sizeof(errors)/sizeof(errors[0]); i++) {
-        reset(); active_ret = -ENODEV; after_load_ret = errors[i];
-        assert(mechrevo_sensors_init() == (errors[i] < 0 ? errors[i] : -EIO));
-        assert(load_calls == 1 && active_calls == 2 && ec_calls == 0 && platform_registers == 0);
-    }
-    reset(); active_ret = -ENODEV; active_id = "other";
-    assert(mechrevo_sensors_init() == -ENODEV && load_calls == 1 && ec_calls == 0);
-    reset(); active_id = "other";
-    assert(mechrevo_sensors_init() == -ENODEV && load_calls == 0 && ec_calls == 0);
-    reset(); active_ret = -EIO;
-    assert(mechrevo_sensors_init() == -EIO && load_calls == 0 && ec_calls == 0);
+    assert(hwmon_unregisters == 1 && platform_unregisters == 1);
 }
 static void temperature_case(void)
 {
@@ -257,10 +231,11 @@ static void interface_case(void)
                 long value = 123; const char *label = "unchanged";
                 assert(mechrevo_sensors_is_visible(NULL, type, attr, channel) ==
                        (valid && (attr == hwmon_temp_input || attr == hwmon_temp_label) ? 0444 : 0));
-                int before = ec_calls;
+                int before = acpi_calls;
                 assert(mechrevo_sensors_read(NULL, type, attr, channel, &value) ==
                        (valid && attr == hwmon_temp_input ? 0 : -EOPNOTSUPP));
-                assert(ec_calls == before + (type == hwmon_temp && valid && attr == hwmon_temp_input));
+                assert(acpi_calls == before +
+                       (valid && attr == hwmon_temp_input ? (type == hwmon_temp ? 1 : 3) : 0));
                 if (!(valid && attr == hwmon_temp_input)) assert(value == 123);
                 assert(mechrevo_sensors_read_string(NULL, type, attr, channel, &label) ==
                        (valid && attr == hwmon_temp_label ? 0 : -EOPNOTSUPP));
@@ -284,25 +259,30 @@ static void lifecycle_case(void)
     mechrevo_sensors_exit();
     assert(strcmp(events, "PHpPHhp") == 0);
     reset();
-    assert(mechrevo_sensors_init() == 0 && ec_calls == 2);
+    assert(mechrevo_sensors_init() == 0 && acpi_calls == 10);
     assert(platform_registers == 1 && hwmon_registers == 1);
     mechrevo_sensors_exit();
     assert(strcmp(events, "PHhp") == 0);
 }
 static void rpm_values_case(void)
 {
-    reset();
-    /* Every possible OEM word, including stopped/maximum; no guessed sentinel. */
-    for (int channel = 0; channel < 2; channel++) {
-        for (unsigned word = 0; word <= 65535; word++) {
-            rpm_bytes[channel * 2] = word >> 8;
-            rpm_bytes[channel * 2 + 1] = word & 255;
-            long value = -1;
-            int before = acpi_calls;
-            assert(mechrevo_sensors_read(NULL, hwmon_fan, hwmon_fan_input, channel, &value) == 0);
-            assert(value == word && acpi_calls == before + 3);
-            assert(mechrevo_sensors_rpm_lock == 0);
+    for (int model = 0; model < (int)MODEL_COUNT; model++) {
+        reset(); select_model(model);
+        mechrevo_sensors_profile = &mechrevo_sensors_profiles[model];
+        /* Every possible OEM word, including stopped/maximum; no guessed sentinel. */
+        for (int channel = 0; channel < 2; channel++) {
+            for (unsigned word = 0; word <= 65535; word++) {
+                rpm_bytes[channel * 2] = word >> 8;
+                rpm_bytes[channel * 2 + 1] = word & 255;
+                long value = -1;
+                int before = acpi_calls;
+                assert(mechrevo_sensors_read(NULL, hwmon_fan, hwmon_fan_input, channel, &value) == 0);
+                assert(value == word && acpi_calls == before + 3);
+                assert(mechrevo_sensors_rpm_lock == 0);
+            }
         }
+        assert(low_b_reads == (model == 0 ? 65536 : 0));
+        assert(low_d_reads == (model == 1 ? 65536 : 0));
     }
 }
 static void rpm_errors_case(void)
@@ -338,26 +318,52 @@ static void rpm_errors_case(void)
 }
 static void rpm_qualification_case(void)
 {
-    for (int variant = 0; variant < 6; variant++) {
-        reset();
-        if (variant == 0) handle_error = 1;
-        if (variant == 1) method_missing = 1;
-        if (variant == 2) project_id = 0x11;
-        if (variant == 3) capability &= ~0x40;
-        if (variant == 4) acpi_fail_at = 1;
-        if (variant == 5) acpi_range_at = 2;
-        assert(mechrevo_sensors_init() == (variant == 4 ? -EIO : variant == 5 ? -ERANGE : -ENODEV));
-        assert(!platform_registers && !hwmon_registers);
+    for (int model = 0; model < (int)MODEL_COUNT; model++) {
+        for (int variant = 0; variant < 6; variant++) {
+            reset(); select_model(model);
+            if (variant == 0) handle_error = 1;
+            if (variant == 1) method_missing = 1;
+            if (variant == 2) project_id = 0x11;
+            if (variant == 3) capability &= ~0x40;
+            if (variant == 4) acpi_fail_at = 1;
+            if (variant == 5) acpi_range_at = 2;
+            assert(mechrevo_sensors_init() == (variant == 4 ? -EIO : variant == 5 ? -ERANGE : -ENODEV));
+            assert(!platform_registers && !hwmon_registers);
+        }
+        /* Any initial sensor read failure must prevent partial registration. */
+        for (int failure = 3; failure <= 10; failure++) {
+            reset(); select_model(model); acpi_fail_at = failure;
+            assert(mechrevo_sensors_init() == -EIO);
+            assert(!platform_registers && !hwmon_registers);
+        }
+        reset(); select_model(model); capability = 0x40;
+        assert(mechrevo_sensors_init() == 0);
+        assert(acpi_calls == 10); mechrevo_sensors_exit();
     }
-    /* Either RPM channel failure must prevent registering invented readings. */
-    for (int failure = 3; failure <= 8; failure++) {
-        reset(); acpi_fail_at = failure;
-        assert(mechrevo_sensors_init() == -EIO);
-        assert(!platform_registers && !hwmon_registers);
-    }
-    reset(); capability = 0x40;
-    assert(mechrevo_sensors_init() == 0);
-    assert(acpi_calls == 8); mechrevo_sensors_exit();
+}
+static void gm6bg0q_case(void)
+{
+    long value;
+
+    /* The secondary tachometer low byte is 0x046d on GM6BG0Q... */
+    reset(); select_model(1);
+    mechrevo_sensors_profile = mechrevo_sensors_supported();
+    assert(mechrevo_sensors_profile == &mechrevo_sensors_profiles[1]);
+    rpm_bytes[2] = 0x12; rpm_bytes[3] = 0x34;
+    assert(mechrevo_sensors_read(NULL, hwmon_fan, hwmon_fan_input, 1, &value) == 0);
+    assert(value == 0x1234 && low_d_reads == 1 && low_b_reads == 0 && acpi_calls == 3);
+
+    /* ... and remains 0x046b for the already-qualified GM6PX0X. */
+    reset(); select_model(0);
+    mechrevo_sensors_profile = mechrevo_sensors_supported();
+    assert(mechrevo_sensors_profile == &mechrevo_sensors_profiles[0]);
+    rpm_bytes[2] = 0x12; rpm_bytes[3] = 0x34;
+    assert(mechrevo_sensors_read(NULL, hwmon_fan, hwmon_fan_input, 1, &value) == 0);
+    assert(value == 0x1234 && low_b_reads == 1 && low_d_reads == 0 && acpi_calls == 3);
+
+    /* Cross-model tuples are not combined into a match. */
+    reset(); dmi_values[1] = "Other"; dmi_values[3] = "GM6BG0Q";
+    assert(mechrevo_sensors_init() == -ENODEV && acpi_calls == 0);
 }
 int main(int argc, char **argv)
 {
@@ -367,10 +373,11 @@ int main(int argc, char **argv)
     else if (!strcmp(argv[1], "temperature")) temperature_case();
     else if (!strcmp(argv[1], "interface")) interface_case();
     else if (!strcmp(argv[1], "lifecycle")) lifecycle_case();
-    else if (!strcmp(argv[1], "loading")) loading_case();
+    else if (!strcmp(argv[1], "independent_transport")) independent_transport_case();
     else if (!strcmp(argv[1], "rpm_values")) rpm_values_case();
     else if (!strcmp(argv[1], "rpm_errors")) rpm_errors_case();
     else if (!strcmp(argv[1], "rpm_qualification")) rpm_qualification_case();
+    else if (!strcmp(argv[1], "gm6bg0q")) gm6bg0q_case();
     else assert(false);
     return 0;
 }

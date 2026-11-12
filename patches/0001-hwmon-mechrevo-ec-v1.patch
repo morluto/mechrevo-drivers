@@ -1,0 +1,426 @@
+From 00c2999b18cfcf4d7a177a8002548664a4e8b932 Mon Sep 17 00:00:00 2001
+From: LIghtJUNction <lightjunction.me@gmail.com>
+Date: Thu, 29 Oct 2026 17:37:50 +0800
+Subject: [PATCH] hwmon: add read-only MECHREVO GM6PX0X sensor driver
+
+The GM6PX0X firmware exposes CPU and GPU temperatures and fan speeds
+through the INOU.ECRR ACPI method. Add a read-only hwmon driver for
+these sensors, scoped to the verified MECHREVO Kuangshi16Pro GM6PX0X,
+board GM6PX0X, and BIOS N.1.09MRO07.
+
+The driver checks the firmware project ID and fan capability before
+registering the device. It uses only ECRR reads and exposes standard
+hwmon temperature and fan input attributes. It does not write EC
+registers or expose fan controls. Fan counters are sampled high/low/high
+to reject a high-byte rollover.
+
+Tested on MECHREVO Kuangshi16Pro Series GM6PX0X, board GM6PX0X, BIOS
+N.1.09MRO07, running 7.2.11-arch1-1: the module built with W=1, loaded
+beside the installed sensor module, provided all four readings, and
+unloaded without removing the existing module. Other systems and BIOS
+versions have not been tested.
+
+Assisted-by: Codex:GPT-6
+Signed-off-by: LIghtJUNction <lightjunction.me@gmail.com>
+---
+AI assistance: Codex was used to draft the read-only driver, its Kconfig
+and Makefile integration, documentation, and commit message. The request
+was to prepare a hwmon submission for the locally verified GM6PX0X using
+the firmware read interface and no EC writes.
+
+Validation is limited to an external-module W=1 build and runtime reads on
+the laptop and BIOS listed above; no full kernel-tree build was performed.
+checkpatch --strict reports no errors and one advisory about a new
+MAINTAINERS entry. The general HWMON entry covers these paths.
+
+ Documentation/hwmon/index.rst       |   1 +
+ Documentation/hwmon/mechrevo-ec.rst |  31 +++
+ drivers/hwmon/Kconfig               |  11 ++
+ drivers/hwmon/Makefile              |   1 +
+ drivers/hwmon/mechrevo-ec.c         | 290 ++++++++++++++++++++++++++++
+ 5 files changed, 334 insertions(+)
+ create mode 100644 Documentation/hwmon/mechrevo-ec.rst
+ create mode 100644 drivers/hwmon/mechrevo-ec.c
+
+diff --git a/Documentation/hwmon/index.rst b/Documentation/hwmon/index.rst
+index 199ca79..6bd4ece 100644
+--- a/Documentation/hwmon/index.rst
++++ b/Documentation/hwmon/index.rst
+@@ -189,6 +189,7 @@ Hardware Monitoring Kernel Drivers
+    mc34vr500
+    mcp3021
+    mcp9982
++   mechrevo-ec
+    menf21bmc
+    minisforum-um780xtx
+    mlxreg-fan
+diff --git a/Documentation/hwmon/mechrevo-ec.rst b/Documentation/hwmon/mechrevo-ec.rst
+new file mode 100644
+index 0000000..91ffd77
+--- /dev/null
++++ b/Documentation/hwmon/mechrevo-ec.rst
+@@ -0,0 +1,31 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++=======================
++MECHREVO GM6PX0X EC
++=======================
++
++Supported systems:
++
++  * MECHREVO Kuangshi16Pro Series GM6PX0X, board GM6PX0X
++  * BIOS N.1.09MRO07
++
++The driver exposes two EC temperatures and two fan speeds through hwmon. It
++uses the firmware ACPI method ``\_SB.INOU.ECRR`` to read EC bytes. Temperatures
++are reported in millidegrees Celsius and fan speeds in RPM. The CPU and GPU
++temperature bytes are at ``0x043e`` and ``0x044f``. The 16-bit CPU and GPU fan
++counters use high/low bytes at ``0x0464``/``0x0465`` and ``0x046c``/``0x046b``,
++respectively.
++
++Each successful ECRR read is followed by a 6 to 12 ms delay. Fan reads sample
++the high byte before and after the low byte and retry up to three times if the
++high byte changes. The EC updates independently, so the driver cannot provide
++an atomic snapshot of the two bytes.
++
++At probe, the driver checks EC project ID ``0x10`` at ``0x0740`` and bit 6 of
++the capability byte at ``0x078e``. It only binds the exact DMI identity and
++BIOS version listed above. Other models and BIOS versions have not been
++validated.
++
++The driver is read-only. It does not call the firmware write method, change EC
++configuration, or expose fan-control attributes. Values above 125 degrees C
++are reported as unavailable; zero is passed through as read from firmware.
+diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+index 18c682e..7e397c2 100644
+--- a/drivers/hwmon/Kconfig
++++ b/drivers/hwmon/Kconfig
+@@ -2888,6 +2888,17 @@ config SENSORS_HP_WMI
+ 	  This driver can also be built as a module. If so, the module
+ 	  will be called hp_wmi_sensors.
+ 
++config SENSORS_MECHREVO_EC
++	tristate "MECHREVO GM6PX0X EC sensors"
++	depends on X86 && ACPI
++	help
++	  If you say yes here you get read-only temperature and fan speed
++	  monitoring for the MECHREVO Kuangshi16Pro Series GM6PX0X with BIOS
++	  N.1.09MRO07, using its firmware ACPI method.
++
++	  This driver can also be built as a module. If so, the module
++	  will be called mechrevo_ec.
++
+ endif # ACPI
+ 
+ endif # HWMON
+diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
+index d4c345e..ac362a1 100644
+--- a/drivers/hwmon/Makefile
++++ b/drivers/hwmon/Makefile
+@@ -13,6 +13,7 @@ obj-$(CONFIG_SENSORS_ASUS_EC)	+= asus-ec-sensors.o
+ obj-$(CONFIG_SENSORS_ASUS_WMI)	+= asus_wmi_sensors.o
+ obj-$(CONFIG_SENSORS_HONOR_FMI)	+= honor-fmi.o
+ obj-$(CONFIG_SENSORS_HP_WMI)	+= hp-wmi-sensors.o
++obj-$(CONFIG_SENSORS_MECHREVO_EC)	+= mechrevo-ec.o
+ 
+ # Native drivers
+ # asb100, then w83781d go first, as they can override other drivers' addresses.
+diff --git a/drivers/hwmon/mechrevo-ec.c b/drivers/hwmon/mechrevo-ec.c
+new file mode 100644
+index 0000000..d4a3430
+--- /dev/null
++++ b/drivers/hwmon/mechrevo-ec.c
+@@ -0,0 +1,290 @@
++// SPDX-License-Identifier: GPL-2.0+
++/* Read-only hwmon driver for the MECHREVO Kuangshi16Pro GM6PX0X. */
++
++#include <linux/acpi.h>
++#include <linux/delay.h>
++#include <linux/dmi.h>
++#include <linux/err.h>
++#include <linux/hwmon.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++
++#define MECHREVO_ECRR_DELAY_MIN_US	6000
++#define MECHREVO_ECRR_DELAY_MAX_US	12000
++#define MECHREVO_RPM_ATTEMPTS		3
++
++struct mechrevo_ec_data {
++	acpi_handle inou;
++	/* Serialize the three ECRR calls that make up one fan sample. */
++	struct mutex rpm_lock;
++};
++
++static const struct dmi_system_id mechrevo_ec_dmi_table[] = {
++	{
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "MECHREVO"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME,
++					"Kuangshi16Pro Series GM6PX0X"),
++			DMI_EXACT_MATCH(DMI_BOARD_NAME, "GM6PX0X"),
++			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "N.1.09MRO07"),
++		},
++	},
++	{}
++};
++MODULE_DEVICE_TABLE(dmi, mechrevo_ec_dmi_table);
++
++static int mechrevo_ec_read_byte(struct mechrevo_ec_data *data, u16 address,
++				 u8 *value)
++{
++	union acpi_object argument = {
++		.integer.type = ACPI_TYPE_INTEGER,
++		.integer.value = address,
++	};
++	struct acpi_object_list arguments = {
++		.count = 1,
++		.pointer = &argument,
++	};
++	unsigned long long raw;
++	acpi_status status;
++
++	status = acpi_evaluate_integer(data->inou, "ECRR", &arguments, &raw);
++	if (ACPI_FAILURE(status))
++		return -EIO;
++
++	/* Match the delay used by the in-tree Uniwill ECRR transport. */
++	usleep_range(MECHREVO_ECRR_DELAY_MIN_US, MECHREVO_ECRR_DELAY_MAX_US);
++	if (raw > 255)
++		return -ERANGE;
++
++	*value = raw;
++	return 0;
++}
++
++static int mechrevo_ec_read_temp(struct mechrevo_ec_data *data, int channel,
++				 long *value)
++{
++	u16 address;
++	u8 raw;
++	int ret;
++
++	switch (channel) {
++	case 0:
++		address = 0x043e;
++		break;
++	case 1:
++		address = 0x044f;
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	ret = mechrevo_ec_read_byte(data, address, &raw);
++	if (ret)
++		return ret;
++	if (raw > 125)
++		return -ENODATA;
++
++	*value = raw * 1000;
++	return 0;
++}
++
++static int mechrevo_ec_read_fan(struct mechrevo_ec_data *data, int channel,
++				long *value)
++{
++	u16 high_address, low_address;
++	u8 high, low, check;
++	int attempt, ret;
++
++	switch (channel) {
++	case 0:
++		high_address = 0x0464;
++		low_address = 0x0465;
++		break;
++	case 1:
++		high_address = 0x046c;
++		low_address = 0x046b;
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	/* The EC can update between byte reads; reject a high-byte rollover. */
++	mutex_lock(&data->rpm_lock);
++	for (attempt = 0; attempt < MECHREVO_RPM_ATTEMPTS; attempt++) {
++		ret = mechrevo_ec_read_byte(data, high_address, &high);
++		if (ret)
++			goto out_unlock;
++
++		ret = mechrevo_ec_read_byte(data, low_address, &low);
++		if (ret)
++			goto out_unlock;
++
++		ret = mechrevo_ec_read_byte(data, high_address, &check);
++		if (ret)
++			goto out_unlock;
++
++		if (high == check) {
++			*value = ((long)high << 8) | low;
++			ret = 0;
++			goto out_unlock;
++		}
++	}
++	ret = -EAGAIN;
++
++out_unlock:
++	mutex_unlock(&data->rpm_lock);
++	return ret;
++}
++
++static umode_t mechrevo_ec_is_visible(const void *data,
++				      enum hwmon_sensor_types type,
++				      u32 attr, int channel)
++{
++	if (channel < 0 || channel > 1)
++		return 0;
++
++	if (type == hwmon_temp)
++		return attr == hwmon_temp_input || attr == hwmon_temp_label ? 0444 : 0;
++	if (type == hwmon_fan)
++		return attr == hwmon_fan_input || attr == hwmon_fan_label ? 0444 : 0;
++
++	return 0;
++}
++
++static int mechrevo_ec_read(struct device *dev, enum hwmon_sensor_types type,
++			    u32 attr, int channel, long *value)
++{
++	struct mechrevo_ec_data *data = dev_get_drvdata(dev);
++
++	if (type == hwmon_temp && attr == hwmon_temp_input)
++		return mechrevo_ec_read_temp(data, channel, value);
++	if (type == hwmon_fan && attr == hwmon_fan_input)
++		return mechrevo_ec_read_fan(data, channel, value);
++
++	return -EOPNOTSUPP;
++}
++
++static int mechrevo_ec_read_string(struct device *dev,
++				   enum hwmon_sensor_types type, u32 attr,
++				   int channel, const char **value)
++{
++	if (channel < 0 || channel > 1)
++		return -EOPNOTSUPP;
++
++	if (type == hwmon_temp && attr == hwmon_temp_label)
++		*value = channel ? "GPU EC" : "CPU EC";
++	else if (type == hwmon_fan && attr == hwmon_fan_label)
++		*value = channel ? "GPU fan" : "CPU fan";
++	else
++		return -EOPNOTSUPP;
++
++	return 0;
++}
++
++static const struct hwmon_ops mechrevo_ec_hwmon_ops = {
++	.is_visible = mechrevo_ec_is_visible,
++	.read = mechrevo_ec_read,
++	.read_string = mechrevo_ec_read_string,
++};
++
++static const struct hwmon_channel_info * const mechrevo_ec_hwmon_info[] = {
++	HWMON_CHANNEL_INFO(temp,
++			   HWMON_T_INPUT | HWMON_T_LABEL,
++			   HWMON_T_INPUT | HWMON_T_LABEL),
++	HWMON_CHANNEL_INFO(fan,
++			   HWMON_F_INPUT | HWMON_F_LABEL,
++			   HWMON_F_INPUT | HWMON_F_LABEL),
++	NULL
++};
++
++static const struct hwmon_chip_info mechrevo_ec_chip_info = {
++	.ops = &mechrevo_ec_hwmon_ops,
++	.info = mechrevo_ec_hwmon_info,
++};
++
++static int mechrevo_ec_probe(struct platform_device *pdev)
++{
++	struct mechrevo_ec_data *data;
++	struct device *hwmon_dev;
++	u8 project, capability;
++	acpi_status status;
++	int ret;
++
++	if (!dmi_check_system(mechrevo_ec_dmi_table))
++		return -ENODEV;
++
++	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++
++	mutex_init(&data->rpm_lock);
++	status = acpi_get_handle(NULL, "\\_SB.INOU", &data->inou);
++	if (ACPI_FAILURE(status) || !acpi_has_method(data->inou, "ECRR"))
++		return dev_err_probe(&pdev->dev, -ENODEV,
++				     "missing INOU.ECRR method\n");
++
++	ret = mechrevo_ec_read_byte(data, 0x0740, &project);
++	if (ret)
++		return dev_err_probe(&pdev->dev, ret,
++				     "failed to read EC project ID\n");
++	ret = mechrevo_ec_read_byte(data, 0x078e, &capability);
++	if (ret)
++		return dev_err_probe(&pdev->dev, ret,
++				     "failed to read EC fan capability\n");
++	if (project != 0x10 || !(capability & 0x40))
++		return dev_err_probe(&pdev->dev, -ENODEV,
++				     "unsupported EC project or fan layout\n");
++
++	platform_set_drvdata(pdev, data);
++	hwmon_dev = devm_hwmon_device_register_with_info(&pdev->dev, "mechrevo",
++							 data,
++							 &mechrevo_ec_chip_info,
++							 NULL);
++	return PTR_ERR_OR_ZERO(hwmon_dev);
++}
++
++static struct platform_driver mechrevo_ec_driver = {
++	.probe = mechrevo_ec_probe,
++	.driver = {
++		.name = "mechrevo-ec-hwmon",
++	},
++};
++
++static struct platform_device *mechrevo_ec_device;
++
++static int __init mechrevo_ec_init(void)
++{
++	int ret;
++
++	if (!dmi_check_system(mechrevo_ec_dmi_table))
++		return -ENODEV;
++
++	ret = platform_driver_register(&mechrevo_ec_driver);
++	if (ret)
++		return ret;
++
++	mechrevo_ec_device = platform_device_register_simple("mechrevo-ec-hwmon",
++							     PLATFORM_DEVID_NONE,
++							     NULL, 0);
++	if (IS_ERR(mechrevo_ec_device)) {
++		ret = PTR_ERR(mechrevo_ec_device);
++		platform_driver_unregister(&mechrevo_ec_driver);
++		return ret;
++	}
++
++	return 0;
++}
++
++static void __exit mechrevo_ec_exit(void)
++{
++	platform_device_unregister(mechrevo_ec_device);
++	platform_driver_unregister(&mechrevo_ec_driver);
++}
++
++module_init(mechrevo_ec_init);
++module_exit(mechrevo_ec_exit);
++
++MODULE_DESCRIPTION("MECHREVO GM6PX0X EC hwmon driver");
++MODULE_LICENSE("GPL");
+-- 
+2.56.0
+

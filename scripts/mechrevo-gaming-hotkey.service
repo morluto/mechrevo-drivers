@@ -1,0 +1,13 @@
+[Unit]
+Description=MECHREVO Gaming Center Hardware Mode Switch Hotkey Daemon
+Documentation=https://github.com/LIghtJUNction/mechrevo-drivers
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/mechrevo-control daemon
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

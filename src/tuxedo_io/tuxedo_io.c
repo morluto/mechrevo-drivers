@@ -25,11 +25,15 @@
 #include <linux/device.h>
 #include <linux/ioctl.h>
 #include <linux/fs.h>
+#include <linux/mutex.h>
 #include <linux/cdev.h>
 #include <linux/uaccess.h>
 #include <linux/delay.h>
 #include <linux/version.h>
 #include <linux/dmi.h>
+#include <linux/err.h>
+#include <linux/fs.h>
+#include <linux/usb.h>
 #include "../clevo_interfaces.h"
 #include "../uniwill_interfaces.h"
 #include "tuxedo_io_ioctl.h"
@@ -164,18 +168,28 @@ static int tdp_max_x6xx45xu[] = { 0x64, 0x64, 0x69 };
 static int tdp_min_xxaf5xxx[] = { 0x0a, 0x0a, 0x0a };
 static int tdp_max_xxaf5xxx[] = { 0xd2, 0xd2, 0x1a4 };
 
+/* Windows Control Center 5.17.49.19 profile values for this exact model:
+ * Office/Gaming/Turbo use PL1/PL2/PL4 35/35/215, 80/80/215 and 95/95/215.
+ * The lower bound remains 35 W for PL1/PL2 and 100 W for PL4 so the EC
+ * defaults and an explicit reset remain representable. These are package
+ * profile values, not a completed high-power thermal qualification; PL4 was
+ * not load-tested at 215 W here.
+ */
+static int tdp_min_gm6bg0q[] = { 0x23, 0x23, 0x64 };
+static int tdp_max_gm6bg0q[] = { 0x5f, 0x5f, 0xd7 };
+
 static int *tdp_min_defs = NULL;
 static int *tdp_max_defs = NULL;
 
-static void uw_id_tdp(void)
+static void uw_id_tdp(u8 model)
 {
-	if (uw_feats->model == UW_MODEL_PH4TUX) {
+	if (model == UW_MODEL_PH4TUX) {
 		tdp_min_defs = tdp_min_ph4tux;
 		tdp_max_defs = tdp_max_ph4tux;
-	} else if (uw_feats->model == UW_MODEL_PH4TRX) {
+	} else if (model == UW_MODEL_PH4TRX) {
 		tdp_min_defs = tdp_min_ph4trx;
 		tdp_max_defs = tdp_max_ph4trx;
-	} else if (uw_feats->model == UW_MODEL_PH4TQF) {
+	} else if (model == UW_MODEL_PH4TQF) {
 		tdp_min_defs = tdp_min_ph4tqx;
 		tdp_max_defs = tdp_max_ph4tqx;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0)
@@ -250,6 +264,12 @@ static void uw_id_tdp(void)
 	} else if (dmi_match(DMI_BOARD_NAME, "X5KK45xS_X5SP45xS")) {
 		tdp_min_defs = tdp_min_xxxx45xs;
 		tdp_max_defs = tdp_max_xxxx45xs;
+	} else if (dmi_match(DMI_SYS_VENDOR, "MECHREVO") &&
+		   dmi_match(DMI_BOARD_NAME, "JIAOLONG Series-X6xR55xK")) {
+		/* Reuse the tested community mapping, not a marketing-name alias.
+		 * These are validation bounds, never automatically applied targets. */
+		tdp_min_defs = tdp_min_x6fr5xx;
+		tdp_max_defs = tdp_max_x6fr5xx;
 	} else if (dmi_match(DMI_BOARD_NAME, "X6AR55xU")) {
 		tdp_min_defs = tdp_min_x6ar55xu;
 		tdp_max_defs = tdp_max_x6ar55xu;
@@ -263,6 +283,15 @@ static void uw_id_tdp(void)
 		   dmi_match(DMI_BOARD_NAME, "XxAF5xxx_mLED")) {
 		tdp_min_defs = tdp_min_xxaf5xxx;
 		tdp_max_defs = tdp_max_xxaf5xxx;
+	} else if (dmi_match(DMI_SYS_VENDOR, "MECHREVO") &&
+		   dmi_match(DMI_BOARD_NAME, "GM6BG0Q") &&
+		   dmi_match(DMI_PRODUCT_NAME, "Jiaolong16K Series GM6BG0Q") &&
+		   dmi_match(DMI_BIOS_VERSION, "N.1.19MRO15")) {
+		/* The same exact identity gates the boot/USB switches. Writing
+		 * PL1=35 through ECRR capped package power to 35 W on hardware;
+		 * other bounds are the OEM profile/registry points only. */
+		tdp_min_defs = tdp_min_gm6bg0q;
+		tdp_max_defs = tdp_max_gm6bg0q;
 #endif
 	} else {
 		tdp_min_defs = NULL;
@@ -270,14 +299,62 @@ static void uw_id_tdp(void)
 	}
 }
 
-static u32 uniwill_identify(void)
+static DEFINE_MUTEX(uniwill_identify_lock);
+
+/* Called with uniwill_identify_lock held. */
+static u32 uw_identify_locked(void)
 {
-	u32 result = uniwill_get_active_interface_id(NULL) == 0 ? 1 : 0;
+	struct uniwill_device_features_t *features;
+	u32 result;
+
+	result = uniwill_get_active_interface_id(NULL) == 0 ? 1 : 0;
 	if (result) {
-		uw_feats = uniwill_get_device_features();
-		uw_id_tdp();
+		features = uniwill_get_device_features();
+		if (!features || !uniwill_device_features_ready()) {
+			result = 0;
+		} else {
+			/* Initialize the TDP table before publishing uw_feats so a
+			 * concurrent ready check cannot observe the model without
+			 * its bounds. */
+			uw_id_tdp(features->model);
+			uw_feats = features;
+		}
 	}
 	return result;
+}
+
+static u32 uniwill_identify(void)
+{
+	u32 result;
+
+	mutex_lock(&uniwill_identify_lock);
+	result = uw_identify_locked();
+	mutex_unlock(&uniwill_identify_lock);
+	return result;
+}
+
+/* tuxedo_io may initialize before the Uniwill interface provider registers
+ * (reproduced on Jiaolong16K GM6BG0Q: R_UW_MODEL_ID failed with ENODEV until
+ * R_HWCHECK_UW). Retry on first use instead of caching a load-order failure.
+ * The lock serializes both the retry and reads of the published pointer, so a
+ * caller cannot observe uw_feats before uw_id_tdp() finished; concurrent
+ * first users still identify only once.
+ */
+static void uw_ensure_identified(void)
+{
+	mutex_lock(&uniwill_identify_lock);
+	if (!uw_feats)
+		uw_identify_locked();
+	mutex_unlock(&uniwill_identify_lock);
+}
+
+/* Feature-gated commands retry identification on first use. Argument
+ * validation and user copies still happen before this where the handler can
+ * decide without the feature set, so malformed requests do not probe. */
+static bool uw_features_ready(void)
+{
+	uw_ensure_identified();
+	return uw_feats != NULL;
 }
 
 /*static int fop_open(struct inode *inode, struct file *file)
@@ -482,6 +559,8 @@ static int uw_get_tdp(u8 tdp_index)
 	int min_tdp_status = uw_get_tdp_min(tdp_index);
 	if (min_tdp_status < 0)
 		return min_tdp_status;
+	if (!uw_feats)
+		return -ENODEV;
 
 	status = uniwill_read_ec_ram(tdp_current_addr, &tdp_data);
 	if (status < 0)
@@ -509,6 +588,8 @@ static int uw_set_tdp(u8 tdp_index, int tdp_value)
 		return tdp_max;
 	if (tdp_value < tdp_min || tdp_value > tdp_max)
 		return -EINVAL;
+	if (!uw_feats)
+		return -ENODEV;
 
 	if (tdp_index == 2 && uw_feats->uniwill_has_double_pl4)
 		tdp_data = tdp_value / 2;
@@ -520,6 +601,8 @@ static int uw_set_tdp(u8 tdp_index, int tdp_value)
 
 static u32 uw_get_performance_profile_count(void)
 {
+	if (!uw_feats)
+		return 0;
 	if (uw_feats->uniwill_profile_v1_two_profs)
 		return 2;
 	if (uw_feats->uniwill_profile_v1_three_profs ||
@@ -609,10 +692,14 @@ static long uniwill_ioctl_interface(struct file *file, unsigned int cmd, unsigne
 			}
 			break;
 		case R_UW_MODEL_ID:
+			if (!uw_features_ready())
+				return -ENODEV;
 			result = uw_feats->model;
 			copy_result = copy_to_user((void *) arg, &result, sizeof(result));
 			break;
 		case R_UW_FANSPEED:
+			if (!uw_features_ready())
+				return -ENODEV;
 			status = uniwill_read_ec_ram(0x1804, &byte_data);
 			if (status < 0)
 				return status;
@@ -622,6 +709,8 @@ static long uniwill_ioctl_interface(struct file *file, unsigned int cmd, unsigne
 			copy_result = copy_to_user((void *) arg, &result, sizeof(result));
 			break;
 		case R_UW_FANSPEED2:
+			if (!uw_features_ready())
+				return -ENODEV;
 			status = uniwill_read_ec_ram(0x1809, &byte_data);
 			if (status < 0)
 				return status;
@@ -681,24 +770,44 @@ static long uniwill_ioctl_interface(struct file *file, unsigned int cmd, unsigne
 			copy_result = copy_to_user((void *) arg, &result, sizeof(result));
 			break;
 		case R_UW_TDP0:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp(0));
 		case R_UW_TDP1:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp(1));
 		case R_UW_TDP2:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp(2));
 		case R_UW_TDP0_MIN:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp_min(0));
 		case R_UW_TDP1_MIN:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp_min(1));
 		case R_UW_TDP2_MIN:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp_min(2));
 		case R_UW_TDP0_MAX:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp_max(0));
 		case R_UW_TDP1_MAX:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp_max(1));
 		case R_UW_TDP2_MAX:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_copy_tdp_value(arg, uw_get_tdp_max(2));
 		case R_UW_PROFS_AVAILABLE:
+			if (!uw_features_ready())
+				return -ENODEV;
 			result = uw_get_performance_profile_count();
 			copy_result = copy_to_user((void *) arg, &result, sizeof(result));
 			break;
@@ -730,6 +839,8 @@ static long uniwill_ioctl_interface(struct file *file, unsigned int cmd, unsigne
 				return -EFAULT;
 			if (argument > 0xff)
 				return -EINVAL;
+			if (!uw_features_ready())
+				return -ENODEV;
 			return (int)uw_set_fan(cmd == W_UW_FANSPEED2, argument);
 		case W_UW_MODE:
 			copy_result = copy_from_user(&argument, (int32_t *) arg, sizeof(argument));
@@ -744,26 +855,44 @@ static long uniwill_ioctl_interface(struct file *file, unsigned int cmd, unsigne
 			*/
 			break;
 		case W_UW_FANAUTO:
+			if (!uw_features_ready())
+				return -ENODEV;
 			return (int)uw_set_fan_auto();
 		case W_UW_TDP0:
 			copy_result = copy_from_user(&argument, (int32_t *) arg, sizeof(argument));
 			if (copy_result)
 				return -EFAULT;
+			if ((int32_t)argument < 0)
+				return -EINVAL;
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_set_tdp(0, argument);
 		case W_UW_TDP1:
 			copy_result = copy_from_user(&argument, (int32_t *) arg, sizeof(argument));
 			if (copy_result)
 				return -EFAULT;
+			if ((int32_t)argument < 0)
+				return -EINVAL;
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_set_tdp(1, argument);
 		case W_UW_TDP2:
 			copy_result = copy_from_user(&argument, (int32_t *) arg, sizeof(argument));
 			if (copy_result)
 				return -EFAULT;
+			if ((int32_t)argument < 0)
+				return -EINVAL;
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_set_tdp(2, argument);
 		case W_UW_PERF_PROF:
 			copy_result = copy_from_user(&argument, (int32_t *) arg, sizeof(argument));
 			if (copy_result)
 				return -EFAULT;
+			if (argument < PROFILE_POWERSAVE || argument > PROFILE_OVERBOOST)
+				return -EINVAL;
+			if (!uw_features_ready())
+				return -ENODEV;
 			return uw_set_performance_profile_v1(argument);
 #ifdef DEBUG
 		case W_TF_BC:
@@ -796,6 +925,169 @@ static long uniwill_ioctl_interface(struct file *file, unsigned int cmd, unsigne
 	return copy_result ? -EFAULT : 0;
 }
 
+/* Uniwill OEM v5.17.51.34 turns the camera on or off by enabling or disabling
+ * the Camera-class device. 0x0727 is already the custom-profile byte, so this
+ * path never writes EC RAM. It only changes authorization of a USB device whose
+ * name is a bus port, and whose product or interface says it is a camera.
+ * usb_authorize_device() is not exported to modules; the sysfs attribute is.
+ * Clevo firmware webcam commands stay on the Clevo path.
+ */
+#define UW_WEBCAM_FOUND		0
+#define UW_WEBCAM_ENABLED	1
+#define UW_WEBCAM_ENABLE	2
+
+static int uniwill_webcam_contains(const char *haystack, const char *needle)
+{
+	size_t i, j;
+
+	if (!haystack || !needle || !needle[0])
+		return 0;
+	for (i = 0; haystack[i]; ++i) {
+		for (j = 0; needle[j]; ++j) {
+			char left = haystack[i + j];
+			char right = needle[j];
+
+			if (!left)
+				return 0;
+			if (left >= 'A' && left <= 'Z')
+				left += 'a' - 'A';
+			if (right >= 'A' && right <= 'Z')
+				right += 'a' - 'A';
+			if (left != right)
+				break;
+		}
+		if (!needle[j])
+			return 1;
+	}
+	return 0;
+}
+
+static int uniwill_webcam_name_is_device(const char *name)
+{
+	size_t i;
+	int dash = 0;
+
+	if (!name || !name[0])
+		return 0;
+	for (i = 0; name[i]; ++i) {
+		char c = name[i];
+
+		if (i >= 31)
+			return 0;
+		if (c == '-') {
+			if (i == 0 || dash)
+				return 0;
+			dash = 1;
+			continue;
+		}
+		if (c == '.') {
+			if (!dash || name[i - 1] == '-' || name[i - 1] == '.')
+				return 0;
+			continue;
+		}
+		if (c < '0' || c > '9')
+			return 0;
+	}
+	if (!dash || name[i - 1] == '-' || name[i - 1] == '.')
+		return 0;
+	return 1;
+}
+
+static int uniwill_webcam_device_is_camera(struct usb_device *udev)
+{
+	int i;
+
+	if (!udev || !uniwill_webcam_name_is_device(dev_name(&udev->dev)))
+		return 0;
+	if (uniwill_webcam_contains(udev->product, "webcam") ||
+	    uniwill_webcam_contains(udev->product, "camera"))
+		return 1;
+	if (!udev->actconfig)
+		return 0;
+	for (i = 0; i < udev->actconfig->desc.bNumInterfaces; ++i) {
+		struct usb_interface *intf = udev->actconfig->interface[i];
+
+		if (intf && intf->cur_altsetting &&
+		    intf->cur_altsetting->desc.bInterfaceClass == USB_CLASS_VIDEO)
+			return 1;
+	}
+	return 0;
+}
+
+static int uniwill_webcam_write_authorized(struct usb_device *udev, int enable)
+{
+	char path[64];
+	struct file *file;
+	loff_t pos = 0;
+	char value = enable ? '1' : '0';
+	ssize_t written;
+	int length;
+
+	if (!uniwill_webcam_name_is_device(dev_name(&udev->dev)))
+		return -EINVAL;
+	length = scnprintf(path, sizeof(path), "/sys/bus/usb/devices/%s/authorized",
+			   dev_name(&udev->dev));
+	if (length < 0 || length >= (int)sizeof(path))
+		return -ENAMETOOLONG;
+	file = filp_open(path, O_WRONLY, 0);
+	if (IS_ERR(file))
+		return PTR_ERR(file);
+	written = kernel_write(file, &value, 1, &pos);
+	filp_close(file, NULL);
+	if (written < 0)
+		return written;
+	return written == 1 ? 0 : -EIO;
+}
+
+static int uniwill_webcam_visit(struct usb_device *udev, void *data)
+{
+	int *walk = data;
+	int desired, status;
+
+	if (!uniwill_webcam_device_is_camera(udev))
+		return 0;
+	++walk[UW_WEBCAM_FOUND];
+	if (udev->authorized)
+		++walk[UW_WEBCAM_ENABLED];
+	if (walk[UW_WEBCAM_ENABLE] < 0)
+		return 0;
+	desired = walk[UW_WEBCAM_ENABLE] & 0x01;
+	if (udev->authorized == desired)
+		return 0;
+	status = uniwill_webcam_write_authorized(udev, desired);
+	if (status)
+		return status;
+	return 0;
+}
+
+static long uniwill_webcam_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+	int walk[3] = { 0, 0, -1 };
+	u32 argument = 0;
+	u32 result;
+	int status;
+
+	(void)file;
+	if (cmd == W_CL_WEBCAM_SW) {
+		if (copy_from_user(&argument, (u32 __user *)arg, sizeof(argument)))
+			return -EFAULT;
+		walk[UW_WEBCAM_ENABLE] = argument & 0x01;
+	} else if (cmd != R_CL_WEBCAM_SW) {
+		return -ENOTTY;
+	}
+	status = usb_for_each_dev(walk, uniwill_webcam_visit);
+	if (status)
+		return status;
+	if (!walk[UW_WEBCAM_FOUND])
+		return -ENODEV;
+	if (cmd == W_CL_WEBCAM_SW)
+		return 0;
+	result = walk[UW_WEBCAM_ENABLED] ? 1 : 0;
+	if (copy_to_user((u32 __user *)arg, &result, sizeof(result)))
+		return -EFAULT;
+	return 0;
+}
+
 static long fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	u32 copy_result;
@@ -821,6 +1113,9 @@ static long fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			return uniwill_ioctl_interface(file, cmd, arg);
 #endif
 		default:
+			if ((cmd == R_CL_WEBCAM_SW || cmd == W_CL_WEBCAM_SW) &&
+			    id_check_uniwill && !id_check_clevo)
+				return uniwill_webcam_ioctl(file, cmd, arg);
 			switch (_IOC_TYPE(cmd)) {
 				case MAGIC_READ_CL:
 				case MAGIC_WRITE_CL:

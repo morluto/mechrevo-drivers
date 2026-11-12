@@ -1,0 +1,19 @@
+[package]
+name = "mechrevo-console-cli"
+default-run = "mechrevo-console"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "mechrevo-console"
+path = "src/main.rs"
+
+[[bin]]
+name = "mechrevo-console-oem-helper"
+path = "src/oem_helper.rs"
+
+[dependencies]
+mechrevo-console-core = { path = "../core" }
+serde_json.workspace = true

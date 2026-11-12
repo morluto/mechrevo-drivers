@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-18",
+  "outcome": "installed_and_scoped_runtime_verified",
+  "scope": "Local Arch r160 release installation, ordinary-user read-only CLI, root pkexec installed-helper Fn toggle/restore, and installed native GUI read-only rendering; no Windows runtime or new kernel activation",
+  "source": {
+    "commit": "5542b9d66eb3bb95b2edd07e4f2fe94afc36ea60",
+    "rust_input_snapshot_sha256": "13b160f02fe7b35f7118e9ed9558e01d58664b10c41bb3eb5a0bba31f4fb92ba",
+    "rust_input_files": 31,
+    "matches_final_v4_verified_snapshot": true,
+    "source_checkout_unchanged_after_build": true,
+    "candidate_verification_receipt": "oem-controls.json",
+    "rust_tests_passed": 146,
+    "python_tests_passed": 95,
+    "git_publication": "pending: system keyring is locked; local commits are not claimed pushed"
+  },
+  "package": {
+    "name": "mechrevo-console",
+    "version": "0.1.0.r160.g5542b9d-1",
+    "source_commit": "5542b9d66eb3bb95b2edd07e4f2fe94afc36ea60",
+    "archive_sha256": "df8fd525bcc282f47f241dd04b4b6a7e9382d420e4fd88daadba2f79903973d5",
+    "archive_bytes": 6762268,
+    "recipe_sha256": "0589bda403cba0fc9cc8f6c261540a129bc5a77403c8847eb6ee3eb919987ec6",
+    "fixed_local_source": true,
+    "locked_offline_release_build": true,
+    "archive_binaries_equal_build_outputs": true,
+    "public_upstream_signature_claimed": false,
+    "aur_published": false
+  },
+  "release_binaries": {
+    "mechrevo-console": {
+      "installed_path": "/usr/bin/mechrevo-console",
+      "sha256": "b4b26c269a2814058bb109b64314ae00ec7ebd130798ec1c67171a7903287e11",
+      "bytes": 1640360,
+      "mode": "0o755"
+    },
+    "mechrevo-console-gui": {
+      "installed_path": "/usr/bin/mechrevo-console-gui",
+      "sha256": "a918ac3481382006851861c1015065aef0fb920a6c724e4e1d40be0fcba287d4",
+      "bytes": 22088504,
+      "mode": "0o755"
+    },
+    "mechrevo-console-oem-helper": {
+      "installed_path": "/usr/lib/mechrevo-console/oem-helper",
+      "sha256": "afcf12a90241009bb5b00c084fdc158ef10d20fe39c54186c58577db8b030576",
+      "bytes": 921680,
+      "mode": "0o755"
+    }
+  },
+  "installation": {
+    "pacman_exit_code": 0,
+    "upgraded_only_console_from": "0.1.0.r158.ga190455-1",
+    "installed_version": "0.1.0.r160.g5542b9d-1",
+    "package_integrity_files": 21,
+    "package_integrity_altered": 0,
+    "verified_regular_payload_files": 9,
+    "all_payload_bytes_modes_root_ownership_match": true,
+    "oem_helper_and_policy_installed": true,
+    "pkaction_registration_exit_code": 0,
+    "automatic_rollback": false,
+    "hardware_control_writes_during_package_install": false,
+    "protected_runtime_unchanged_during_install": true
+  },
+  "installed_cli": {
+    "ordinary_user": true,
+    "commands": {
+      "version": {
+        "exit_code": 0
+      },
+      "status": {
+        "exit_code": 0
+      },
+      "oem_list": {
+        "exit_code": 0
+      },
+      "pkaction": {
+        "exit_code": 0
+      },
+      "package": {
+        "exit_code": 0
+      },
+      "integrity": {
+        "exit_code": 0
+      }
+    },
+    "hardware_setters_executed_in_readonly_smoke": false
+  },
+  "installed_helper": {
+    "outcome": "fn_toggle_and_restore_verified",
+    "ordinary_user_installed_cli_fresh_preview": true,
+    "privileged_execution": "sudo/root pkexec --disable-internal-agent invoking the fixed installed helper",
+    "applied_verified": 2,
+    "step_hashes_verified": 6,
+    "fn_changed_and_restored": true,
+    "all_four_controls_restored": true,
+    "runtime_guard_unchanged": true,
+    "installed_binary_and_policy_proof_unchanged": true,
+    "unknown_state_seen": false,
+    "remaining_pkexec_or_helper_processes": 0,
+    "oem_lock_free_after_probe": true,
+    "normal_user_administrator_authentication_dialog_verified": false,
+    "gui_apply_verified": false,
+    "other_three_oem_controls_written_in_release_acceptance": false,
+    "scope": "Root pkexec installed fixed-helper path only; not normal-user authorization dialog or GUI apply; only Fn changed/restored, other controls read-only"
+  },
+  "installed_native_gui": {
+    "installed_elf_sha256": "a918ac3481382006851861c1015065aef0fb920a6c724e4e1d40be0fcba287d4",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "lifetime_seconds": 25.57818925200263,
+    "overview_visually_confirmed": true,
+    "controls_page_navigation_visually_confirmed": true,
+    "observed_oem_selectors": 4,
+    "observed_panel": "Fn lock only",
+    "other_oem_panels_visited": false,
+    "preview_or_apply_activated": false,
+    "hardware_setter_executed": false,
+    "binary_sha256_unchanged_after_capture": true,
+    "all_owned_gui_keyboard_compositor_processes_ended": true,
+    "screenshots_sha256": {
+      "overview.png": "d2606a1a586eb13dd06c024b3fb57786f72c10993814aaabe0b67758585a2de3",
+      "controls.png": "2c70f5f7269034f1aea4070ce78b34195b6e08c7a428c2049a66b875dc9e48bf"
+    },
+    "scope": "Installed release Linux native GUI startup, overview, four OEM selectors and Fn-lock panel rendering/navigation only. No OEM preview/application or hardware setter; no user desktop/HOME/system settings changed. Other OEM panels, Windows runtime, and physical hardware behavior are not accepted by this smoke."
+  },
+  "kernel_and_existing_controls": {
+    "installed_driver_package": "4.24.0.r158.ga190455-1",
+    "loaded_driver_revision": "r106",
+    "new_kernel_code_loaded": false,
+    "kernel_module_reload_or_reboot": false,
+    "efi_or_boot_files_changed_in_this_console_deployment": false,
+    "tcc_fan_or_power_configuration_changed": false,
+    "note": "The installed console uses the already loaded driver interfaces; r160 console acceptance does not activate or validate the prepared r158 kernel code."
+  },
+  "recovery": {
+    "old_r158_package_sha256": "91252dc7052cb5e0f7bab9ebb9ba4e75bf777d53de2862e03be4ee10ce47418d",
+    "old_package_reused_without_duplicate_copy": true,
+    "new_fixed_package_sha256": "df8fd525bcc282f47f241dd04b4b6a7e9382d420e4fd88daadba2f79903973d5",
+    "private_install_recovery_kept": true,
+    "installed_fn_evidence_archive_files": 13,
+    "installed_fn_evidence_archive_bytes": 81920,
+    "installed_fn_evidence_archive_sha256": "ed7b4ffe03d5295826265c6fcd35104e8d84bb923d3dbd84abec17bd4635b9f5"
+  },
+  "private_evidence_sha256": {
+    "release_provenance": "66358537ac0dfa166cbf8084f0bcca6aec33a66fa33d7648724b9c48f60b2543",
+    "installation_terminal": "b88bf0574abf1214c48a1b357b70c36ba47bb0fe936007873ca083a7a9a1155b",
+    "installation_runtime_before": "1d30dfa0d9a521a019a5488a483e7382466e45c08882f845209dad59a9914da2",
+    "installation_runtime_after": "1d30dfa0d9a521a019a5488a483e7382466e45c08882f845209dad59a9914da2",
+    "installed_readonly_smoke": "8e0f2a109336d1557b7ce5c7fbdd7519fb42123469f3eafdf5d7f2bb4ec1f0be",
+    "installed_fn_summary": "38ea122b75d04c71bcfabfdb5f1eb338df26a81fbeb308f714627491140706d7",
+    "installed_fn_postcheck": "5a317af61f53a6f2987ee993fddb7d87db13a57c10a86a0013d169517eaf876e",
+    "installed_native_review": "943af600cfb515ff14f3842d27af11cf09aebce8a13f0ef6e1a585f6f3bf021d",
+    "installation_host_tracking_final": "de40e4db9c1a0d2ba9da705836b7816af6767e3785fc626c30a6109574ca21b3",
+    "installation_payload_audit": "cb99cb292efb4d69b3234096cc859a3ecdd48bdd0e726fba90d57ad079a4b925",
+    "installation_plan": "c0bbf9c38c56ab1103ca63186caec81a0d22c7ee2fda79d047f45365eb990049",
+    "installation_log": "c3c5daf90af6233c129395559c99100be7adecee3af15c190a8febe37c7cd51c"
+  },
+  "tracking": {
+    "release_build": {
+      "status": "partial",
+      "gap_count": 348,
+      "unresolved_event_count": 3415
+    },
+    "installation_host_watch": {
+      "status": "partial",
+      "finalized": true,
+      "gap_count": 0,
+      "unresolved_event_count": 4,
+      "limitation": "One /usr/share/applications path had unavailable metadata for one create, two modify and one delete events; final package/runtime checks do not reconstruct those events."
+    },
+    "installed_fn_acceptance": {
+      "status": "complete",
+      "gap_count": 0,
+      "unresolved_event_count": 0
+    },
+    "installed_native_gui": {
+      "status": "partial",
+      "gap_count": 0,
+      "unresolved_event_count": 3
+    },
+    "git_internal_files": "Excluded by the tracking tool; Git source/commit/push claims require independent verification.",
+    "limitation": "Successful build/install/runtime commands and final payload checks do not reconstruct missing filesystem event history.",
+    "installation_tools": {
+      "status": "complete",
+      "gap_count": 0,
+      "unresolved_event_count": 0
+    },
+    "installation_bootstrap": {
+      "status": "complete",
+      "gap_count": 0,
+      "unresolved_event_count": 0
+    },
+    "earlier_installation_baseline": {
+      "status": "failed_before_installation",
+      "installation_executed": false,
+      "limitation": "An earlier broad native-watch baseline hit the watch limit; it is not represented as covered installation history."
+    }
+  },
+  "limitations": [
+    "Normal-user administrator authentication dialogue and GUI apply remain unverified.",
+    "Only Fn was changed and restored through the installed release helper; the four-control candidate transactions remain separate historical evidence.",
+    "Fn EC and LED requested-state readback do not establish physical key/light behavior; charging-profile readback does not establish stop-charging behavior.",
+    "Windows OEM backend and Windows runtime/hardware acceptance remain incomplete.",
+    "No fan/noise, CPU/GPU power, suspend/resume or persistence acceptance is claimed.",
+    "Source has local commits; remote push is pending keyring unlock."
+  ]
+}

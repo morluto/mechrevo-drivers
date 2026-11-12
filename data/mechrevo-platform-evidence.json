@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "model_id": "gm6px0x",
+      "title": "旷世 16 Pro GM6PX0X",
+      "platform": "uniwill",
+      "identity": {
+        "manufacturer": "MECHREVO",
+        "product_name": "Kuangshi16Pro Series GM6PX0X",
+        "board_name": "GM6PX0X"
+      },
+      "qualified_bios": ["N.1.09MRO07"],
+      "evidence_level": "hardware-partial",
+      "sources": ["docs/hardware/GM6PX0X.md", "src/mechrevo_ec_sensors.c"]
+    },
+    {
+      "model_id": "gx4hrxl",
+      "title": "无界 14X GX4HRXL",
+      "platform": "uniwill",
+      "identity": {"manufacturer": "MECHREVO", "board_name": "GX4HRXL"},
+      "qualified_bios": [],
+      "evidence_level": "upstream-source",
+      "sources": [
+        "https://github.com/minortex/mech-forza-kmod/tree/00769343a82f66bcbf44f58924d88b7035066b71",
+        "https://github.com/sund3RRR/mechrevo14X-linux/tree/8b516120e67d7cb2c7fc87b9fc3cf472813a29e1"
+      ]
+    },
+    {
+      "model_id": "jiaolong-x6xr55xk",
+      "title": "蛟龙 16 Pro 2025 X6xR55xK",
+      "platform": "uniwill",
+      "identity": {"manufacturer": "MECHREVO", "board_name": "JIAOLONG Series-X6xR55xK"},
+      "qualified_bios": [],
+      "evidence_level": "upstream-source",
+      "sources": ["https://github.com/sklynic/pkgbuild-mechrevo-driver-dkms-16-pro/tree/cf71e4cc1b2d8d4ebdf68a98ca00910087f1678d"]
+    },
+    {
+      "model_id": "gm6bg0q",
+      "title": "蛟龙 16K GM6BG0Q",
+      "platform": "uniwill",
+      "identity": {
+        "manufacturer": "MECHREVO",
+        "product_name": "Jiaolong16K Series GM6BG0Q",
+        "board_name": "GM6BG0Q"
+      },
+      "qualified_bios": ["N.1.19MRO15"],
+      "evidence_level": "hardware-partial",
+      "sources": [
+        "docs/hardware/GM6BG0Q.md",
+        "src/mechrevo_ec_sensors.c",
+        "src/tuxedo_io/tuxedo_io.c",
+        "https://lists.openwall.net/linux-kernel/2026/10/23/301",
+        "https://github.com/Wer-Wolf/uniwill-laptop/blob/a9e5ac3b10ed09c6d9aedd23288d3c7887afb450/uniwill-acpi.c"
+      ]
+    },
+    {
+      "model_id": "wujie-x5sp4nag",
+      "title": "无界 15X Pro X5SP4NAG",
+      "platform": "uniwill",
+      "identity": {
+        "manufacturer": "MECHREVO",
+        "board_name": "WUJIE Series-X5SP4NAG"
+      },
+      "qualified_bios": [],
+      "evidence_level": "upstream-source",
+      "sources": [
+        "https://lists.openwall.net/linux-kernel/2026/10/16/1522",
+        "https://lists.openwall.net/linux-kernel/2026/09/28/2519",
+        "https://github.com/Wer-Wolf/uniwill-laptop/blob/a9e5ac3b10ed09c6d9aedd23288d3c7887afb450/uniwill-acpi.c"
+      ]
+    },
+    {
+      "model_id": "mrid6-23",
+      "title": "蛟龙 16 Pro 2023 MRID6-23",
+      "platform": "bitland-mifs-wmi",
+      "identity": {
+        "manufacturer": "MECHREVO",
+        "product_name": "Jiaolong Series MRID6",
+        "product_version": "1",
+        "board_name": "MRID6-23"
+      },
+      "qualified_bios": [],
+      "evidence_level": "upstream-source",
+      "sources": [
+        "https://github.com/Tanpinsary/JiaoLongOnArch/blob/f75e2522ab6cda6fd6990a3d8468cf0d27d067dd/docs/hardware.md",
+        "https://github.com/Tanpinsary/JiaoLongOnArch/blob/f75e2522ab6cda6fd6990a3d8468cf0d27d067dd/docs/linux-stage3-results.md",
+        "https://github.com/torvalds/linux/blob/v7.2/drivers/platform/x86/bitland-mifs-wmi.c"
+      ]
+    },
+    {
+      "model_id": "gm5hg0a",
+      "title": "翼龙 15 Pro GM5HG0A",
+      "platform": "uniwill",
+      "identity": {
+        "manufacturer": "MECHREVO",
+        "product_name": "Yilong15Pro Series GM5HG0A",
+        "board_name": "GM5HG0A"
+      },
+      "qualified_bios": [],
+      "evidence_level": "upstream-source",
+      "sources": [
+        "https://lore-kernel.gnuweeb.org/platform-driver-x86/tencent_36699D13D174660E0D76C4F5EFB825D86609%40qq.com/T/"
+      ]
+    },
+    {
+      "model_id": "wujie15-hpt",
+      "title": "无界 15 Pro HPT",
+      "platform": "bitland-mifs-wmi",
+      "identity": {
+        "manufacturer": "MECHREVO",
+        "product_name": "WUJIE15 PRO",
+        "board_name": "WUJIE15 Series-HPT"
+      },
+      "qualified_bios": [],
+      "evidence_level": "upstream-source",
+      "sources": [
+        "https://lists.openwall.net/linux-kernel/2026/09/14/65",
+        "https://lkml.iu.edu/hypermail/linux/kernel/2609.2/19484.html",
+        "https://lkml.iu.edu/2610.2/04186.html"
+      ]
+    },
+    {
+      "model_id": "p916f-hpt-r",
+      "title": "星耀 P916F HPT-R",
+      "platform": "acpi-p916f",
+      "identity": {
+        "manufacturer": "MECHREVO",
+        "product_name": "XINGYAO Series",
+        "board_name": "XINGYAO Series-P916F-HPT-R"
+      },
+      "qualified_bios": [],
+      "evidence_level": "upstream-source",
+      "sources": [
+        "https://github.com/longwudf/mechrevo-p916f-linux/blob/1168e9c4dce3a0a63bac71a54b9e08ceb1c1a273/README.md",
+        "https://github.com/longwudf/mechrevo-p916f-linux/blob/1168e9c4dce3a0a63bac71a54b9e08ceb1c1a273/mechrevo-p916f-wmi.c"
+      ]
+    },
+    {
+      "model_id": "wujie14sah-p4hplnav",
+      "title": "无界 14SAH P4HPLNAV",
+      "platform": "amd-acp63-soundwire",
+      "identity": {
+        "manufacturer": "MECHREVO",
+        "product_name": "WUJIE Series",
+        "board_name": "WUJIE Series-P4HPLNAV"
+      },
+      "qualified_bios": [],
+      "evidence_level": "upstream-source",
+      "sources": [
+        "https://www.mail-archive.com/ubuntu-bugs%40lists.ubuntu.com/msg6319052.html",
+        "https://lists.openwall.net/linux-kernel/2026/10/23/536",
+        "https://www.mail-archive.com/ubuntu-bugs%40lists.ubuntu.com/msg6319765.html"
+      ]
+    }
+  ]
+}

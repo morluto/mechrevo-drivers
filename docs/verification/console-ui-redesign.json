@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "scope": "0.1.0 native UI redesign development candidate",
+  "source_digest": "1ecbadff450a3129d0570758262693e2e9c40a8f3ad58902bc5c2ec3e5a0a442",
+  "source_inputs_unchanged": true,
+  "rust": {
+    "checks": {
+      "fmt": "passed",
+      "test": "passed",
+      "clippy": "passed",
+      "windows": "passed"
+    },
+    "test_totals": {
+      "passed": 67,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered_out": 0
+    }
+  },
+  "layout_scenarios": 80,
+  "expanded_sensor_sources_tested": true,
+  "native_linux_render": {
+    "binary_sha256": "505d20da5eee05d590f511f193385c2303174610c29faea273215a0cc41b8c22",
+    "screenshot_sha256": "ba1173bc09a4500424d322328a805e38f16a60beeae3c27b8ca797dbf21bc923",
+    "width": 1280,
+    "height": 720,
+    "scope": "native Linux render and read-only startup; no user desktop or hardware control"
+  },
+  "design_review": "ship for the five reviewed UI fixes; no Windows runtime or hardware claim",
+  "archives": [
+    {
+      "file": "mechrevo-console-0.1.0-redesign-linux-x86_64.tar.gz",
+      "bytes": 14131799,
+      "sha256": "9d666dc0cd1bb9560cf2a35c447244bc6bde0a720f87dd06ae600b916171a0e4",
+      "all_members_verified": true
+    },
+    {
+      "file": "mechrevo-console-0.1.0-redesign-windows-x86_64.zip",
+      "bytes": 15308083,
+      "sha256": "5dc492a9d88a025b0ecf6d980230ec0485c98b48fbb904f46ae0f0224ae39905",
+      "all_members_verified": true
+    }
+  ],
+  "audio_analysis_tests": 25,
+  "verification_runner_tests": 16,
+  "audio_evidence": "Private local recording and analysis retained outside Git; no microphone starts from the GUI or analyzer.",
+  "installed": false,
+  "aur_published": false,
+  "windows_runtime_tested": false,
+  "hardware_writes_tested": false,
+  "oem_ec_fan_mux_rgb_water_cooler_implemented": false,
+  "tracking": "Partial overall: the shared watcher exited with database-is-locked and retained unresolved events; local verification outcomes are recorded separately."
+}

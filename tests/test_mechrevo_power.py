@@ -1502,7 +1502,7 @@ class PassiveTemperatureTarget(unittest.TestCase):
                 trip = trips[0]
                 self.assertEqual({k: trip.findtext(k) for k in
                                   ("SensorType", "Temperature", "Hyst", "type", "ControlType")},
-                                 {"SensorType": "x86_pkg_temp", "Temperature": "90000", "Hyst": "0",
+                                 {"SensorType": "x86_pkg_temp", "Temperature": "90000", "Hyst": "3000",
                                   "type": "passive", "ControlType": "SEQUENTIAL"})
                 devices = trip.findall("CoolingDevice")
                 self.assertEqual([d.findtext("type") for d in devices],
@@ -1693,7 +1693,7 @@ class PassivePollingInterval(unittest.TestCase):
         self.assertEqual(POWER.digest(self.controller.xml(55_000_000, "ENERGY_CONSERVE")),
                          "df2e2c43d6b5a866d3780a326cdc7450aea07a4e0e9716e1fc912f811c6191c8")
         self.assertEqual(POWER.digest(self.controller.xml(55_000_000, "ENERGY_CONSERVE", 90)),
-                         "49a0c2679fa6ffd1b7cbf60dff7d275f6fcece27ca1ad2b2cf4c8e18b4bef229")
+                         "61a1a9f15821804d11a3781d21491287805413a3845453ceeb2f90fc3fd8b28e")
 
     def test_one_second_polling_changes_only_platform_interval_and_reports_desired_value(self):
         baseline = self.controller.xml(55_000_000, "ENERGY_CONSERVE", 90)
@@ -1811,7 +1811,7 @@ class RaplDebounceInterval(unittest.TestCase):
 
     def test_absent_debounce_preserves_frozen_r10_xml_digest(self):
         self.assertEqual(POWER.digest(self.controller.xml(55_000_000, "ENERGY_CONSERVE", 90, 1)),
-                         "feecbf58256bd6ac75598a889ab4b3a65eeb71997a41e2c3eaddf94373bd28b7")
+                         "e36b5396c4cf15d04ec46dd96f0f4215b98bd313b43ebd063032ad336419d2ea")
 
     def test_failed_clear_restores_explicit_zero_configuration(self):
         self.fast()

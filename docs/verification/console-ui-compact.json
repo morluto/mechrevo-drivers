@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "scope": "Compact native Rust device overview; local checks and Linux read-only render; no release, installation or new hardware control qualification",
+  "source_sha256": "a485584e96ad0bfcc88ae37faaccd761c7cef1b33efa747feec4a84be00998ee",
+  "source_inputs_include_embedded_fonts_and_licenses": true,
+  "source_unchanged_during_verification_and_linux_build": true,
+  "rust_checks": {
+    "fmt": "passed",
+    "test": "passed",
+    "clippy": "passed",
+    "windows": "passed"
+  },
+  "rust_test_totals": {
+    "passed": 76,
+    "failed": 0,
+    "ignored": 0,
+    "measured": 0,
+    "filtered_out": 0
+  },
+  "python_console_tests": {
+    "outcome": "passed",
+    "ran": 88,
+    "skipped": 0,
+    "failures": 0,
+    "errors": 0
+  },
+  "layout_scenarios": {
+    "retained_scenarios": 94,
+    "native_dpi_factors": [1.0, 1.25, 1.5, 2.0],
+    "themes": ["dark", "light"],
+    "coverage": [
+      "real renderer with Chinese fallback and missing-glyph panic",
+      "long identities, expanded sources, missing readings and bottom reachability",
+      "real pointer and keyboard navigation; reduced-motion preference",
+      "sampling switch pointer, Tab/Space and accessible toggled state",
+      "real timestamp deduplication, two-sample collection state, elapsed range and current endpoints",
+      "unavailable GPU endpoint and machine-history isolation",
+      "equal-width temperature digits and stable unit position",
+      "named fan proximity, unassigned fan row and independent control-card gutter"
+    ]
+  },
+  "measured_default_desktop_layout": {
+    "logical_sizes": [[1120, 760], [1280, 720]],
+    "title_font_px": 34,
+    "heading_height_px": 49.0,
+    "thermal_card_height_px": 274.4,
+    "navigation_to_card_px": 104.0,
+    "control_card_gutter_px": 18.0,
+    "scope": "100 percent text scaling with explicit CPU/GPU fan fixtures; narrow windows and larger text may grow vertically"
+  },
+  "native_linux_capture": {
+    "binary_sha256": "13466234ca217a910ecb2ce4d578bd94b55126e86fa29bc810a6d99c73a83032",
+    "screenshot_sha256": "8ae1811e4ae2c574ccb45e403169e02d6a65b25d721ac0cdd485fea3daecc155",
+    "width": 1280,
+    "height": 720,
+    "compositor": "cage headless / pixman",
+    "scope": "native Linux startup and real read-only telemetry, application inspected locally; no user desktop capture or hardware writes"
+  },
+  "confirmed_regressions_repaired": [
+    "Thermal minimum height counted the heading twice, producing 304.4px; corrected to 274.4px without clipping content",
+    "Outer centering layout leaked zero horizontal spacing into the body, merging control cards; restored body spacing and separate card gutter",
+    "Manual mode relative update age could freeze without repaint; replaced with a static manual-update status"
+  ],
+  "markref": {
+    "marks": 21,
+    "files": 224,
+    "errors": 0,
+    "warnings": 0
+  },
+  "material": "cached application-owned diffuse texture, faint upper-right warm light, stable reduced grain and uniform dark-gray surfaces; no desktop capture or OS backdrop blur",
+  "limitations": [
+    "Windows compilation check only for this revision; Windows runtime and hardware remain untested",
+    "Linux render is read-only on development hardware and is not cross-distribution acceptance",
+    "No newly packaged archive, AUR publication or installation in this revision",
+    "OEM EC/fan/MUX/RGB/water-cooler control remains unimplemented in the Rust console",
+    "UI verification does not resolve the separate fan-noise or host-lag investigation"
+  ],
+  "tracking": "Source edits covered by a ready controlled watcher; build-cache churn, rustdoc temporary paths and compositor runtime sockets have partial tracking; no cleanup performed"
+}

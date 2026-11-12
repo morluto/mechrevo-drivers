@@ -37,6 +37,17 @@ class VerificationTests(unittest.TestCase):
         name = "test_probe_" + self.directory.name.replace("-", "_") + ".py"
         (self.root / "tests" / name).write_text(body)
 
+    def audio_source(self, body):
+        name = "test_analyze_fan_audio"
+        (self.root / "tests" / (name + ".py")).write_text(body)
+        # Discovery caches module names process-wide, including the real audio suite.
+        previous = sys.modules.pop(name, None)
+        def restore():
+            sys.modules.pop(name, None)
+            if previous is not None:
+                sys.modules[name] = previous
+        self.addCleanup(restore)
+
     def run_main(self, args=None):
         out, err = io.StringIO(), io.StringIO()
         code = verify.main(args or [], root=self.root, stdout=out, stderr=err)
@@ -132,6 +143,50 @@ class VerificationTests(unittest.TestCase):
             self.assertEqual(os.environ["MECHREVO_TEST_TMPDIR"], str(self.root / ".local-tests"))
         self.assertEqual(tempfile.tempdir, original_temp)
         self.assertEqual(sys.path, original_path)
+
+    def test_fan_audio_domain_selects_only_audio_module_and_imports_numpy(self):
+        self.audio_source("import unittest\nclass T(unittest.TestCase):\n def test_audio(self): pass\n")
+        self.source("raise AssertionError('unrelated domain must not load')\n")
+        with patch.object(verify.importlib, "import_module", return_value=object()) as dependency:
+            code, result, _ = self.run_main(["--domain", "fan-audio"])
+        dependency.assert_called_once_with("numpy")
+        self.assertEqual((code, result["outcome"], result["ran"]), (0, "passed", 1))
+        self.assertEqual(result["modules"], ["test_analyze_fan_audio.py"])
+        self.assertEqual(result["prerequisites"], [])
+
+    def test_missing_numpy_is_incomplete_before_loading_audio_module(self):
+        self.audio_source("raise AssertionError('missing dependency must prevent import')\n")
+        with patch.object(verify.importlib, "import_module", side_effect=ModuleNotFoundError("No module named 'numpy'")):
+            code, result, _ = self.run_main(["--domain", "fan-audio"])
+        self.assertEqual((code, result["outcome"], result["discovered"], result["ran"]), (2, "incomplete", 0, 0))
+        self.assertEqual(result["modules"], ["test_analyze_fan_audio.py"])
+        self.assertEqual(result["prerequisites"][0]["dependency"], "numpy")
+        self.assertIn("ModuleNotFoundError", result["prerequisites"][0]["reason"])
+        self.assertEqual(result["errors"], 0)
+        self.assertEqual(result["load_errors"], [])
+
+    def test_all_keeps_audio_selected_when_its_dependency_is_missing(self):
+        self.audio_source("raise AssertionError('missing dependency must prevent import')\n")
+        self.source("import unittest\nclass T(unittest.TestCase):\n def test_regular(self): pass\n")
+        with patch.object(verify.importlib, "import_module", side_effect=ImportError("NumPy unavailable")):
+            code, result, _ = self.run_main(["--domain", "all"])
+        self.assertEqual((code, result["outcome"], result["ran"]), (2, "incomplete", 1))
+        self.assertIn("test_analyze_fan_audio.py", result["modules"])
+        self.assertEqual(len(result["modules"]), 2)
+        self.assertEqual(result["prerequisites"][0]["dependency"], "numpy")
+        self.assertEqual(result["failures"], 0)
+        self.assertEqual(result["errors"], 0)
+
+    def test_driver_domain_does_not_probe_audio_dependencies(self):
+        self.audio_source("raise AssertionError('audio is outside driver domain')\n")
+        name = "test_uniwill_verifier_" + self.directory.name.replace("-", "_") + ".py"
+        (self.root / "tests" / name).write_text("import unittest\nclass T(unittest.TestCase):\n def test_driver(self): pass\n")
+        with patch.object(verify.importlib, "import_module", side_effect=AssertionError("Must not probe NumPy")) as dependency:
+            code, result, _ = self.run_main(["--domain", "driver"])
+        dependency.assert_not_called()
+        self.assertEqual((code, result["outcome"], result["ran"]), (0, "passed", 1))
+        self.assertEqual(result["modules"], [name])
+        self.assertEqual(result["prerequisites"], [])
 
     def test_derived_immutable_outcome(self):
         result = verify.Report("all", discovered=1, ran=1, skipped=1)

@@ -90,6 +90,15 @@ static long uniwill_ioctl_interface(struct file *file, unsigned int cmd, unsigne
 	return uniwill_status;
 }
 static u32 id_check_clevo, id_check_uniwill;
+static int uniwill_webcam_calls;
+static long uniwill_webcam_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+	(void)file;
+	(void)cmd;
+	(void)arg;
+	++uniwill_webcam_calls;
+	return -EIO;
+}
 static u32 clevo_identify(void) { return 1; }
 static u32 uniwill_identify(void) { return 0; }
 static struct { const char *version; } test_module = { "test-version" };
@@ -123,7 +132,8 @@ static void reset(void)
 	input_fault = output_fault = 0;
 	input_copies = output_copies = 0;
 	input_size = output_size = 0;
-	method_calls = sleeps = uniwill_calls = 0;
+	method_calls = sleeps = uniwill_calls = uniwill_webcam_calls = 0;
+	id_check_clevo = id_check_uniwill = 0;
 	uniwill_status = 0;
 	uniwill_command = 0;
 	uniwill_argument = 0;
@@ -469,6 +479,30 @@ static void debug_command_routing(void)
 	}
 }
 
+static void webcam_platform_route(void)
+{
+	u32 value = 1;
+
+	reset();
+	id_check_clevo = 1;
+	id_check_uniwill = 1;
+	results[0] = 0;
+	assert(ioctl_value(W_CL_WEBCAM_SW, &value) == 0);
+	assert(method_calls == 2 && methods[0] == CLEVO_CMD_GET_WEBCAM_SW);
+	assert(methods[1] == CLEVO_CMD_SET_WEBCAM_SW && arguments[1] == 1);
+	assert(uniwill_webcam_calls == 0);
+
+	reset();
+	id_check_clevo = 0;
+	id_check_uniwill = 1;
+	results[0] = 1;
+	assert(ioctl_value(W_CL_WEBCAM_SW, &value) == -EIO);
+	assert(method_calls == 0 && uniwill_webcam_calls == 1);
+	assert(input_copies == 0 && output_copies == 0);
+	assert(ioctl_value(R_CL_WEBCAM_SW, &value) == -EIO);
+	assert(method_calls == 0 && uniwill_webcam_calls == 2);
+}
+
 int main(int argc, char **argv)
 {
 	assert(argc == 2);
@@ -489,6 +523,7 @@ int main(int argc, char **argv)
 	CASE(webcam_noop)
 	CASE(webcam_set)
 	CASE(webcam_dmi)
+	CASE(webcam_platform_route)
 	CASE(unknown_commands)
 	CASE(malformed_commands)
 	CASE(debug_command_routing)

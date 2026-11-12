@@ -1,0 +1,122 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+"""Canonical profile-store synchronization function for the legacy CLI patch.
+
+Importing this module performs no I/O. The host supplies PROFILES_PATH and
+MECHREVO_PROFILES when transplanting the function into the existing CLI.
+This module contains no hardware controls or model power parameters.
+"""
+import json
+import os
+from pathlib import Path
+
+PROFILES_PATH: Path
+MECHREVO_PROFILES: list[dict]
+
+
+def sync_oem_profiles() -> None:
+    """Append missing defaults; preserve existing profile choices and user fields."""
+    import stat
+    import tempfile
+
+    def snapshot():
+        try:
+            before = PROFILES_PATH.lstat()
+        except FileNotFoundError:
+            return None, None
+        if not stat.S_ISREG(before.st_mode):
+            raise ValueError(f"Refusing non-regular profile store: {PROFILES_PATH}")
+        descriptor = os.open(PROFILES_PATH, os.O_RDONLY | os.O_NOFOLLOW)
+        with os.fdopen(descriptor, "rb") as source:
+            opened = os.fstat(source.fileno())
+            if (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino):
+                raise RuntimeError(f"Profile store changed while opening: {PROFILES_PATH}")
+            contents = source.read()
+            after = os.fstat(source.fileno())
+        if identity(before) != identity(after):
+            raise RuntimeError(f"Profile store changed while reading: {PROFILES_PATH}")
+        return contents, after
+
+    def identity(info):
+        if info is None:
+            return None
+        return (info.st_dev, info.st_ino, info.st_uid, info.st_gid,
+                stat.S_IMODE(info.st_mode), info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+
+    def unique_object(pairs):
+        value = {}
+        for key, entry in pairs:
+            if key in value:
+                raise ValueError(f"Duplicate JSON key in {PROFILES_PATH}: {key}")
+            value[key] = entry
+        return value
+
+    def invalid_constant(value):
+        raise ValueError(f"Invalid JSON constant in {PROFILES_PATH}: {value}")
+
+    def profile_ids(records, origin):
+        if not isinstance(records, list):
+            raise ValueError(f"Expected profile list in {origin}")
+        ids = set()
+        for index, record in enumerate(records):
+            if not isinstance(record, dict) or not isinstance(record.get("id"), str) or not record["id"].strip():
+                raise ValueError(f"Invalid profile record at index {index} in {origin}")
+            if record["id"] in ids:
+                raise ValueError(f"Duplicate profile ID in {origin}: {record['id']}")
+            ids.add(record["id"])
+        return ids
+
+    original, original_info = snapshot()
+    if original is None:
+        current_profiles = []
+    else:
+        current_profiles = json.loads(original.decode("utf-8"), object_pairs_hook=unique_object,
+                                      parse_constant=invalid_constant)
+    existing_ids = profile_ids(current_profiles, PROFILES_PATH)
+    profile_ids(MECHREVO_PROFILES, "built-in defaults")
+    missing = [record for record in MECHREVO_PROFILES if record["id"] not in existing_ids]
+    if not missing:
+        return  # No write, inode replacement, chmod, or mtime change for a complete store.
+
+    payload = (json.dumps(current_profiles + missing, indent=2, ensure_ascii=False, allow_nan=False) + "\n").encode("utf-8")
+    PROFILES_PATH.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(prefix=".mechrevo-profiles-", dir=PROFILES_PATH.parent)
+    temporary = Path(temporary_name)
+    committed = False
+    try:
+        with os.fdopen(descriptor, "wb") as staged:
+            if original_info is not None:
+                staged_info = os.fstat(staged.fileno())
+                if (staged_info.st_uid, staged_info.st_gid) != (original_info.st_uid, original_info.st_gid):
+                    os.fchown(staged.fileno(), original_info.st_uid, original_info.st_gid)
+                os.fchmod(staged.fileno(), stat.S_IMODE(original_info.st_mode))
+            else:
+                os.fchmod(staged.fileno(), 0o644)
+            staged.write(payload)
+            staged.flush()
+            os.fsync(staged.fileno())
+
+        latest, latest_info = snapshot()
+        if latest != original or identity(latest_info) != identity(original_info):
+            raise RuntimeError(f"Profile store changed concurrently; refusing overwrite: {PROFILES_PATH}")
+        if original_info is None:
+            # link is an atomic create-if-absent; a newly appeared destination is never replaced.
+            os.link(temporary, PROFILES_PATH)
+        else:
+            # Final observed byte/identity comparison is above. Non-cooperating writers can
+            # still race in the narrow interval before replace; this is not kernel-level CAS.
+            os.replace(temporary, PROFILES_PATH)
+        committed = True
+        directory = os.open(PROFILES_PATH.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    except Exception as exc:
+        if committed:
+            raise RuntimeError(f"Profiles committed but directory durability check failed; inspect {PROFILES_PATH}: {exc}") from exc
+        raise
+    finally:
+        try:
+            temporary.unlink()
+        except FileNotFoundError:
+            pass

@@ -1,0 +1,15 @@
+# Preserve user profile choices in the legacy CLI
+
+The legacy `sync_oem_profiles()` replaced every built-in ID with its default object. A tuned Office fan minimum of 60 was therefore reset to 0 when that synchronization ran with write permission. The isolated regression confirms this bug; it is not proof that the current unprivileged hotkey process has overwritten a live root-owned store. The isolated regression executes the original function excerpt and demonstrates this reset without invoking any mode or hardware control.
+
+`patches/mechrevo_profile_store.py` is the canonical replacement function. Existing IDs, list order and all nested user values survive. Only missing defaults are appended. A complete list returns before creating a directory or staging a file; bytes, inode, mode and mtime remain unchanged. Invalid JSON, duplicate keys or IDs, malformed records, and I/O permission errors fail explicitly.
+
+Missing defaults are staged in the same directory, preserving an existing store's uid, gid and mode. File data is flushed and synced before publication. A final byte and file-identity comparison rejects observed concurrent changes; existing stores use atomic replacement and absent stores use exclusive hard-link creation. The parent directory is synced. A directory-sync error after publication reports that the new file may already be committed.
+
+This is an observed-change check, not a kernel compare-and-swap operation: a noncooperating writer can still race between the final check and rename. File replacement preserves uid/gid/mode; it does not claim to preserve ACLs, extended attributes, or a byte-for-byte format when appending new IDs.
+
+Run `PYTHONDONTWRITEBYTECODE=1 python tests/test_console_profile_store.py` from the repository. The tests use a temporary store, synthetic defaults, the canonical candidate function and the original function excerpt. They do not import the complete legacy CLI or call hardware, mode, DBus or service operations.
+
+The optional unified patch is pinned to legacy full-file SHA256 `0d1b9a26c7caaddb24416ecd88523f334704c73c90971c0ba14c16b952058f79`. It changes only `sync_oem_profiles()`. A different preimage requires review. Publishing this patch does not qualify the legacy CLI's other hardware features or model claims.
+
+Before any installation, verify the exact source SHA, back up each of the three current copies under `$HOME/Backups/mechrevo-drivers/<hostname>/<date>/profile-store-preservation-<unique>/`, and record original bytes, uid/gid/mode and SHA. Verify recovery bytes before replacing files. Preserve mode/ownership on each atomic install, compare the expected original immediately before replacement, and independently verify all resulting file hashes. If a concurrent edit appears, stop rather than overwrite it. Do not invoke `set_mode`, a fan command or a service restart as a substitute for file verification. A running long-lived Python process may retain its old function until separately handled; changing source files alone does not prove every caller reloaded them.

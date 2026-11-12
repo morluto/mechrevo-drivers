@@ -1,16 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0+
-/* Read-only EC sensors verified on this exact machine/firmware only. */
+/* Read-only EC sensors verified on these exact machines and firmwares only. */
 #include <linux/acpi.h>
+#include <linux/delay.h>
 #include <linux/dmi.h>
 #include <linux/err.h>
 #include <linux/hwmon.h>
-#include <linux/kmod.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
 #include <linux/platform_device.h>
-#include <linux/string.h>
-
-#include "uniwill_interfaces.h"
 
 #define MECHREVO_CPU_EC_TEMP 0x043e
 #define MECHREVO_GPU_EC_TEMP 0x044f
@@ -19,10 +16,43 @@
 #define MECHREVO_CPU_RPM_HIGH 0x0464
 #define MECHREVO_CPU_RPM_LOW  0x0465
 #define MECHREVO_GPU_RPM_HIGH 0x046c
-#define MECHREVO_GPU_RPM_LOW  0x046b
 #define MECHREVO_RPM_ATTEMPTS 3
+#define MECHREVO_ECRR_DELAY_MIN_US 6000
+#define MECHREVO_ECRR_DELAY_MAX_US 12000
+#define MECHREVO_PROJECT_ID 0x0740
+#define MECHREVO_FAN_CTRL 0x078e
+#define MECHREVO_PROJECT_ID_EXPECTED 0x10
+#define MECHREVO_UNIVERSAL_FAN_CTRL 0x40
+
+/* The GPU tachometer low byte is model-specific. GM6PX0X is qualified from
+ * the OEM RPM method; GM6BG0Q was measured on hardware (only 0x046c/0x046d
+ * follow the secondary fan across 50/200 duty steps while 0x046a/0x046b stay
+ * at 0x41). Both pairs also match the in-tree Uniwill definitions.
+ */
+struct mechrevo_sensors_profile {
+	const char *product_name;
+	const char *board_name;
+	const char *bios_version;
+	u16 gpu_rpm_low;
+};
+
+static const struct mechrevo_sensors_profile mechrevo_sensors_profiles[] = {
+	{
+		.product_name = "Kuangshi16Pro Series GM6PX0X",
+		.board_name = "GM6PX0X",
+		.bios_version = "N.1.09MRO07",
+		.gpu_rpm_low = 0x046b,
+	},
+	{
+		.product_name = "Jiaolong16K Series GM6BG0Q",
+		.board_name = "GM6BG0Q",
+		.bios_version = "N.1.19MRO15",
+		.gpu_rpm_low = 0x046d,
+	},
+};
 
 static acpi_handle mechrevo_sensors_inou;
+static const struct mechrevo_sensors_profile *mechrevo_sensors_profile;
 static DEFINE_MUTEX(mechrevo_sensors_rpm_lock);
 static struct platform_device *mechrevo_sensors_device;
 static struct device *mechrevo_sensors_hwmon;
@@ -32,42 +62,39 @@ static const struct dmi_system_id mechrevo_sensors_dmi[] = {
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "MECHREVO"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Kuangshi16Pro Series GM6PX0X"),
+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "GM6PX0X"),
 			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "N.1.09MRO07"),
+		},
+	},
+	{
+		.matches = {
+			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "MECHREVO"),
+			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Jiaolong16K Series GM6BG0Q"),
+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "GM6BG0Q"),
+			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "N.1.19MRO15"),
 		},
 	},
 	{ }
 };
 MODULE_DEVICE_TABLE(dmi, mechrevo_sensors_dmi);
 
-static bool mechrevo_sensors_supported(void)
+static const struct mechrevo_sensors_profile *mechrevo_sensors_supported(void)
 {
+	unsigned int i;
+
 	/* dmi_match compares the whole field, unlike substring DMI table matches. */
-	return dmi_match(DMI_SYS_VENDOR, "MECHREVO") &&
-		dmi_match(DMI_PRODUCT_NAME, "Kuangshi16Pro Series GM6PX0X") &&
-		dmi_match(DMI_BIOS_VERSION, "N.1.09MRO07");
-}
+	for (i = 0; i < sizeof(mechrevo_sensors_profiles) /
+				 sizeof(mechrevo_sensors_profiles[0]); i++) {
+		const struct mechrevo_sensors_profile *profile =
+			&mechrevo_sensors_profiles[i];
 
-static int mechrevo_sensors_temperature(int channel, long *value)
-{
-	u8 raw;
-	int ret;
-	u16 address;
-
-	if (channel == 0)
-		address = MECHREVO_CPU_EC_TEMP;
-	else if (channel == 1)
-		address = MECHREVO_GPU_EC_TEMP;
-	else
-		return -EOPNOTSUPP;
-
-	ret = uniwill_read_ec_ram(address, &raw);
-	if (ret)
-		return ret < 0 ? ret : -EIO;
-	if (raw > 125)
-		return -ENODATA;
-
-	*value = (long)raw * 1000;
-	return 0;
+		if (dmi_match(DMI_SYS_VENDOR, "MECHREVO") &&
+		    dmi_match(DMI_PRODUCT_NAME, profile->product_name) &&
+		    dmi_match(DMI_BOARD_NAME, profile->board_name) &&
+		    dmi_match(DMI_BIOS_VERSION, profile->bios_version))
+			return profile;
+	}
+	return NULL;
 }
 
 static int mechrevo_sensors_ecrr(u16 address, u8 *value)
@@ -82,9 +109,34 @@ static int mechrevo_sensors_ecrr(u16 address, u8 *value)
 				       &arguments, &raw);
 	if (ACPI_FAILURE(status))
 		return -EIO;
+	/* Match the delay used by the in-tree Uniwill ECRR transport. */
+	usleep_range(MECHREVO_ECRR_DELAY_MIN_US, MECHREVO_ECRR_DELAY_MAX_US);
 	if (raw > 255)
 		return -ERANGE;
 	*value = raw;
+	return 0;
+}
+
+static int mechrevo_sensors_temperature(int channel, long *value)
+{
+	u16 address;
+	u8 raw;
+	int ret;
+
+	if (channel == 0)
+		address = MECHREVO_CPU_EC_TEMP;
+	else if (channel == 1)
+		address = MECHREVO_GPU_EC_TEMP;
+	else
+		return -EOPNOTSUPP;
+
+	ret = mechrevo_sensors_ecrr(address, &raw);
+	if (ret)
+		return ret;
+	if (raw > 125)
+		return -ENODATA;
+
+	*value = (long)raw * 1000;
 	return 0;
 }
 
@@ -94,12 +146,14 @@ static int mechrevo_sensors_rpm(int channel, long *value)
 	u8 high, low, check;
 	int attempt, ret;
 
+	if (!mechrevo_sensors_profile)
+		return -ENODEV;
 	if (channel == 0) {
 		high_address = MECHREVO_CPU_RPM_HIGH;
 		low_address = MECHREVO_CPU_RPM_LOW;
 	} else if (channel == 1) {
 		high_address = MECHREVO_GPU_RPM_HIGH;
-		low_address = MECHREVO_GPU_RPM_LOW;
+		low_address = mechrevo_sensors_profile->gpu_rpm_low;
 	} else {
 		return -EOPNOTSUPP;
 	}
@@ -139,14 +193,15 @@ static int mechrevo_sensors_rpm_qualify(void)
 				       &mechrevo_sensors_inou)) ||
 	    !acpi_has_method(mechrevo_sensors_inou, "ECRR"))
 		return -ENODEV;
-	ret = mechrevo_sensors_ecrr(0x0740, &project);
+	ret = mechrevo_sensors_ecrr(MECHREVO_PROJECT_ID, &project);
 	if (ret)
 		return ret;
-	ret = mechrevo_sensors_ecrr(0x078e, &capability);
+	ret = mechrevo_sensors_ecrr(MECHREVO_FAN_CTRL, &capability);
 	if (ret)
 		return ret;
 	/* Only the observed project 0x10 and OEM RAM-fan-1p5 branch. */
-	return project == 0x10 && (capability & 0x40) ? 0 : -ENODEV;
+	return project == MECHREVO_PROJECT_ID_EXPECTED &&
+		(capability & MECHREVO_UNIVERSAL_FAN_CTRL) ? 0 : -ENODEV;
 }
 
 static umode_t mechrevo_sensors_is_visible(const void *data,
@@ -212,26 +267,15 @@ static const struct hwmon_chip_info mechrevo_sensors_chip = {
 
 static int __init mechrevo_sensors_init(void)
 {
-	char *interface_id = NULL;
 	long value;
 	int ret;
 
-	if (!mechrevo_sensors_supported())
+	mechrevo_sensors_profile = mechrevo_sensors_supported();
+	if (!mechrevo_sensors_profile)
 		return -ENODEV;
-	ret = uniwill_get_active_interface_id(&interface_id);
-	if (ret == -ENODEV) {
-		/* Load the transport on demand without owning its removal lifecycle.
-		 * A modprobe softdep would also remove WMI when removing this module.
-		 */
-		ret = request_module("uniwill_wmi");
-		if (ret)
-			return ret < 0 ? ret : -EIO;
-		ret = uniwill_get_active_interface_id(&interface_id);
-	}
+	ret = mechrevo_sensors_rpm_qualify();
 	if (ret)
-		return ret < 0 ? ret : -EIO;
-	if (!interface_id || strcmp(interface_id, UNIWILL_INTERFACE_WMI_STRID))
-		return -ENODEV;
+		return ret;
 	ret = mechrevo_sensors_temperature(0, &value);
 	if (ret)
 		return ret;
@@ -239,9 +283,6 @@ static int __init mechrevo_sensors_init(void)
 	if (ret)
 		return ret;
 
-	ret = mechrevo_sensors_rpm_qualify();
-	if (ret)
-		return ret;
 	ret = mechrevo_sensors_rpm(0, &value);
 	if (ret)
 		return ret;
@@ -277,5 +318,5 @@ static void __exit mechrevo_sensors_exit(void)
 
 module_init(mechrevo_sensors_init);
 module_exit(mechrevo_sensors_exit);
-MODULE_DESCRIPTION("Read-only MECHREVO GM6PX0X EC temperatures and OEM RPM (N.1.09MRO07)");
+MODULE_DESCRIPTION("Read-only MECHREVO EC temperatures and fan RPM");
 MODULE_LICENSE("GPL");

@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-10-25T17:57:34.438715+00:00",
+  "scope": "GM6PX0X performance-button cycle and mode-linked indicator; local acceptance only",
+  "qualified_host": {
+    "vendor": "MECHREVO",
+    "product": "Kuangshi16Pro Series GM6PX0X",
+    "board": "GM6PX0X",
+    "bios": "N.1.09MRO07",
+    "kernel": "7.2.11-arch1-1"
+  },
+  "source_commit": "575632a90eac7ce9d61215fa8f4d18f543895977",
+  "package": {
+    "name": "mechrevo-console",
+    "version": "0.1.0.r188.g575632a-1",
+    "sha256": "564fa4cb83c8dfe37a0dd1c694f4ffeb6a49039af5a7035a4087433f101cab65",
+    "installed": true,
+    "integrity_files": 26,
+    "integrity_altered": 0,
+    "aur_published": false
+  },
+  "control_sha256": "5e0b4a99aa9dcdec4442fa8079bce0713a49e1fe660c5bcf56294845dc3d8d6b",
+  "offline_tests": {
+    "domain": "console",
+    "outcome": "passed",
+    "discovered": 105,
+    "ran": 105,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "prerequisites": []
+  },
+  "regression_control": {
+    "previous_source": "9008128",
+    "result": "new behavior tests fail against the previous implementation",
+    "test_failures": 5,
+    "assertion_failures_including_subtests": 7,
+    "errors": 0
+  },
+  "installed_cycle": {
+    "recorded_at": "2026-10-25T17:57:34.438715+00:00",
+    "installed_package": "mechrevo-console 0.1.0.r188.g575632a-1",
+    "initial_profile": "mechrevo_turbo",
+    "initial_mode_byte": 16,
+    "transitions": [
+      {
+        "profile": "mechrevo_office",
+        "mode_byte": 160,
+        "command": "mechrevo-control mode cycle",
+        "exit_code": 0
+      },
+      {
+        "profile": "mechrevo_gaming",
+        "mode_byte": 0,
+        "command": "mechrevo-control mode cycle",
+        "exit_code": 0
+      },
+      {
+        "profile": "mechrevo_turbo",
+        "mode_byte": 16,
+        "command": "mechrevo-control mode cycle",
+        "exit_code": 0
+      }
+    ],
+    "final_profile": "mechrevo_turbo",
+    "final_mode_byte": 16,
+    "acceptance_scope": "Installed CLI cycle, active profile and EC readback; not physical-button injection or three visual brightness observations"
+  },
+  "runtime_service": {
+    "name": "mechrevo-gaming-hotkey.service",
+    "active_state": "active",
+    "sub_state": "running",
+    "restarts": 0
+  },
+  "loaded_modules": {
+    "tuxedo_keyboard": "5899CC006083121EA48734C",
+    "uniwill_wmi": "A2073FB1E86DCA0AE3CB364",
+    "providers_reloaded": false,
+    "temporary_probe_modules_loaded": false
+  },
+  "physical_acceptance": {
+    "turbo_indicator": "user confirmed illuminated or changed state before the cycle update",
+    "office_indicator": "pending individual visual confirmation",
+    "gaming_indicator": "pending individual visual confirmation",
+    "full_physical_button_cycle": "pending user confirmation",
+    "wake_resume": "not tested"
+  },
+  "rejected_candidate": {
+    "address": "0x07a5",
+    "low_field_value": 2,
+    "wmi_and_oem_ecrr_readback": 2,
+    "visual_result": "user reported no change",
+    "restored_low_field": 0,
+    "shipped": false
+  },
+  "customer_mode_light_trial": {
+    "address": "0x0727",
+    "bit": 6,
+    "executed": false
+  },
+  "limits": [
+    "Three distinct EC mode values do not establish numeric brightness percentages.",
+    "Active profile identity does not establish power limits or thermal performance.",
+    "The installed CLI cycle is not physical-button injection.",
+    "Other models, firmware, and Windows runtime remain unqualified."
+  ]
+}

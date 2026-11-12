@@ -1,0 +1,41 @@
+{
+  "scope": "legacy CLI profile-store function only; other legacy controls remain unqualified",
+  "old_full_file_sha256": "0d1b9a26c7caaddb24416ecd88523f334704c73c90971c0ba14c16b952058f79",
+  "new_full_file_sha256": "ee01ca9aec4caec287cb09855e23c5a6d1ea2d1e82faec3dcc3e5fa3c508a74a",
+  "canonical_function_module_sha256": "6a429cd45df56b47ea5319d716675ef16b511f5b1c80577c1c3420feb5d403ad",
+  "offline_console_tests": {
+    "outcome": "passed",
+    "ran": 88,
+    "skipped": 0,
+    "profile_store_regression_cases": 15
+  },
+  "behavior": [
+    "original function resets tuned same-ID record under write permission; reproduced only in isolated fixture",
+    "existing IDs and all user fields preserved; missing defaults appended",
+    "complete store is byte/inode/mtime unchanged with zero write",
+    "invalid data and I/O failure propagate without false success",
+    "same-directory atomic replacement and observed-change check; not kernel-level CAS"
+  ],
+  "local_activation": {
+    "repository_prototype_and_staging_copy_updated": true,
+    "installed_cli_hash_verified": true,
+    "running_hotkey_process_reloaded": true,
+    "complete_live_store_function_call_zero_write_verified": true,
+    "active_profile_and_store_preserved_during_reload": true,
+    "actual_mode_switch_tested": false
+  },
+  "mitigation": {
+    "profile": "current Office/Quiet only",
+    "minimum_fan_percent": 60,
+    "maximum_fan_percent": 100,
+    "qualification": "provisional host-specific noise mitigation, not a permanent optimal floor or mechanical diagnosis"
+  },
+  "recovery": "verified private originals, original metadata and SHA256 retained under the user backup convention",
+  "limitations": [
+    "No evidence that the unprivileged hotkey daemon actually overwrote the live root-owned store",
+    "No raw EC or mode commands exercised by this change",
+    "No AUR/package release or qualification of the full legacy prototype",
+    "Windows fan control remains unimplemented; the separate Rust UI has compile/link evidence only"
+  ],
+  "tracking": "source/test generation complete; installed atomic-replacement tracking partial for transient paths"
+}

@@ -9,3 +9,7 @@ evdev:atkbd:dmi:*:svnTUXEDO:*:rvnNB02:*
 # TUXEDO InfinityFlex 14 Gen1
 evdev:atkbd:dmi:*:svnTUXEDO:*:rnDN50Z-140HC-YD:*
  KEYBOARD_KEY_6e=fn
+
+# MECHREVO / TongFang GM6PX0X & compatible models
+evdev:atkbd:dmi:*:svnMECHREVO:*
+ KEYBOARD_KEY_f8=fn

@@ -1150,7 +1150,21 @@ static int is_auto_boot_and_powershare_supported(bool *status)
 
 		  // Stellaris Gen8
 		  dmi_match(DMI_BOARD_NAME, "XxAF5xxx") ||
-		  dmi_match(DMI_BOARD_NAME, "XxAF5xxx_mLED");
+		  dmi_match(DMI_BOARD_NAME, "XxAF5xxx_mLED") ||
+
+		  /* MECHREVO feature reports: WUJIE 15X Pro v4 and Jiaolong 16K
+		   * (LKML 2026-10-16 / 2026-10-23). Same registers and bits as
+		   * these helpers; the 16K stays within the reported BIOS scope. */
+		  (dmi_match(DMI_SYS_VENDOR, "MECHREVO") &&
+		   (dmi_match(DMI_BOARD_NAME, "WUJIE Series-X5SP4NAG") ||
+		    (dmi_match(DMI_BOARD_NAME, "GM6BG0Q") &&
+		     dmi_match(DMI_PRODUCT_NAME, "Jiaolong16K Series GM6BG0Q") &&
+		     dmi_match(DMI_BIOS_VERSION, "N.1.19MRO15")) ||
+		    /* GM5HG0A owner report, LKML 2026-10-08: both switches
+		     * tested separately, with the other switch disabled. */
+		    (dmi_match(DMI_BOARD_NAME, "GM5HG0A") &&
+		     dmi_match(DMI_PRODUCT_NAME, "Yilong15Pro Series GM5HG0A") &&
+		     dmi_match(DMI_BIOS_VERSION, "N.1.09MRO19"))));
 
 	return 0;
 }
@@ -1212,18 +1226,23 @@ static int uw_has_ac_auto_boot(bool *status)
 static void uw_ac_auto_boot_init(struct platform_device *dev)
 {
 	u8 value;
+	int result;
 	struct uniwill_device_features_t *uw_feats = &uniwill_device_features;
 
-	if (uw_feats->uniwill_has_ac_auto_boot)
-		uw_ac_auto_boot_loaded =
-			sysfs_create_group(&dev->dev.kobj,
-					   &uw_ac_auto_boot_attr_group) == 0;
-
-	// Read for state init
-	if (uw_ac_auto_boot_loaded) {
-		uw_get_ac_auto_boot(&value);
-		uw_ac_auto_boot_last_written_value = value;
+	uw_ac_auto_boot_loaded = false;
+	if (!uw_feats->uniwill_has_ac_auto_boot)
+		return;
+	/* Initialize only from a successful read, before publishing the group. */
+	result = uw_get_ac_auto_boot(&value);
+	if (result) {
+		pr_err("Could not read initial AC auto-boot state: %d\n", result);
+		return;
 	}
+	uw_ac_auto_boot_last_written_value = value;
+	result = sysfs_create_group(&dev->dev.kobj, &uw_ac_auto_boot_attr_group);
+	if (result)
+		pr_err("Could not register AC auto-boot controls: %d\n", result);
+	uw_ac_auto_boot_loaded = result == 0;
 }
 
 static ssize_t uw_ac_auto_boot_show(struct device *child,
@@ -1315,18 +1334,22 @@ static int uw_has_usb_powershare(bool *status)
 static void uw_usb_powershare_init(struct platform_device *dev)
 {
 	u8 value;
+	int result;
 	struct uniwill_device_features_t *uw_feats = &uniwill_device_features;
 
-	if (uw_feats->uniwill_has_usb_powershare)
-		uw_usb_powershare_loaded =
-			sysfs_create_group(&dev->dev.kobj,
-					   &uw_usb_powershare_attr_group) == 0;
-
-	// Read for state init
-	if (uw_usb_powershare_loaded) {
-		uw_get_usb_powershare(&value);
-		uw_usb_powershare_last_written_value = value;
+	uw_usb_powershare_loaded = false;
+	if (!uw_feats->uniwill_has_usb_powershare)
+		return;
+	result = uw_get_usb_powershare(&value);
+	if (result) {
+		pr_err("Could not read initial USB powershare state: %d\n", result);
+		return;
 	}
+	uw_usb_powershare_last_written_value = value;
+	result = sysfs_create_group(&dev->dev.kobj, &uw_usb_powershare_attr_group);
+	if (result)
+		pr_err("Could not register USB powershare controls: %d\n", result);
+	uw_usb_powershare_loaded = result == 0;
 }
 
 static ssize_t uw_usb_powershare_show(struct device *child,
@@ -1904,6 +1927,9 @@ struct uniwill_device_features_t *uniwill_get_device_features(void)
 
 	uw_feats->uniwill_custom_profile_mode_needed = false
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0)
+		/* sklynic's tested JIAOLONG 16 Pro 2025 adaptation; exact DMI. */
+		|| (dmi_match(DMI_SYS_VENDOR, "MECHREVO") &&
+		    dmi_match(DMI_BOARD_NAME, "JIAOLONG Series-X6xR55xK"))
 		|| dmi_match(DMI_PRODUCT_SKU, "STELLARIS16I06")
 		|| dmi_match(DMI_PRODUCT_SKU, "STELLARIS17I06")
 		|| dmi_match(DMI_PRODUCT_SKU, "STELLARIS16I07")
@@ -1930,6 +1956,17 @@ struct uniwill_device_features_t *uniwill_get_device_features(void)
 	uw_feats->uniwill_profile_v1 =
 		uw_feats->uniwill_profile_v1_two_profs ||
 		uw_feats->uniwill_profile_v1_three_profs;
+	/* GX4HRXL supports the same three mode values (mech-forza-kmod),
+	 * but has no evidence for the legacy fan-curve copy in probe. Advertise
+	 * modes after computing that legacy initialization flag. GM6BG0Q also
+	 * stays out of the fan-table copy: the OEM control center owns its
+	 * curves, and hardware only qualified the 0x0751 mode values. */
+	uw_feats->uniwill_profile_v1_three_profs |=
+		(dmi_match(DMI_SYS_VENDOR, "MECHREVO") &&
+		 (dmi_match(DMI_BOARD_NAME, "GX4HRXL") ||
+		  (dmi_match(DMI_BOARD_NAME, "GM6BG0Q") &&
+		   dmi_match(DMI_PRODUCT_NAME, "Jiaolong16K Series GM6BG0Q") &&
+		   dmi_match(DMI_BIOS_VERSION, "N.1.19MRO15"))));
 
 	if (uw_has_charging_priority(&uw_feats->uniwill_has_charging_prio) != 0)
 		feats_loaded = false;
@@ -1962,6 +1999,12 @@ struct uniwill_device_features_t *uniwill_get_device_features(void)
 	return uw_feats;
 }
 EXPORT_SYMBOL(uniwill_get_device_features);
+
+bool uniwill_device_features_ready(void)
+{
+	return uw_feats_loaded;
+}
+EXPORT_SYMBOL(uniwill_device_features_ready);
 
 // Fn lock
 

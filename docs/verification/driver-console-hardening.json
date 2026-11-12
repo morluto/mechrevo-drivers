@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-18",
+  "base_commit": "c76b738abe741c1323f026f43ee39c0b479d2242",
+  "scope": "Source hardening, offline regression, kernel module compilation and read-only native Linux CLI validation; no installation or new hardware-control acceptance",
+  "kernel_candidate": {
+    "source": "Pinned git archive plus only feature-binding guards and two new tests; pre-existing webcam WIP excluded",
+    "io_source_sha256": "ef6f7294a41661c67be4692989b401dcca393e21ea025934e12f4bdfc203a78c",
+    "patch_sha256": "8ebecc854a23145aa4eaeb993675a187888799ec2cc36cf5e0d60d6f0c0904e5",
+    "changed_source_lines": {
+      "added": 19,
+      "removed": 1
+    },
+    "source_files_checked": 363,
+    "source_unchanged_during_verification": true,
+    "driver_tests": {
+      "outcome": "passed",
+      "ran": 496,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "feature_binding_tests": {
+      "ran": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failure_cases": []
+    },
+    "old_source_sensitivity": {
+      "ran_methods": 14,
+      "failed_subtests": 14,
+      "errors": 0,
+      "skipped": 0,
+      "builds": [
+        "ordinary",
+        "DEBUG"
+      ],
+      "scope": "Seven boundary cases fail in each build; mocked extraction of real production functions, not a live kernel crash"
+    },
+    "builds": {
+      "7.2.9-arch1-1": {
+        "exit_code": 0,
+        "modules": 28,
+        "flags": [
+          "W=1",
+          "-j2"
+        ],
+        "warning_count": 5,
+        "warning_scope": "Five unused-but-set variables in unchanged driver files",
+        "io_module_sha256": "2eb8acd2f36102b31b3c20ae8365a72348f6b99b94a9d3d52693202b1479d4bc",
+        "vermagic": "7.2.9-arch1-1 SMP preempt mod_unload",
+        "log_sha256": "31ad975afe52d903698a5c4d65c3f95c07f540d100d7acc47b9c3f0704e54cbb"
+      },
+      "7.2.7-arch1-1": {
+        "exit_code": 0,
+        "modules": 28,
+        "flags": [
+          "W=1",
+          "-j2"
+        ],
+        "warning_count": 5,
+        "warning_scope": "Five unused-but-set variables in unchanged driver files",
+        "io_module_sha256": "6363de04213aa5e11bbcc9c4b7c54b79dc79e42b79deaf390b060613e8f8d6bf",
+        "vermagic": "7.2.7-arch1-1 SMP preempt mod_unload",
+        "log_sha256": "f6999c771b31ed9241a91bdd692352f0a8462307ff286ab46d65ba7f689da696"
+      }
+    }
+  },
+  "console": {
+    "source_sha256": "05cf713981d2f35b09c555a9cda057debc2760a9aeb1337f4521502601662314",
+    "source_unchanged": true,
+    "checks": {
+      "fmt": "passed",
+      "test": "passed",
+      "clippy": "passed",
+      "windows": "passed"
+    },
+    "rust_tests": {
+      "passed": 84,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered_out": 0
+    },
+    "python_tests": {
+      "outcome": "passed",
+      "ran": 88,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "linux_cli": {
+      "outcome": "passed",
+      "source_sha256": "05cf713981d2f35b09c555a9cda057debc2760a9aeb1337f4521502601662314",
+      "source_unchanged_during_build": true,
+      "binary_sha256": "9e22629f05494ca6d61af1cfb564da8cc7089f5c1beae5a5007ef0bf3cb339a3",
+      "telemetry_count": 38,
+      "unique_telemetry_ids": 38,
+      "canonical_hwmon_inputs": 33,
+      "collection_elapsed_ns": 319814854,
+      "outer_elapsed_ns": 326934006,
+      "wall_clock_bracket_verified": true,
+      "running_kernel": "7.2.9-arch1-1",
+      "status_fields_preserved_with_collection_addition": true,
+      "export_has_same_document_structure": true,
+      "existing_file_refused_and_bytes_preserved": true,
+      "dangling_symlink_refused_and_target_not_created": true,
+      "protected_runtime_unchanged": true,
+      "installed": false,
+      "loaded_new_kernel_code": false,
+      "hardware_writes": false
+    },
+    "sensor_regression_sensitivity": {
+      "legacy_duplicate_id_and_alias_cases": "compiled and failed expected assertions",
+      "legacy_cross_state_identity_case": "passed; preserved behavior",
+      "legacy_fifo_case": "failed canonical-ID assertion without blocking; does not establish a legacy suspended-input read",
+      "suspended_branch_disabled_mutation": "compiled; FIFO regression failed via its internal five-second timeout",
+      "mutant_fifo_seconds": 5.013313,
+      "observed_child_processes_reaped": true,
+      "current_four_cases": "passed"
+    }
+  },
+  "runtime_identity": {
+    "kernel": "7.2.9-arch1-1",
+    "installed_package": "mechrevo-drivers-dkms-git 4.24.0.r106.gaaf6b36-1",
+    "tuxedo_io_installed_and_loaded_build_id": "a0aeba3f4ea1cd34f3e88b6f255224ec2b0381ac",
+    "scope": "Only tuxedo_io identity reverified this round; does not generalize to other modules",
+    "protected_runtime_unchanged": true
+  },
+  "markref": {
+    "marks": 21,
+    "files": 226,
+    "errors": 0,
+    "warnings": 0,
+    "scope": "Final check --include-untracked after adding the receipt and test README"
+  },
+  "limitations": [
+    "Kernel fix not installed or loaded; feature-unbound failure reproduced only in ordinary/DEBUG mocked C harnesses",
+    "Provider-null branch is defensive; current provider returns a static object",
+    "Concurrent transport unbind is outside this fix; underlying transport errno remains unchanged",
+    "Windows target compile check only; no Windows runtime or hardware test",
+    "Linux hwmon sensor IDs changed; consumers must migrate old indexes; no stability guarantee across reboot or hwmon renumbering",
+    "Fan noise, sustained thermals, suspend/resume, GPU stability and full OEM parity remain unaccepted",
+    "No AUR publication, new package installation, service change or hardware-control writes"
+  ],
+  "tracking": {
+    "source_edits": "Ready controlled source watcher active throughout edits",
+    "rust_target_cache": {
+      "status": "partial",
+      "gaps": 0,
+      "unresolved_events": 4645
+    },
+    "linux_live_run": {
+      "command_exit": 0,
+      "status": "partial",
+      "gaps": 1,
+      "unresolved_events": 19,
+      "scope": "Dangling-symlink boundary and concurrent scratch metadata/removal events; not complete filesystem history"
+    },
+    "git_metadata": "AgentGC rejects .git as internal state; Git mutations run under selected source-root tracking, without claiming .git write history",
+    "cleanup_performed": false
+  },
+  "private_evidence_directory": ".local-tests/console-redesign/driver-continuation"
+}

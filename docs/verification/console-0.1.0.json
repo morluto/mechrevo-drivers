@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "version": "0.1.0 development candidate",
+  "source_digest": "83c3338fb733a43a0dacf23c1d320177b4e2170d7215b3726a67aa0539de0a92",
+  "source_inputs_unchanged": true,
+  "rust": {
+    "outcome": "passed",
+    "test_totals": {
+      "passed": 65,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered_out": 0
+    },
+    "checks": [
+      {
+        "name": "fmt",
+        "status": "passed",
+        "exit_code": 0
+      },
+      {
+        "name": "test",
+        "status": "passed",
+        "exit_code": 0
+      },
+      {
+        "name": "clippy",
+        "status": "passed",
+        "exit_code": 0
+      },
+      {
+        "name": "windows",
+        "status": "passed",
+        "exit_code": 0
+      }
+    ]
+  },
+  "python": {
+    "outcome": "passed",
+    "ran": 70,
+    "skipped": 0
+  },
+  "gui_layout_scenarios": 64,
+  "linux_read_only_runtime": {
+    "help_exit": 0,
+    "status_exit": 0,
+    "platform": "linux",
+    "identity_evidence": "hardware_partial",
+    "sensors": 38,
+    "brightness_devices": 1,
+    "scope": "stripped Linux CLI; read-only"
+  },
+  "native_linux_render": {
+    "width": 1280,
+    "height": 720,
+    "binary_sha256": "eb8ea4d336d73757cb3ac3ebff5226fda15983151aaaaff2277039e109bf44a3",
+    "screenshot_sha256": "000efb986153f6e8c0f3521fe302338507cf26a39dcd004de20fb15e5290d2aa"
+  },
+  "no_op_runner_rejected_as_incomplete": true,
+  "archives": [
+    {
+      "file": "mechrevo-console-0.1.0-dev-linux-x86_64.tar.gz",
+      "bytes": 14075423,
+      "sha256": "6219c3920cdf365b3f3bd5465d46822b860a3a462be2bd53af16645a59975b1f",
+      "all_members_verified": true
+    },
+    {
+      "file": "mechrevo-console-0.1.0-dev-windows-x86_64.zip",
+      "bytes": 15260891,
+      "sha256": "a171fac9c0ce310c3e1ba97c3f9616b70f44ef22f978603faa6cf64e6a5f9a41",
+      "all_members_verified": true
+    }
+  ],
+  "windows_runtime_tested": false,
+  "hardware_writes_tested": false,
+  "oem_ec_fan_mux_rgb_water_cooler_implemented": false,
+  "all_upstream_issues_resolved": false,
+  "installed": false,
+  "aur_published": false
+}

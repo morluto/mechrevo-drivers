@@ -27,7 +27,8 @@ all:
 
 install: all
 	make -C $(KDIR) M=$(PWD) $(MAKEFLAGS) modules_install
-	cp -r usr /
+	@if [ -d files ]; then cp -r files/* /; fi
+	@if [ -d usr ]; then cp -r usr /; fi
 
 clean:
 	make -C $(KDIR) M=$(PWD) $(MAKEFLAGS) clean
